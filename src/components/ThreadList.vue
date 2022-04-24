@@ -10,8 +10,10 @@
       >
         <div>
           <p>
-            <a href="#" v-text="title" />
-            <!-- <a href="thread.html" v-text="title" /> -->
+            <router-link
+              :to="{ name: `ThreadShow`, params: { id } }"
+              v-text="title"
+            />
           </p>
           <p class="text-faded text-xsmall">
             By <a href="#" v-text="userById(userId).name" />, {{ publishedAt }}.
