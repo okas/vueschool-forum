@@ -1,3 +1,22 @@
+<script setup lang="ts">
+import { computed } from "vue";
+import PostList from "../components/PostList.vue";
+import { threads, posts } from "../data.json";
+
+const props = defineProps({
+  id: {
+    type: String,
+    required: true,
+  },
+});
+
+const thread = computed(() => threads.find(({ id }) => id === props.id));
+
+const threadPosts = computed(() =>
+  posts.filter(({ threadId }) => threadId === thread.value.id)
+);
+</script>
+
 <template>
   <div>
     <!-- <ul class="breadcrumbs">
@@ -23,21 +42,4 @@
   </div>
 </template>
 
-<script setup lang="ts">
-import { computed } from "vue";
-import PostList from "../components/PostList.vue";
-import { threads, posts } from "../data.json";
-
-const props = defineProps({
-  id: {
-    type: String,
-    required: true,
-  },
-});
-
-const thread = computed(() => threads.find(({ id }) => id === props.id));
-
-const threadPosts = computed(() =>
-  posts.filter(({ threadId }) => threadId === thread.value.id)
-);
-</script>
+<style scoped></style>
