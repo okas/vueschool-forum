@@ -9,12 +9,12 @@ const routes = [
   {
     path: "/",
     name: "Home",
-    component: () => import("../components/PageHome.vue"),
+    component: () => import("../pages/PageHome.vue"),
   },
   {
     path: "/thread/:id",
     name: "ThreadShow",
-    component: () => import("../components/PageThreadShow.vue"),
+    component: () => import("../pages/PageThreadShow.vue"),
     props: true,
     beforeEnter: (
       { params, path, query, hash }: RouteLocationNormalized,
@@ -38,7 +38,7 @@ const routes = [
     // will match everything and put it under `$route.params.pathMatch`
     path: "/:pathMatch(.*)*",
     name: "NotFound",
-    component: () => import("../components/PageNotFound.vue"),
+    component: () => import("../pages/PageNotFound.vue"),
   },
 ];
 

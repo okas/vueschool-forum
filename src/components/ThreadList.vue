@@ -40,7 +40,7 @@
       </div>
     </div>
 
-    <!-- <div class="pagination">
+    <!-- <div class="pagination"></div>
       <button class="btn-circle" disabled="">
         <i class="fa fa-angle-left"></i>
       </button>
