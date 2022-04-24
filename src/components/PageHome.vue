@@ -4,7 +4,7 @@
 </template>
 
 <script setup lang="ts">
-import ThreadList from "@/components/ThreadList.vue";
+import ThreadList from "../components/ThreadList.vue";
 </script>
 
 <style scoped></style>

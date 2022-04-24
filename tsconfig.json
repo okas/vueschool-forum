@@ -8,12 +8,14 @@
     "moduleResolution": "node",
     "sourceMap": true,
     "allowSyntheticDefaultImports": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "jsx": "preserve"
   },
   "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
   "paths": {
-    "@/*": ["./src/*"]
+    "@/*": ["src/*"]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "src/**/*.jsx"],
   "exclude": ["node_modules"]
 }

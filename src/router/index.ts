@@ -4,12 +4,12 @@ const routes = [
   {
     path: "/",
     name: "Home",
-    component: () => import("@/components/PageHome.vue"),
+    component: () => import("../components/PageHome.vue"),
   },
   {
     path: "/thread/:id",
     name: "ThreadShow",
-    component: () => import("@/components/PageThreadShow.vue"),
+    component: () => import("../components/PageThreadShow.vue"),
     props: true,
   },
 ];
