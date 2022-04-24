@@ -3,10 +3,16 @@ module.exports = {
 
   env: {
     node: true,
+    es6: true,
+    browser: true,
+    "vue/setup-compiler-macros": true,
   },
 
+  parser: "vue-eslint-parser",
+
   parserOptions: {
-    parser: "@babel/eslint-parser",
+    ecmaVersion: 2022,
+    parser: "@typescript-eslint/parser",
   },
 
   rules: {
@@ -15,10 +21,14 @@ module.exports = {
     "no-debugger": process.env.NODE_ENV === "production" ? "warn" : "off",
   },
 
+  plugins: ["@typescript-eslint"],
+
   extends: [
     "plugin:vue/vue3-essential",
     "@vue/standard",
     "eslint:recommended",
+    "plugin:@typescript-eslint/eslint-recommended",
+    "plugin:@typescript-eslint/recommended",
     "plugin:prettier/recommended",
   ],
 };
