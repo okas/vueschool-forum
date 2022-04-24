@@ -17,18 +17,20 @@ const routes = [
     component: () => import("../components/PageThreadShow.vue"),
     props: true,
     beforeEnter: (
-      { params, path }: RouteLocationNormalized,
+      { params, path, query, hash }: RouteLocationNormalized,
       _: undefined,
       next
     ) =>
       next(
         threadData.some(({ id }) => id === params.id)
-          ? null
+          ? undefined
           : {
               name: "NotFound",
               params: {
                 pathMatch: path.substring(1).split("/"),
               },
+              query,
+              hash,
             }
       ),
   },
