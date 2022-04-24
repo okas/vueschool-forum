@@ -1,4 +1,9 @@
-import { createRouter, createWebHistory } from "vue-router";
+import {
+  createRouter,
+  createWebHistory,
+  RouteLocationNormalized,
+} from "vue-router";
+import { threads as threadData } from "../data.json";
 
 const routes = [
   {
@@ -11,6 +16,12 @@ const routes = [
     name: "ThreadShow",
     component: () => import("../components/PageThreadShow.vue"),
     props: true,
+    beforeEnter: ({ params }: RouteLocationNormalized, _: undefined, next) =>
+      next(
+        threadData.some(({ id }) => id === params.id)
+          ? null
+          : { name: "NotFound" }
+      ),
   },
   {
     // will match everything and put it under `$route.params.pathMatch`
