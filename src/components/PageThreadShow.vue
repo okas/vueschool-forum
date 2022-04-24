@@ -97,11 +97,11 @@ const props = defineProps({
 
 const thread = computed(() => threads.find(({ id }) => id === props.id));
 
-function postById(pId) {
+function postById(pId: string) {
   return posts.find(({ id }) => id === pId);
 }
 
-function userById(uId) {
+function userById(uId: string) {
   return users.find(({ id }) => id === uId);
 }
 </script>
