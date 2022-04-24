@@ -20,7 +20,10 @@
         </div>
 
         <div class="activity">
-          <p class="replies-count">{{ length }} replies</p>
+          <p class="replies-count">
+            {{ length }}
+            {{ length > 1 || length === 0 ? "replies" : "reply" }}
+          </p>
 
           <img class="avatar-medium" :src="userById(userId).avatar" alt="" />
 
@@ -46,9 +49,16 @@
 </template>
 
 <script setup lang="ts">
-import { threads, users } from "../data.json";
+import { users } from "../data.json";
 
-function userById(uId) {
+defineProps({
+  threads: {
+    type: Array,
+    required: true,
+  },
+});
+
+function userById(uId: string) {
   return users.find(({ id }) => id === uId);
 }
 </script>
