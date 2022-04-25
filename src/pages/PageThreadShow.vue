@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from "vue";
-import { guidAsBase64 } from "../utils/index";
+import { computed, reactive } from "vue";
 import PostList from "../components/PostList.vue";
+import PostEditor from "../components/PostEditor.vue";
 import { threads, posts } from "../data.json";
 
 const props = defineProps({
@@ -21,23 +21,15 @@ const threadPostsC = computed(() =>
   postsR.filter(({ threadId }) => threadId === threadC.value.id)
 );
 
-const newPostTextRf = ref<string>(null);
-
-function addPost() {
-  const id = guidAsBase64();
-
+function addPost({ id, ...rest }) {
   const post = {
     id,
-    text: newPostTextRf.value,
-    publishedAt: Math.floor(Date.now() / 1000),
     threadId: props.id,
-    userId: "NnooaWj4KHVxbhKwO1pEdfaQDsD2",
+    ...rest,
   };
 
   postsR.push(post);
   threadC.value.posts.push(id);
-
-  newPostTextRf.value = null;
 }
 </script>
 
@@ -60,28 +52,9 @@ function addPost() {
       >
     </p> -->
     <post-list :posts="threadPostsC" />
-    <div class="col-full">
-      <h1>Create new thread in <i v-text="threadC.title" /></h1>
-      <form @submit.prevent="addPost">
-        <div class="form-group">
-          <label for="thread_content">Content:</label>
-          <textarea
-            id="thread_content"
-            class="form-input"
-            name="content"
-            rows="8"
-            cols="140"
-            v-model="newPostTextRf"
-          />
-        </div>
-        <div class="btn-group">
-          <button class="btn btn-ghost">Cancel</button>
-          <button class="btn btn-blue" type="submit" name="Publish">
-            Publish
-          </button>
-        </div>
-      </form>
-    </div>
+    <post-editor @save="addPost" class="col-full">
+      {{ threadC.title }}
+    </post-editor>
   </div>
 </template>
 
