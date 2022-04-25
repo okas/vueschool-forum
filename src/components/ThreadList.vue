@@ -1,3 +1,19 @@
+<script setup lang="ts">
+import AppDate from "./AppDate.vue";
+import { users } from "../data.json";
+
+defineProps({
+  threads: {
+    type: Array,
+    required: true,
+  },
+});
+
+function userById(uId: string) {
+  return users.find(({ id }) => id === uId);
+}
+</script>
+
 <template>
   <div class="col-full">
     <div class="thread-list">
@@ -52,21 +68,5 @@
     </div> -->
   </div>
 </template>
-
-<script setup lang="ts">
-import AppDate from "./AppDate.vue";
-import { users } from "../data.json";
-
-defineProps({
-  threads: {
-    type: Array,
-    required: true,
-  },
-});
-
-function userById(uId: string) {
-  return users.find(({ id }) => id === uId);
-}
-</script>
 
 <style scoped></style>
