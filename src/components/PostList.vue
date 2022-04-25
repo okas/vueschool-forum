@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { diffFromUnix, formatFromUnix } from "../utils/dateTimeDiffFormat";
+import AppDate from "./AppDate.vue";
 import { users } from "../data.json";
 
 defineProps({
@@ -46,11 +46,9 @@ function userById(uId: string) {
           ></a> -->
       </div>
 
-      <div
-        v-text="diffFromUnix(publishedAt)"
-        :title="formatFromUnix(publishedAt)"
-        class="post-date text-faded"
-      />
+      <div class="post-date text-faded">
+        <app-date :timestamp="publishedAt" />
+      </div>
 
       <!-- <div class="reactions">
           <ul>
