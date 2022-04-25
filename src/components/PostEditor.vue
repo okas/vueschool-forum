@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { guidAsBase64 } from "../utils";
+import { guidAsBase64 } from "../utils/misc";
 
 const emits = defineEmits<{
   (e: "save", partialPost: Record<string, unknown>): void;
