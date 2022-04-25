@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { diffFromUnix, formatFromUnix } from "../utils/dateTimeDiffFormat";
 import { users } from "../data.json";
 
 defineProps({
@@ -45,7 +46,11 @@ function userById(uId: string) {
           ></a> -->
       </div>
 
-      <div v-text="publishedAt" class="post-date text-faded" />
+      <div
+        v-text="diffFromUnix(publishedAt)"
+        :title="formatFromUnix(publishedAt)"
+        class="post-date text-faded"
+      />
 
       <!-- <div class="reactions">
           <ul>

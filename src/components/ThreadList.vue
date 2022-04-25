@@ -16,7 +16,11 @@
             />
           </p>
           <p class="text-faded text-xsmall">
-            By <a href="#" v-text="userById(userId).name" />, {{ publishedAt }}.
+            By <a href="#" v-text="userById(userId).name" />,
+            <span
+              :title="formatFromUnix(publishedAt)"
+              v-text="diffFromUnix(publishedAt)"
+            />.
             <!-- By <a href="profile.html" v-text="userById(userId).name" />, {{ publishedAt }}. -->
           </p>
         </div>
@@ -34,7 +38,11 @@
               <a href="#" v-text="userById(userId).name" />
               <!-- <a href="profile.html" v-text="userById(userId)" /> -->
             </p>
-            <p class="text-xsmall text-faded" v-text="publishedAt" />
+            <p
+              class="text-xsmall text-faded"
+              :title="formatFromUnix(publishedAt)"
+              v-text="diffFromUnix(publishedAt)"
+            />
           </div>
         </div>
       </div>
@@ -51,6 +59,8 @@
 </template>
 
 <script setup lang="ts">
+import { diffFromUnix, formatFromUnix } from "../utils/dateTimeDiffFormat";
+
 import { users } from "../data.json";
 
 defineProps({
