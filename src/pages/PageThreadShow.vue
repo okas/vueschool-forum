@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, reactive, ref } from "vue";
+import { guidAsBase64 } from "../utils/index";
 import PostList from "../components/PostList.vue";
 import { threads, posts } from "../data.json";
 
@@ -10,11 +11,34 @@ const props = defineProps({
   },
 });
 
-const thread = computed(() => threads.find(({ id }) => id === props.id));
+// to overcome JSON data source, using suffixes to distinguish types of vars
+const threadsR = reactive(threads);
+const postsR = reactive(posts);
 
-const threadPosts = computed(() =>
-  posts.filter(({ threadId }) => threadId === thread.value.id)
+const threadC = computed(() => threadsR.find(({ id }) => id === props.id));
+
+const threadPostsC = computed(() =>
+  postsR.filter(({ threadId }) => threadId === threadC.value.id)
 );
+
+const newPostTextRf = ref<string>(null);
+
+function addPost() {
+  const id = guidAsBase64();
+
+  const post = {
+    id,
+    text: newPostTextRf.value,
+    publishedAt: Math.floor(Date.now() / 1000),
+    threadId: props.id,
+    userId: "NnooaWj4KHVxbhKwO1pEdfaQDsD2",
+  };
+
+  postsR.push(post);
+  threadC.value.posts.push(id);
+
+  newPostTextRf.value = null;
+}
 </script>
 
 <template>
@@ -26,9 +50,7 @@ const threadPosts = computed(() =>
       <li><a href="category.html">Discussions</a></li>
       <li class="active"><a href="#">Cooking</a></li>
     </ul> -->
-
-    <h1 v-text="thread.title" />
-
+    <h1 v-text="threadC.title" />
     <!-- <p>
       By <a href="#" class="link-unstyled">Robin</a>, 2 hours ago.
       <span
@@ -37,8 +59,29 @@ const threadPosts = computed(() =>
         >3 replies by 3 contributors</span
       >
     </p> -->
-
-    <post-list :posts="threadPosts" />
+    <post-list :posts="threadPostsC" />
+    <div class="col-full">
+      <h1>Create new thread in <i v-text="threadC.title" /></h1>
+      <form @submit.prevent="addPost">
+        <div class="form-group">
+          <label for="thread_content">Content:</label>
+          <textarea
+            id="thread_content"
+            class="form-input"
+            name="content"
+            rows="8"
+            cols="140"
+            v-model="newPostTextRf"
+          />
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-ghost">Cancel</button>
+          <button class="btn btn-blue" type="submit" name="Publish">
+            Publish
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </template>
 
