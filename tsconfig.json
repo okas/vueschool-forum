@@ -1,18 +1,29 @@
 {
   "compilerOptions": {
+    "strict": true,
     "outDir": "./dist/",
+    "incremental": true,
     "noImplicitAny": true,
     "module": "es2022",
     "target": "es2021",
     "allowJs": true,
+    "checkJs": true,
+    "declaration": true,
     "moduleResolution": "node",
+    "importHelpers": true,
     "sourceMap": true,
+    "downlevelIteration": true,
     "allowSyntheticDefaultImports": true,
+    "noImplicitReturns": true,
+    "isolatedModules": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "jsx": "preserve",
     "forceConsistentCasingInFileNames": true,
-    "pretty": true
+    "pretty": true,
+    "typeRoots": [
+      "node_modules/@types"
+    ] /* List of folders to include type definitions from. */
   },
   "enableAutoDiscovery": true,
   "typeAcquisition": {
@@ -22,6 +33,6 @@
   "paths": {
     "@/*": ["src/*"]
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "src/**/*.jsx"],
+  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.jsx"],
   "exclude": ["node_modules"]
 }
