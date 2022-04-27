@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import AppDate from "./AppDate.vue";
 import { users } from "../data.json";
 
 defineProps({
