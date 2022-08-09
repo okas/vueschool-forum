@@ -25,7 +25,7 @@ module.exports = {
 
   extends: [
     "plugin:vue/vue3-essential",
-    "@vue/standard",
+    "@vue/eslint-config-standard",
     "eslint:recommended",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
