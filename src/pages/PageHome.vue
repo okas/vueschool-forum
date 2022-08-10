@@ -1,11 +1,11 @@
 <template>
   <h1>Welcome to Vue School Forum</h1>
-  <thread-list :threads="threads" />
+  <forum-list :forums="forums" />
 </template>
 
 <script setup lang="ts">
-import ThreadList from "../components/ThreadList.vue";
-import { threads } from "../data.json";
+import ForumList from "../components/ForumList.vue";
+import { forums } from "../data.json";
 </script>
 
 <style scoped></style>
