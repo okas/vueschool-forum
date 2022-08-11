@@ -34,7 +34,7 @@ const routes: Readonly<RouteRecordRaw[]> = [
       routeObj,
       _: unknown,
       next: (p: RouteLocationRaw | undefined) => void
-    ) => next(test(routeObj)),
+    ) => next(testForNotFound(routeObj)),
   },
   {
     // will match everything and put it under `$route.params.pathMatch`
@@ -44,13 +44,13 @@ const routes: Readonly<RouteRecordRaw[]> = [
   },
 ];
 
-function test({
+function testForNotFound({
   params,
   path,
   query,
   hash,
 }: RouteLocation): RouteLocationRaw | undefined {
-  return useMainStore().threads.some(({ id }) => id === params.id)
+  return useMainStore().threads.some(({ id }) => id === params.threadId)
     ? undefined
     : {
         name: "NotFound",
