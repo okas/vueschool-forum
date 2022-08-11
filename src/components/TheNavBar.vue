@@ -1,4 +1,8 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useMainStore } from "../store";
+
+const { name, avatar } = useMainStore().authUser;
+</script>
 
 <template>
   <header class="header" id="header">
@@ -20,11 +24,11 @@
           <a href="#">
             <img
               class="avatar-small"
-              src="https://pbs.twimg.com/profile_images/1188775562657091594/5mgkg44t_400x400.jpg"
-              alt=""
+              :src="avatar"
+              :alt="`${name} profile picture`"
             />
             <span>
-              Alex Kyriakidis
+              {{ name }}
               <img
                 class="icon-profile"
                 src="../assets/svg/arrow-profile.svg"
