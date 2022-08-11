@@ -1,5 +1,5 @@
 <template>
-  <h1>Welcome to Vue School Forum</h1>
+  <h1 class="push-top">Welcome to Vue School Forum</h1>
   <category-list />
 </template>
 
