@@ -1,12 +1,14 @@
 export class UserVM {
   id!: string;
   name!: string;
-  userId!: string;
   avatar!: string;
   email!: string;
   lastVisitAt!: number;
-  isModerator!: boolean;
+  isModerator?: boolean;
   registeredAt!: number;
   username!: string;
   usernameLower!: string;
+  bio?: string;
+  twitter?: string;
+  website?: string;
 }

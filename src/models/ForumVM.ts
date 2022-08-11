@@ -3,7 +3,7 @@ export class ForumVM {
   name!: string;
   categoryId!: string;
   description!: string;
-  lastPostId!: string;
+  lastPostId?: string;
   slug!: string;
   threads?: Array<string>;
 }

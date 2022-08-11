@@ -4,9 +4,13 @@ export class PostVm {
   publishedAt!: number;
   text!: string;
   threadId!: string;
-  edited!: {
+  edited?: {
     at: number;
     by: string;
     moderated: boolean;
+  };
+
+  reactions?: {
+    [key: string]: unknown;
   };
 }
