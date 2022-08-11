@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { PostVm } from "../models/PostVm";
+import { useMainStore } from "../store";
 
 export type PostVMFormInput = Omit<
   PostVm,
@@ -17,7 +18,7 @@ function save() {
   const post: PostVMFormInput = {
     text: text.value,
     publishedAt: Math.floor(Date.now() / 1000),
-    userId: "NnooaWj4KHVxbhKwO1pEdfaQDsD2",
+    userId: useMainStore().authId,
   };
 
   emits("save", post);
