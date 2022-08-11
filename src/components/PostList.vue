@@ -16,7 +16,7 @@ function userById(uId: string) {
 <template>
   <div class="post-list">
     <div
-      v-for="{ id, userId, text, publishedAt } in store.posts"
+      v-for="{ id, userId, text, publishedAt } of posts"
       :key="id"
       class="post"
     >

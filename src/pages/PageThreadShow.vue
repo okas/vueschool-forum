@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive } from "vue";
+import { computed } from "vue";
 import PostEditor from "../components/PostEditor.vue";
 import PostList from "../components/PostList.vue";
 import { useMainStore } from "../store";
@@ -10,12 +10,10 @@ const props = defineProps<{
 
 const store = useMainStore();
 
-const threadsR = reactive(store.threads);
-const postsR = reactive(store.posts);
+const thread = store.threads.find(({ id }) => id === props.id);
 
-const threadC = computed(() => threadsR.find(({ id }) => id === props.id));
-const threadPostsC = computed(() =>
-  postsR.filter(({ threadId }) => threadId === threadC.value.id)
+const posts = computed(() =>
+  store.posts.filter(({ threadId }) => threadId === thread.id)
 );
 
 function addPost({ id, ...rest }) {
@@ -25,8 +23,8 @@ function addPost({ id, ...rest }) {
     ...rest,
   };
 
-  postsR.push(post);
-  threadC.value.posts.push(id);
+  store.posts.push(post);
+  thread.posts.push(id);
 }
 </script>
 
@@ -39,7 +37,7 @@ function addPost({ id, ...rest }) {
       <li><a href="category.html">Discussions</a></li>
       <li class="active"><a href="#">Cooking</a></li>
     </ul> -->
-    <h1 v-text="threadC.title" />
+    <h1 v-text="thread.title" />
     <!-- <p>
       By <a href="#" class="link-unstyled">Robin</a>, 2 hours ago.
       <span
@@ -48,9 +46,9 @@ function addPost({ id, ...rest }) {
         >3 replies by 3 contributors</span
       >
     </p> -->
-    <post-list :posts="threadPostsC" />
+    <post-list :posts="posts" />
     <post-editor @save="addPost" class="col-full">
-      {{ threadC.title }}
+      {{ thread.title }}
     </post-editor>
   </div>
 </template>

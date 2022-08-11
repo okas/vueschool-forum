@@ -20,13 +20,7 @@ function userById(uId: string) {
 
       <div
         class="thread"
-        v-for="{
-          id,
-          title,
-          userId,
-          publishedAt,
-          posts: { length },
-        } of store.threads"
+        v-for="{ id, title, userId, publishedAt, posts: { length } } of threads"
         :key="id"
       >
         <div>

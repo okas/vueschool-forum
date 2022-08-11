@@ -9,14 +9,18 @@ const groupedForums = groupByToMap(
   store.forums,
   ({ categoryId }) => categoryId
 );
+
+function getCategoryName(categoryId: string) {
+  return store.categories.find(({ id }) => id === categoryId).name;
+}
 </script>
 
 <template>
   <div class="col-full">
     <category-list-item
-      v-for="{ id, name } of store.categories"
-      :key="id"
-      v-bind="{ categoryId: id, name, forums: groupedForums.get(id) }"
+      v-for="[categoryId, forums] of groupedForums"
+      :key="categoryId"
+      v-bind="{ categoryId, name: getCategoryName(categoryId), forums }"
     />
   </div>
 </template>

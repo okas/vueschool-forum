@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed } from "vue";
 import ThreadList from "../components/ThreadList.vue";
 import { useMainStore } from "../store";
 
@@ -9,9 +8,10 @@ const props = defineProps<{
 
 const store = useMainStore();
 
-const forum = computed(() => store.forums.find(({ id }) => id === props.id));
-const forumThreads = computed(() =>
-  store.threads.filter(({ forumId }) => forumId === props.id)
+const { name, description } = store.forums.find(({ id }) => id === props.id);
+
+const forumThreads = store.threads.filter(
+  ({ forumId }) => forumId === props.id
 );
 </script>
 
@@ -19,8 +19,8 @@ const forumThreads = computed(() =>
   <div class="col-full push-top">
     <div class="forum-header">
       <div class="forum-details">
-        <h1 v-text="forum.name" />
-        <p class="text-lead" v-text="forum.description" />
+        <h1 v-text="name" />
+        <p class="text-lead" v-text="description" />
       </div>
       <a href="new-thread.html" class="btn-green btn-small">Start a thread</a>
     </div>
