@@ -20,12 +20,18 @@ function userById(uId: string) {
 
       <div
         class="thread"
-        v-for="{ id, title, userId, publishedAt, posts: { length } } of threads"
-        :key="id"
+        v-for="{
+          id: threadId,
+          title,
+          userId,
+          publishedAt,
+          posts: { length },
+        } of threads"
+        :key="threadId"
       >
         <div>
           <p>
-            <router-link :to="{ name: `ThreadShow`, params: { id } }">
+            <router-link :to="{ name: `ThreadShow`, params: { threadId } }">
               {{ title }}
             </router-link>
           </p>

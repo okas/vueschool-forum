@@ -5,12 +5,12 @@ import PostList from "../components/PostList.vue";
 import { useMainStore } from "../store";
 
 const props = defineProps<{
-  id: string;
+  threadId: string;
 }>();
 
 const store = useMainStore();
 
-const thread = store.threads.find(({ id }) => id === props.id);
+const thread = store.threads.find(({ id }) => id === props.threadId);
 
 const posts = computed(() =>
   store.posts.filter(({ threadId }) => threadId === thread.id)
@@ -19,7 +19,7 @@ const posts = computed(() =>
 function addPost({ id, ...rest }) {
   const post = {
     id,
-    threadId: props.id,
+    threadId: props.threadId,
     ...rest,
   };
 

@@ -3,15 +3,17 @@ import ThreadList from "../components/ThreadList.vue";
 import { useMainStore } from "../store";
 
 const props = defineProps<{
-  id: string;
+  forumId: string;
 }>();
 
 const store = useMainStore();
 
-const { name, description } = store.forums.find(({ id }) => id === props.id);
+const { name, description } = store.forums.find(
+  ({ id }) => id === props.forumId
+);
 
-const forumThreads = store.threads.filter(
-  ({ forumId }) => forumId === props.id
+const threads = store.threads.filter(
+  ({ forumId }) => forumId === props.forumId
 );
 </script>
 
@@ -27,7 +29,7 @@ const forumThreads = store.threads.filter(
   </div>
 
   <div class="col-full push-top">
-    <thread-list :threads="forumThreads" />
+    <thread-list :threads="threads" />
   </div>
 </template>
 

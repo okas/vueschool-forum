@@ -13,11 +13,19 @@ function forumThreadsWord(length: number) {
 <template>
   <div
     class="forum-listing"
-    v-for="{ id, name, description, threads: { length } = [] } of forums"
-    :key="id"
+    v-for="{
+      id: forumId,
+      name,
+      description,
+      threads: { length } = [],
+    } of forums"
+    :key="forumId"
   >
     <div class="forum-details">
-      <router-link class="text-xlarge" :to="{ name: 'Forum', params: { id } }">
+      <router-link
+        class="text-xlarge"
+        :to="{ name: 'Forum', params: { forumId } }"
+      >
         {{ name }}
       </router-link>
       <p v-text="description" />

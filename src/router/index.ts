@@ -20,13 +20,13 @@ const routes: Readonly<RouteRecordRaw[]> = [
     props: true,
   },
   {
-    path: "/forum/:id",
+    path: "/forum/:forumId",
     name: "Forum",
     component: () => import("../pages/PageForum.vue"),
     props: true,
   },
   {
-    path: "/thread/:id",
+    path: "/thread/:threadId",
     name: "ThreadShow",
     component: () => import("../pages/PageThreadShow.vue"),
     props: true,
