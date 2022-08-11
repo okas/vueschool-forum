@@ -1,35 +1,67 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { PostVm } from "../models/PostVm";
 import { useMainStore } from "../store";
 
-defineProps<{
+const props = defineProps<{
   posts: Array<PostVm>;
 }>();
 
 const store = useMainStore();
 
+const renderData = computed(() =>
+  props.posts.map(({ id, userId, text, publishedAt }) => {
+    const { name: userName, avatar: userAvatar } = userById(userId);
+
+    const userPostsCount = getUserPostsCount(userId);
+
+    return {
+      id,
+      text,
+      publishedAt,
+      userName,
+      userAvatar,
+      userPostsCount,
+    };
+  })
+);
+
 function userById(uId: string) {
   return store.users.find(({ id }) => id === uId);
+}
+
+function getUserPostsCount(uId: string) {
+  return store.posts.reduce(
+    (count, { userId }) => count + Number(userId === uId),
+    0
+  );
 }
 </script>
 
 <template>
   <div class="post-list">
     <div
-      v-for="{ id, userId, text, publishedAt } of posts"
+      v-for="{
+        id,
+        text,
+        publishedAt,
+        userAvatar,
+        userName,
+        userPostsCount,
+      } of renderData"
       :key="id"
       class="post"
     >
       <div class="user-info">
-        <a v-text="userById(userId).name" href="#" class="user-name" />
+        <a v-text="userName" href="#" class="user-name" />
         <!-- <a  v-text="userById(userId).name" href="profile.html#profile-details" class="user-name"></a> -->
 
         <a href="#">
           <!-- <a href="profile.html#profile-details"> -->
-          <img class="avatar-large" :src="userById(userId).avatar" alt="" />
+          <img class="avatar-large" :src="userAvatar" alt="" />
         </a>
 
-        <p class="desktop-only text-small">107 posts</p>
+        <p class="desktop-only text-small" v-text="userPostsCount" />
 
         <!-- <p class="desktop-only text-small">23 threads</p>
           <span class="online desktop-only">online</span> -->
