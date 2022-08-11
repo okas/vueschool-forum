@@ -5,7 +5,7 @@ defineProps<{
   forums: Array<ForumVM>;
 }>();
 
-function forumThreadsWord(length: number) {
+function countPhrase(length: number) {
   return length === 1 ? "thread" : length ? "threads" : "no threads";
 }
 </script>
@@ -34,7 +34,7 @@ function forumThreadsWord(length: number) {
     <div class="threads-count">
       <p>
         <span class="count" v-text="length" v-if="length" />
-        <span v-text="forumThreadsWord(length)" />
+        <span v-text="countPhrase(length)" />
       </p>
     </div>
 
