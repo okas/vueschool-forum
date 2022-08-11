@@ -7,6 +7,7 @@ import { PostVm } from "../models/PostVm";
 import { StatsVM } from "../models/StatsVM";
 import { ThreadVM } from "../models/ThreadVM";
 import { UserVM } from "../models/UserVM";
+import { guidAsBase64 } from "../utils/misc";
 
 export interface StateMainStore {
   categories: CategoryVM[];
@@ -15,6 +16,8 @@ export interface StateMainStore {
   threads: ThreadVM[];
   users: UserVM[];
   stats: StatsVM;
+
+  createPost(dto: Omit<PostVm, "id">): Promise<void>;
 }
 
 export const useMainStore = defineStore("main", (): StateMainStore => {
@@ -25,5 +28,13 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
   const users = reactive(sourceData.users);
   const stats = reactive(sourceData.stats);
 
-  return { categories, forums, posts, threads, users, stats };
+  async function createPost(dto: Omit<PostVm, "id">) {
+    const id = guidAsBase64();
+
+    posts.push({ id, ...dto });
+
+    threads.find(({ id }) => id === dto.threadId)?.posts.push(id);
+  }
+
+  return { categories, forums, posts, threads, users, stats, createPost };
 });

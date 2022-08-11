@@ -8,9 +8,9 @@ export class PostVm {
     at: number;
     by: string;
     moderated: boolean;
-  };
+  } | null;
 
   reactions?: {
     [key: string]: unknown;
-  };
+  } | null;
 }

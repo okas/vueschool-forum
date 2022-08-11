@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import PostEditor, { CreatePostVM } from "../components/PostEditor.vue";
+import PostEditor, { PostVMFormInput } from "../components/PostEditor.vue";
 import PostList from "../components/PostList.vue";
 import { PostVm } from "../models/PostVm";
 import { useMainStore } from "../store";
@@ -17,15 +17,13 @@ const posts = computed(() =>
   store.posts.filter(({ threadId }) => threadId === thread.id)
 );
 
-function addPost({ id, ...rest }: CreatePostVM) {
-  const post: PostVm = {
-    id,
+function addPost(dto: PostVMFormInput) {
+  const post: Omit<PostVm, "id"> = {
     threadId: props.threadId,
-    ...rest,
+    ...dto,
   };
 
-  store.posts.push(post);
-  thread.posts.push(id);
+  store.createPost(post);
 }
 </script>
 

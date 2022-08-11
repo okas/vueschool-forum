@@ -1,19 +1,20 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { PostVm } from "../models/PostVm";
-import { guidAsBase64 } from "../utils/misc";
 
-export type CreatePostVM = Omit<PostVm, "threadId" | "edited" | "reactions">;
+export type PostVMFormInput = Omit<
+  PostVm,
+  "id" | "threadId" | "edited" | "reactions"
+>;
 
 const emits = defineEmits<{
-  (e: "save", dto: CreatePostVM): void;
+  (e: "save", dto: PostVMFormInput): void;
 }>();
 
 const text = ref<string>(null);
 
 function save() {
-  const post: CreatePostVM = {
-    id: guidAsBase64(),
+  const post: PostVMFormInput = {
     text: text.value,
     publishedAt: Math.floor(Date.now() / 1000),
     userId: "NnooaWj4KHVxbhKwO1pEdfaQDsD2",
