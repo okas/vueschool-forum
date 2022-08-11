@@ -11,7 +11,7 @@ const store = useMainStore();
 
 const renderData = computed(() =>
   props.posts.map(({ id, userId, text, publishedAt }) => {
-    const { name: userName, avatar: userAvatar } = userById(userId);
+    const { name: userName, avatar: userAvatar } = store.getUserByIdFn(userId);
 
     const userPostsCount = getUserPostsCount(userId);
 
@@ -25,10 +25,6 @@ const renderData = computed(() =>
     };
   })
 );
-
-function userById(uId: string) {
-  return store.users.find(({ id }) => id === uId);
-}
 
 function getUserPostsCount(uId: string) {
   return store.posts.reduce(
