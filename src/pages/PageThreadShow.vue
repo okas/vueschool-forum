@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import PostEditor from "../components/PostEditor.vue";
+import PostEditor, { CreatePostVM } from "../components/PostEditor.vue";
 import PostList from "../components/PostList.vue";
+import { PostVm } from "../models/PostVm";
 import { useMainStore } from "../store";
 
 const props = defineProps<{
@@ -16,8 +17,8 @@ const posts = computed(() =>
   store.posts.filter(({ threadId }) => threadId === thread.id)
 );
 
-function addPost({ id, ...rest }) {
-  const post = {
+function addPost({ id, ...rest }: CreatePostVM) {
+  const post: PostVm = {
     id,
     threadId: props.threadId,
     ...rest,
