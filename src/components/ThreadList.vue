@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { users } from "../data.json";
+import { ThreadVM } from "../models/ThreadVM";
+import { useMainStore } from "../store";
 
-defineProps({
-  threads: {
-    type: Array,
-    required: true,
-  },
-});
+defineProps<{
+  threads: Array<ThreadVM>;
+}>();
+
+const store = useMainStore();
 
 function userById(uId: string) {
-  return users.find(({ id }) => id === uId);
+  return store.users.find(({ id }) => id === uId);
 }
 </script>
 
@@ -20,7 +20,13 @@ function userById(uId: string) {
 
       <div
         class="thread"
-        v-for="{ id, title, userId, publishedAt, posts: { length } } in threads"
+        v-for="{
+          id,
+          title,
+          userId,
+          publishedAt,
+          posts: { length },
+        } of store.threads"
         :key="id"
       >
         <div>

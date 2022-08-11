@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import CategoryListItem from "../components/CategoryListItem.vue";
+import { useMainStore } from "../store";
 
-import { categories, forums } from "../data.json";
+const props = defineProps<{
+  categoryId: string;
+}>();
 
-const props = defineProps({
-  categoryId: { type: String, required: true },
-});
+const store = useMainStore();
 
-const { name } = categories.find(({ id }) => id === props.categoryId);
+const { name } = store.categories.find(({ id }) => id === props.categoryId);
 
-const categoryForums = forums.filter(
+const categoryForums = store.forums.filter(
   ({ categoryId }) => categoryId === props.categoryId
 );
 </script>

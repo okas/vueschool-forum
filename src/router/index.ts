@@ -5,7 +5,7 @@ import {
   RouteLocationRaw,
   RouteRecordRaw,
 } from "vue-router";
-import { threads as threadData } from "../data.json";
+import { useMainStore } from "./../store/index";
 
 const routes: Readonly<RouteRecordRaw[]> = [
   {
@@ -50,7 +50,7 @@ function test({
   query,
   hash,
 }: RouteLocation): RouteLocationRaw | undefined {
-  return threadData.some(({ id }) => id === params.id)
+  return useMainStore().threads.some(({ id }) => id === params.id)
     ? undefined
     : {
         name: "NotFound",

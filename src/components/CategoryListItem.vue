@@ -1,15 +1,15 @@
 <script setup lang="ts">
 import { useRoute } from "vue-router";
-import { ForumItemVM } from "../models/ForumItemVM";
+import { ForumVM } from "../models/ForumVM";
 import ForumList from "./ForumList.vue";
 
-const { params } = useRoute();
+const props = defineProps<{
+  categoryId: string;
+  name: string;
+  forums: Array<ForumVM>;
+}>();
 
-const props = defineProps({
-  categoryId: { type: String, required: true },
-  name: { type: String, required: true },
-  forums: { type: Array<ForumItemVM>, required: true },
-});
+const { params } = useRoute();
 
 const showCategoryLink = params.categoryId !== props.categoryId;
 </script>

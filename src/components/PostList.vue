@@ -1,19 +1,22 @@
 <script setup lang="ts">
-import { users } from "../data.json";
+import { PostVm } from "../models/PostVm";
+import { useMainStore } from "../store";
 
-defineProps({
-  posts: { type: Array, required: true },
-});
+defineProps<{
+  posts: Array<PostVm>;
+}>();
+
+const store = useMainStore();
 
 function userById(uId: string) {
-  return users.find(({ id }) => id === uId);
+  return store.users.find(({ id }) => id === uId);
 }
 </script>
 
 <template>
   <div class="post-list">
     <div
-      v-for="{ id, userId, text, publishedAt } in posts"
+      v-for="{ id, userId, text, publishedAt } in store.posts"
       :key="id"
       class="post"
     >

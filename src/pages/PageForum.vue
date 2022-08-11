@@ -1,19 +1,17 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import ThreadList from "../components/ThreadList.vue";
-import { forums, threads } from "../data.json";
+import { useMainStore } from "../store";
 
-const props = defineProps({
-  id: {
-    type: String,
-    required: true,
-  },
-});
+const props = defineProps<{
+  id: string;
+}>();
 
-const forum = computed(() => forums.find(({ id }) => id === props.id));
+const store = useMainStore();
 
+const forum = computed(() => store.forums.find(({ id }) => id === props.id));
 const forumThreads = computed(() =>
-  threads.filter(({ forumId }) => forumId === props.id)
+  store.threads.filter(({ forumId }) => forumId === props.id)
 );
 </script>
 

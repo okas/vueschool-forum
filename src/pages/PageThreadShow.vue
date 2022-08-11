@@ -1,22 +1,19 @@
 <script setup lang="ts">
 import { computed, reactive } from "vue";
-import PostList from "../components/PostList.vue";
 import PostEditor from "../components/PostEditor.vue";
-import { threads, posts } from "../data.json";
+import PostList from "../components/PostList.vue";
+import { useMainStore } from "../store";
 
-const props = defineProps({
-  id: {
-    type: String,
-    required: true,
-  },
-});
+const props = defineProps<{
+  id: string;
+}>();
 
-// to overcome JSON data source, using suffixes to distinguish types of vars
-const threadsR = reactive(threads);
-const postsR = reactive(posts);
+const store = useMainStore();
+
+const threadsR = reactive(store.threads);
+const postsR = reactive(store.posts);
 
 const threadC = computed(() => threadsR.find(({ id }) => id === props.id));
-
 const threadPostsC = computed(() =>
   postsR.filter(({ threadId }) => threadId === threadC.value.id)
 );

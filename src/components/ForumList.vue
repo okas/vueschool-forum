@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { ForumItemVM } from "../models/ForumItemVM";
+import { ForumVM } from "../models/ForumVM";
+import { useMainStore } from "../store";
 
-defineProps({
-  forums: {
-    type: Array<ForumItemVM>,
-    required: true,
-  },
-});
+defineProps<{
+  forums: Array<ForumVM>;
+}>();
+
+const store = useMainStore();
 
 function forumThreadsWord(length: number) {
   return length === 1 ? "thread" : length ? "threads" : "no threads";
@@ -16,7 +16,7 @@ function forumThreadsWord(length: number) {
 <template>
   <div
     class="forum-listing"
-    v-for="{ id, name, description, threads: { length } = [] } in forums"
+    v-for="{ id, name, description, threads: { length } = [] } of store.forums"
     :key="id"
   >
     <div class="forum-details">
