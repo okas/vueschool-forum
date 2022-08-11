@@ -1,15 +1,35 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { ThreadVM } from "../models/ThreadVM";
 import { useMainStore } from "../store";
 
-defineProps<{
+const props = defineProps<{
   threads: Array<ThreadVM>;
 }>();
 
-const store = useMainStore();
+const { getUserByIdFn } = useMainStore();
 
-function userById(uId: string) {
-  return store.users.find(({ id }) => id === uId);
+const renderData = computed(() =>
+  props.threads.map(
+    ({ id, title, userId, publishedAt, posts: { length: postsCount } }) => {
+      const { name: userName, avatar: userAvatar } = getUserByIdFn(userId);
+
+      return {
+        threadId: id,
+        title,
+        publishedAt,
+        postsCount,
+        userName,
+        userAvatar,
+      };
+    }
+  )
+);
+
+function countPhrase(count: number) {
+  return `${count}${
+    count === 1 ? " reply" : count ? " replies" : "no replies"
+  }`;
 }
 </script>
 
@@ -21,12 +41,13 @@ function userById(uId: string) {
       <div
         class="thread"
         v-for="{
-          id: threadId,
+          threadId,
           title,
-          userId,
           publishedAt,
-          posts: { length },
-        } of threads"
+          postsCount,
+          userName,
+          userAvatar,
+        } of renderData"
         :key="threadId"
       >
         <div>
@@ -36,23 +57,20 @@ function userById(uId: string) {
             </router-link>
           </p>
           <p class="text-faded text-xsmall">
-            By <a href="#" v-text="userById(userId).name" />,
+            By <a href="#" v-text="userName" />,
             <app-date :timestamp="publishedAt" />.
             <!-- By <a href="profile.html" v-text="userById(userId).name" />, {{ publishedAt }}. -->
           </p>
         </div>
 
         <div class="activity">
-          <p class="replies-count">
-            {{ length }}
-            {{ length > 1 || length === 0 ? "replies" : "reply" }}
-          </p>
+          <p class="replies-count" v-text="countPhrase(postsCount)" />
 
-          <img class="avatar-medium" :src="userById(userId).avatar" alt="" />
+          <img class="avatar-medium" :src="userAvatar" alt="" />
 
           <div>
             <p class="text-xsmall">
-              <a href="#" v-text="userById(userId).name" />
+              <a href="#" v-text="userName" />
               <!-- <a href="profile.html" v-text="userById(userId)" /> -->
             </p>
             <p class="text-xsmall text-faded">

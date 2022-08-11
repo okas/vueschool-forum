@@ -1,5 +1,5 @@
 import { defineStore } from "pinia";
-import { reactive } from "vue";
+import { computed, ComputedRef, reactive } from "vue";
 import sourceData from "../data.json";
 import { CategoryVM } from "../models/CategoryVM";
 import { ForumVM } from "../models/ForumVM";
@@ -17,6 +17,8 @@ export interface StateMainStore {
   users: UserVM[];
   stats: StatsVM;
 
+  getUserByIdFn: ComputedRef<(userId: string) => UserVM | undefined>;
+
   createPost(dto: Omit<PostVm, "id">): Promise<void>;
 }
 
@@ -28,6 +30,10 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
   const users = reactive(sourceData.users);
   const stats = reactive(sourceData.stats);
 
+  const getUserByIdFn = computed(
+    () => (userId: string) => users.find(({ id }) => id === userId)
+  );
+
   async function createPost(dto: Omit<PostVm, "id">) {
     const id = guidAsBase64();
 
@@ -36,5 +42,14 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     threads.find(({ id }) => id === dto.threadId)?.posts.push(id);
   }
 
-  return { categories, forums, posts, threads, users, stats, createPost };
+  return {
+    categories,
+    forums,
+    posts,
+    threads,
+    users,
+    stats,
+    createPost,
+    getUserByIdFn,
+  };
 });
