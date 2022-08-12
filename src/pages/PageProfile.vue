@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import PostList from "../components/PostList.vue";
+import ProfileCard from "../components/ProfileCard.vue";
 import { useMainStore } from "../store";
 import {
   diffFromUnix,
@@ -9,50 +10,17 @@ import {
 
 const store = useMainStore();
 
-const { authId } = store;
-const { name, avatar, username, bio, website, registeredAt, lastVisitAt } =
-  store.authUser;
+const { name, registeredAt, lastVisitAt, posts } = store.authUser;
 
 const memberSince = computed(() => formatMonthYearFromUnix(registeredAt));
+
 const lasVisited = computed(() => diffFromUnix(lastVisitAt));
-const posts = computed(() =>
-  store.posts.filter(({ userId }) => userId === authId)
-);
-const postsCount = computed(() => posts.value.length);
-const threadsCount = store.getUserThreadsCountFn(authId);
 </script>
 
 <template>
   <div class="flex-grid">
     <div class="col-3 push-top">
-      <div class="profile-card">
-        <p class="text-center">
-          <img
-            :src="avatar"
-            class="avatar-xlarge"
-            :alt="`${name} profile picture`"
-          />
-        </p>
-
-        <h1 class="title" v-text="username" />
-
-        <p class="text-lead" v-text="name" />
-
-        <p class="text-justify" v-text="!bio ? 'No bio specified' : bio" />
-
-        <span class="online" v-text="`${username} is online`" />
-
-        <div class="stats">
-          <span v-text="`${postsCount} posts`" />
-          <span v-text="`${threadsCount} threads`" />
-        </div>
-
-        <hr />
-
-        <p v-if="website" class="text-large text-center">
-          <i class="fa fa-globe"></i> <a :href="website" v-text="website" />
-        </p>
-      </div>
+      <profile-card :auth-user="store.authUser" />
 
       <p class="text-xsmall text-faded text-center">
         <span v-text="`Member since ${memberSince}, `" />

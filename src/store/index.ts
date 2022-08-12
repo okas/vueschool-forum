@@ -7,6 +7,7 @@ import { PostVm } from "../models/PostVm";
 import { StatsVM } from "../models/StatsVM";
 import { ThreadVM } from "../models/ThreadVM";
 import { UserVM } from "../models/UserVM";
+import { IAuthUser } from "../types/IAuthUser";
 import { guidAsBase64 } from "../utils/misc";
 
 export interface StateMainStore {
@@ -20,7 +21,7 @@ export interface StateMainStore {
   stats: StatsVM;
 
   // GETTERS
-  authUser: ComputedRef<UserVM | undefined>;
+  authUser: ComputedRef<IAuthUser | undefined>;
   getUserByIdFn: ComputedRef<(userId: string) => UserVM | undefined>;
   getUserPostsCountFn: ComputedRef<(userId: string) => number>;
   getUserThreadsCountFn: ComputedRef<(userId: string) => number>;
@@ -41,7 +42,33 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
   const stats = reactive(sourceData.stats);
 
   // GETTERS
-  const authUser = computed(() => users.find(({ id }) => id === authId.value));
+  const authUser = computed(() => {
+    const user = users.find(({ id }) => id === authId.value);
+
+    if (!user) {
+      return undefined;
+    }
+
+    return {
+      ...user,
+
+      get posts() {
+        return posts.filter(({ userId }) => userId === authId.value);
+      },
+
+      get threads() {
+        return threads.filter(({ userId }) => userId === authId.value);
+      },
+
+      get postsCount() {
+        return this.posts.length;
+      },
+
+      get threadsCount() {
+        return this.threads.length;
+      },
+    } as IAuthUser;
+  });
 
   const getUserByIdFn = computed(
     () => (userId: string) => users.find(({ id }) => id === userId)

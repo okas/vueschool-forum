@@ -139,6 +139,30 @@
   "posts": [
     {
       "edited": {
+        "at": 1594437546,
+        "by": "ALXhxjwgY9PinwNGHpfai6OWyDu2",
+        "moderated": false
+      },
+      "publishedAt": 1594085908,
+      "text": "A test content 2.\n",
+      "threadId": "-KsjWehQ--apjDBwSBCY",
+      "userId": "Qc4Pz_28PEqITnCQ21T6Vw",
+      "id": "-KsjWehQ--apjDBwSBCD"
+    },
+    {
+      "edited": {
+        "at": 1594037546,
+        "by": "ALXhxjwgY9PinwNGHpfai6OWyDu2",
+        "moderated": false
+      },
+      "publishedAt": 1594035908,
+      "text": "A test content.\n",
+      "threadId": "-KsjWehQ--apjDBwSBCY",
+      "userId": "Qc4Pz_28PEqITnCQ21T6Vw",
+      "id": "-KsjWehQ--apjDBwSBCX"
+    },
+    {
+      "edited": {
         "at": 1594037546,
         "by": "ALXhxjwgY9PinwNGHpfai6OWyDu2",
         "moderated": false
@@ -877,6 +901,8 @@
       "lastPostId": "-KsjnAAjzfpznUVh4DSa",
       "posts": [
         "-KsjWehQ--apjDBwSBCZ",
+        "-KsjWehQ--apjDBwSBCX",
+        "-KsjWehQ--apjDBwSBCD",
         "-KsjefUiIuNkJieBc5Rq",
         "-KsjfvciJhJnebrL4Iw7",
         "-KsjnAAjzfpznUVh4DSa"
