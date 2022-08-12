@@ -1,13 +1,13 @@
+<script setup lang="ts">
+import TheNavBar from "./components/TheNavBar.vue";
+</script>
+
 <template>
   <the-nav-bar />
   <div class="container">
     <router-view />
   </div>
 </template>
-
-<script setup lang="ts">
-import TheNavBar from "./components/TheNavBar.vue";
-</script>
 
 <style>
 @import "assets/style.css";
