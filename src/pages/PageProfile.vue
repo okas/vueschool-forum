@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { storeToRefs } from "pinia";
 import { computed } from "vue";
 import PostList from "../components/PostList.vue";
 import ProfileCard from "../components/ProfileCard.vue";
@@ -8,19 +9,19 @@ import {
   formatMonthYearFromUnix,
 } from "../utils/dateTimeDiffFormat";
 
-const store = useMainStore();
+const { authUser } = storeToRefs(useMainStore());
 
-const { name, registeredAt, lastVisitAt, posts } = store.authUser;
+const memberSince = computed(() =>
+  formatMonthYearFromUnix(authUser.value.registeredAt)
+);
 
-const memberSince = computed(() => formatMonthYearFromUnix(registeredAt));
-
-const lasVisited = computed(() => diffFromUnix(lastVisitAt));
+const lasVisited = computed(() => diffFromUnix(authUser.value.lastVisitAt));
 </script>
 
 <template>
   <div class="flex-grid">
     <div class="col-3 push-top">
-      <profile-card :auth-user="store.authUser" />
+      <profile-card :auth-user="authUser" />
 
       <p class="text-xsmall text-faded text-center">
         <span v-text="`Member since ${memberSince}, `" />
@@ -35,13 +36,13 @@ const lasVisited = computed(() => diffFromUnix(lastVisitAt));
 
     <div class="col-7 push-top">
       <div class="profile-header">
-        <span class="text-lead">{{ name }}'s recent activity </span>
+        <span class="text-lead">{{ authUser.name }}'s recent activity </span>
         <a href="#">See only started threads?</a>
       </div>
 
       <hr />
 
-      <post-list :posts="posts" />
+      <post-list :posts="authUser.posts" />
       <!-- <div class="activity-list">
         <div class="activity">
           <div class="activity-header">

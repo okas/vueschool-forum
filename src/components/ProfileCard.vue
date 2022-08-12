@@ -1,42 +1,42 @@
 <script setup lang="ts">
-import { reactive } from "vue";
 import { IAuthUser } from "../types/IAuthUser";
 
-const props = defineProps<{
+defineProps<{
   authUser: IAuthUser;
 }>();
-
-const { name, avatar, username, bio, website, postsCount, threadsCount } =
-  reactive(props.authUser);
 </script>
 
 <template>
   <div class="profile-card">
     <p class="text-center">
       <img
-        :src="avatar"
+        :src="authUser.avatar"
         class="avatar-xlarge"
-        :alt="`${name} profile picture`"
+        :alt="`${authUser.name} profile picture`"
       />
     </p>
 
-    <h1 class="title" v-text="username" />
+    <h1 class="title" v-text="authUser.username" />
 
-    <p class="text-lead" v-text="name" />
+    <p class="text-lead" v-text="authUser.name" />
 
-    <p class="text-justify" v-text="!bio ? 'No bio specified' : bio" />
+    <p
+      class="text-justify"
+      v-text="!authUser.bio ? 'No bio specified' : authUser.bio"
+    />
 
-    <span class="online" v-text="`${username} is online`" />
+    <span class="online" v-text="`${authUser.username} is online`" />
 
     <div class="stats">
-      <span v-text="`${postsCount} posts`" />
-      <span v-text="`${threadsCount} threads`" />
+      <span v-text="`${authUser.postsCount} posts`" />
+      <span v-text="`${authUser.threadsCount} threads`" />
     </div>
 
     <hr />
 
-    <p v-if="website" class="text-large text-center">
-      <i class="fa fa-globe"></i> <a :href="website" v-text="website" />
+    <p v-if="authUser.website" class="text-large text-center">
+      <i class="fa fa-globe"></i>
+      <a :href="authUser.website" v-text="authUser.website" />
     </p>
   </div>
 </template>
