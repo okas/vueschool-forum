@@ -3,6 +3,7 @@ import { storeToRefs } from "pinia";
 import { computed } from "vue";
 import PostList from "../components/PostList.vue";
 import ProfileCard from "../components/ProfileCard.vue";
+import ProfileCardEditor from "../components/ProfileCardEditor.vue";
 import { useMainStore } from "../store";
 import {
   diffFromUnix,
@@ -22,6 +23,7 @@ const lasVisited = computed(() => diffFromUnix(authUser.value.lastVisitAt));
   <div class="flex-grid">
     <div class="col-3 push-top">
       <profile-card :auth-user="authUser" />
+      <profile-card-editor :user="authUser" />
 
       <p class="text-xsmall text-faded text-center">
         <span v-text="`Member since ${memberSince}, `" />

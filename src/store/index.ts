@@ -28,6 +28,7 @@ export interface StateMainStore {
 
   // ACTIONS
   createPost(dto: Omit<PostVm, "id">): Promise<void>;
+  editUser(dto: UserVM): Promise<void>;
 }
 
 export const useMainStore = defineStore("main", (): StateMainStore => {
@@ -93,6 +94,10 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     threads.find(({ id }) => id === dto.threadId)?.posts.push(id);
   }
 
+  async function editUser(dto: UserVM) {
+    Object.assign(users[users.findIndex(({ id }) => id === dto.id)], dto);
+  }
+
   return {
     // STATE
     authId,
@@ -109,5 +114,6 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     getUserThreadsCountFn,
     // ACTIONS
     createPost,
+    editUser,
   };
 });

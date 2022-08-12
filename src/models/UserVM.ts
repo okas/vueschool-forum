@@ -11,4 +11,5 @@ export class UserVM {
   bio?: string;
   twitter?: string;
   website?: string;
+  location?: string;
 }
