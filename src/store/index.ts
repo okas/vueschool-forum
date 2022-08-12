@@ -23,6 +23,7 @@ export interface StateMainStore {
   authUser: ComputedRef<UserVM | undefined>;
   getUserByIdFn: ComputedRef<(userId: string) => UserVM | undefined>;
   getUserPostsCountFn: ComputedRef<(userId: string) => number>;
+  getUserThreadsCountFn: ComputedRef<(userId: string) => number>;
 
   // ACTIONS
   createPost(dto: Omit<PostVm, "id">): Promise<void>;
@@ -47,8 +48,13 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
   );
 
   const getUserPostsCountFn = computed(
-    () => (userId: string) =>
-      posts.reduce((count, { userId: id }) => count + Number(id === userId), 0)
+    () => (id: string) =>
+      posts.reduce((count, { userId }) => count + Number(userId === id), 0)
+  );
+
+  const getUserThreadsCountFn = computed(
+    () => (id: string) =>
+      threads.reduce((count, { userId }) => count + Number(userId === id), 0)
   );
 
   // ACTIONS
@@ -73,6 +79,7 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     // GETTERS
     getUserByIdFn,
     getUserPostsCountFn,
+    getUserThreadsCountFn,
     // ACTIONS
     createPost,
   };

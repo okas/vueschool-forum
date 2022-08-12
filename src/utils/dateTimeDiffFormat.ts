@@ -1,9 +1,9 @@
 import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import localizedFormat from "dayjs/plugin/localizedFormat";
+import localizedFormatPlugin from "dayjs/plugin/localizedFormat";
+import relativeTimePlugin from "dayjs/plugin/relativeTime";
 
-dayjs.extend(relativeTime);
-dayjs.extend(localizedFormat);
+dayjs.extend(relativeTimePlugin);
+dayjs.extend(localizedFormatPlugin);
 
 export function diffFromUnix(unixTimestamp: number) {
   return dayjs.unix(unixTimestamp).fromNow();
@@ -11,4 +11,8 @@ export function diffFromUnix(unixTimestamp: number) {
 
 export function formatFromUnix(unixTimestamp: number) {
   return dayjs.unix(unixTimestamp).format("llll");
+}
+
+export function formatMonthYearFromUnix(unixTimestamp: number) {
+  return dayjs.unix(unixTimestamp).format("MMMM YYYY");
 }
