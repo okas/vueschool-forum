@@ -5,7 +5,7 @@ const { name, avatar } = useMainStore().authUser;
 </script>
 
 <template>
-  <header class="header" id="header">
+  <header id="header" class="header">
     <router-link class="logo" :to="{ name: 'Home' }">
       <img src="../assets/svg/vueschool-logo.svg" alt="logo" title="Home" />
     </router-link>

@@ -3,7 +3,7 @@ module.exports = {
 
   env: {
     node: true,
-    es6: true,
+    es2022: true,
     browser: true,
     "vue/setup-compiler-macros": true,
   },
@@ -24,11 +24,12 @@ module.exports = {
   plugins: ["@typescript-eslint"],
 
   extends: [
-    "plugin:vue/vue3-essential",
-    "@vue/eslint-config-standard",
     "eslint:recommended",
+    "@vue/eslint-config-standard",
+    "plugin:vue/vue3-recommended",
+    "prettier",
     "plugin:@typescript-eslint/eslint-recommended",
     "plugin:@typescript-eslint/recommended",
-    "plugin:prettier/recommended",
+    "plugin:prettier-vue/recommended",
   ],
 };

@@ -49,7 +49,7 @@ function getUserPostsCount(uId: string) {
       class="post"
     >
       <div class="user-info">
-        <a v-text="userName" href="#" class="user-name" />
+        <a href="#" class="user-name" v-text="userName" />
         <!-- <a  v-text="userById(userId).name" href="profile.html#profile-details" class="user-name"></a> -->
 
         <a href="#">

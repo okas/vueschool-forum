@@ -37,11 +37,11 @@ function save() {
         <label for="thread_content">Content:</label>
         <textarea
           id="thread_content"
+          v-model="text"
           class="form-input"
           name="content"
           rows="8"
           cols="140"
-          v-model="text"
         />
       </div>
       <div class="btn-group">

@@ -12,7 +12,6 @@ function countPhrase(length: number) {
 
 <template>
   <div
-    class="forum-listing"
     v-for="{
       id: forumId,
       name,
@@ -20,6 +19,7 @@ function countPhrase(length: number) {
       threads: { length } = [],
     } of forums"
     :key="forumId"
+    class="forum-listing"
   >
     <div class="forum-details">
       <router-link
@@ -33,7 +33,7 @@ function countPhrase(length: number) {
 
     <div class="threads-count">
       <p>
-        <span class="count" v-text="length" v-if="length" />
+        <span v-if="length" class="count" v-text="length" />
         <span v-text="countPhrase(length)" />
       </p>
     </div>

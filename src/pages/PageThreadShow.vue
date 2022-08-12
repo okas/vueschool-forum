@@ -46,7 +46,7 @@ function addPost(dto: PostVMFormInput) {
       >
     </p> -->
     <post-list :posts="posts" />
-    <post-editor @save="addPost" class="col-full">
+    <post-editor class="col-full" @save="addPost">
       {{ thread.title }}
     </post-editor>
   </div>

@@ -39,7 +39,6 @@ function countPhrase(count: number) {
       <h2 class="list-title">Threads</h2>
 
       <div
-        class="thread"
         v-for="{
           threadId,
           title,
@@ -49,6 +48,7 @@ function countPhrase(count: number) {
           userAvatar,
         } of renderData"
         :key="threadId"
+        class="thread"
       >
         <div>
           <p>

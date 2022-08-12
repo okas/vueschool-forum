@@ -7,7 +7,7 @@ defineProps<{
 </script>
 
 <template>
-  <span v-text="diffFromUnix(timestamp)" :title="formatFromUnix(timestamp)" />
+  <span :title="formatFromUnix(timestamp)" v-text="diffFromUnix(timestamp)" />
 </template>
 
 <style scoped></style>
