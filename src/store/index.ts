@@ -10,6 +10,7 @@ import { UserVM } from "../models/UserVM";
 import { guidAsBase64 } from "../utils/misc";
 
 export interface StateMainStore {
+  // STATE
   authId: Ref<string | undefined>;
   categories: CategoryVM[];
   forums: ForumVM[];
@@ -18,13 +19,17 @@ export interface StateMainStore {
   users: UserVM[];
   stats: StatsVM;
 
+  // GETTERS
   authUser: ComputedRef<UserVM | undefined>;
   getUserByIdFn: ComputedRef<(userId: string) => UserVM | undefined>;
+  getUserPostsCountFn: ComputedRef<(userId: string) => number>;
 
+  // ACTIONS
   createPost(dto: Omit<PostVm, "id">): Promise<void>;
 }
 
 export const useMainStore = defineStore("main", (): StateMainStore => {
+  // STATE
   const authId = ref("Qc4Pz_28PEqITnCQ21T6Vw");
 
   const categories = reactive(sourceData.categories);
@@ -34,12 +39,19 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
   const users = reactive(sourceData.users);
   const stats = reactive(sourceData.stats);
 
+  // GETTERS
   const authUser = computed(() => users.find(({ id }) => id === authId.value));
 
   const getUserByIdFn = computed(
     () => (userId: string) => users.find(({ id }) => id === userId)
   );
 
+  const getUserPostsCountFn = computed(
+    () => (userId: string) =>
+      posts.reduce((count, { userId: id }) => count + Number(id === userId), 0)
+  );
+
+  // ACTIONS
   async function createPost(dto: Omit<PostVm, "id">) {
     const id = guidAsBase64();
 
@@ -49,6 +61,7 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
   }
 
   return {
+    // STATE
     authId,
     categories,
     forums,
@@ -56,8 +69,11 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     threads,
     users,
     stats,
-    createPost,
     authUser,
+    // GETTERS
     getUserByIdFn,
+    getUserPostsCountFn,
+    // ACTIONS
+    createPost,
   };
 });

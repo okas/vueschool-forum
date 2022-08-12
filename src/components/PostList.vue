@@ -7,13 +7,13 @@ const props = defineProps<{
   posts: Array<PostVm>;
 }>();
 
-const store = useMainStore();
+const { getUserByIdFn, getUserPostsCountFn } = useMainStore();
 
 const renderData = computed(() =>
   props.posts.map(({ id, userId, text, publishedAt }) => {
-    const { name: userName, avatar: userAvatar } = store.getUserByIdFn(userId);
+    const { name: userName, avatar: userAvatar } = getUserByIdFn(userId);
 
-    const userPostsCount = getUserPostsCount(userId);
+    const userPostsCount = getUserPostsCountFn(userId);
 
     return {
       id,
@@ -25,13 +25,6 @@ const renderData = computed(() =>
     };
   })
 );
-
-function getUserPostsCount(uId: string) {
-  return store.posts.reduce(
-    (count, { userId }) => count + Number(userId === uId),
-    0
-  );
-}
 </script>
 
 <template>
