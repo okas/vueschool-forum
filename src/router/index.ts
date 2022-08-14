@@ -2,6 +2,7 @@ import {
   createRouter,
   createWebHistory,
   RouteLocation,
+  RouteLocationNormalized,
   RouteLocationRaw,
   RouteRecordRaw,
 } from "vue-router";
@@ -17,6 +18,7 @@ const routes: Readonly<RouteRecordRaw[]> = [
     path: "/me",
     name: "Profile",
     component: () => import("../pages/PageProfile.vue"),
+    meta: { toTop: true, smoothScroll: true },
   },
   {
     path: "/me/edit",
@@ -71,4 +73,19 @@ function testForNotFound({
       };
 }
 
-export default createRouter({ history: createWebHistory(), routes });
+function scrollBehavior(to: RouteLocationNormalized): Promise<ScrollToOptions> {
+  const conditionalOptions: ScrollToOptions = {
+    top: to.meta.toTop ? 0 : undefined,
+    behavior: to.meta.smoothScroll ? "smooth" : undefined,
+  };
+
+  return new Promise((resolve) =>
+    setTimeout(() => resolve(conditionalOptions), 100)
+  );
+}
+
+export default createRouter({
+  routes,
+  scrollBehavior,
+  history: createWebHistory(),
+});
