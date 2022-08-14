@@ -28,8 +28,8 @@ export interface StateMainStore {
   getUserThreadsCountFn: ComputedRef<(userId: string) => number>;
 
   // ACTIONS
-  createPost(dto: PostVMNew): Promise<void>;
   editUser(dto: UserVM): Promise<void>;
+  createPost(dto: PostVMNew): Promise<void>;
 }
 
 export const useMainStore = defineStore("main", (): StateMainStore => {
@@ -87,6 +87,10 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
   );
 
   // ACTIONS
+  async function editUser(dto: UserVM) {
+    Object.assign(users[users.findIndex(({ id }) => id === dto.id)], dto);
+  }
+
   async function createPost(dto: PostVMNew) {
     const id = guidAsBase64();
     const userId = authId.value;
@@ -97,10 +101,6 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     posts.push(newPost);
 
     threads.find(({ id }) => id === dto.threadId)?.posts.push(id);
-  }
-
-  async function editUser(dto: UserVM) {
-    Object.assign(users[users.findIndex(({ id }) => id === dto.id)], dto);
   }
 
   return {
@@ -118,7 +118,7 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     getUserPostsCountFn,
     getUserThreadsCountFn,
     // ACTIONS
-    createPost,
     editUser,
+    createPost,
   };
 });
