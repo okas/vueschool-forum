@@ -24,7 +24,12 @@ const threads = store.threads.filter(
         <h1 v-text="name" />
         <p class="text-lead" v-text="description" />
       </div>
-      <a href="new-thread.html" class="btn-green btn-small">Start a thread</a>
+      <router-link
+        :to="{ name: 'ThreadCreate', params: { forumId } }"
+        class="btn-green btn-small"
+      >
+        Start a thread
+      </router-link>
     </div>
   </div>
 

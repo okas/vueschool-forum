@@ -1,14 +1,20 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 import { useMainStore } from "../store/index";
 
 const props = defineProps<{
   forumId: string;
-  forumName: string;
 }>();
+
+const router = useRouter();
 
 const title = ref<string>(null);
 const text = ref<string>(null);
+
+const { name: forumName } = useMainStore().forums.find(
+  ({ id }) => id === props.forumId
+);
 
 function save() {
   useMainStore().createThread({
@@ -16,16 +22,31 @@ function save() {
     title: title.value,
     text: text.value,
   });
-
-  title.value = text.value = null;
+  clear();
+  goToForum();
 }
 
-function cancel() {}
+function cancel() {
+  clear();
+  goToForum();
+}
+
+function clear() {
+  title.value = null;
+  text.value = null;
+}
+
+function goToForum() {
+  router.push({ name: "Forum" });
+}
 </script>
 
 <template>
   <div class="col-full push-top">
-    <h1>Create new thread in <i v-text="forumName" /></h1>
+    <h1>
+      Create new thread in
+      <i v-text="forumName" />
+    </h1>
 
     <form @submit.prevent="save">
       <div class="form-group">
@@ -43,7 +64,7 @@ function cancel() {}
         <label for="thread_content">Content:</label>
         <textarea
           id="thread_content"
-          v-mode="text"
+          v-model="text"
           class="form-input"
           name="content"
           rows="8"
@@ -52,7 +73,9 @@ function cancel() {}
       </div>
 
       <div class="btn-group">
-        <button class="btn btn-ghost" @click.prevent="cancel">Cancel</button>
+        <button class="btn btn-ghost" type="button" @click.prevent="cancel">
+          Cancel
+        </button>
         <button class="btn btn-blue" type="submit" name="Publish">
           Publish
         </button>
