@@ -89,8 +89,12 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
   // ACTIONS
   async function createPost(dto: PostVMNew) {
     const id = guidAsBase64();
+    const userId = authId.value;
+    const publishedAt = Math.floor(Date.now() / 1000);
 
-    posts.push({ ...dto, id });
+    const newPost = { ...dto, id, userId, publishedAt } as PostVm;
+
+    posts.push(newPost);
 
     threads.find(({ id }) => id === dto.threadId)?.posts.push(id);
   }

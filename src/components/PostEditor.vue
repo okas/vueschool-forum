@@ -11,8 +11,6 @@ const text = ref<string>(null);
 function save() {
   const post: PostVMFormInput = {
     text: text.value,
-    publishedAt: Math.floor(Date.now() / 1000),
-    userId: useMainStore().authId,
   };
 
   emits("save", post);
