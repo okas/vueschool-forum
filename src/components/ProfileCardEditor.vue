@@ -1,11 +1,14 @@
 <script setup lang="ts">
 import { reactive, toRaw } from "vue";
+import { useRouter } from "vue-router";
 import { UserVM } from "../models/UserVM";
 import { useMainStore } from "../store";
 
 const props = defineProps<{
   user: UserVM;
 }>();
+
+const router = useRouter();
 
 const { id, name, username, bio, email, website, location, avatar, twitter } =
   toRaw(props.user);
@@ -22,8 +25,17 @@ const userEditorObj = reactive({
   twitter,
 });
 
-function save() {
-  useMainStore().editUser(userEditorObj as UserVM);
+function goToProfile() {
+  router.push({ name: "Profile" });
+}
+
+async function save() {
+  await useMainStore().editUser(userEditorObj as UserVM);
+  goToProfile();
+}
+
+function cancel() {
+  goToProfile();
 }
 </script>
 
@@ -104,7 +116,7 @@ function save() {
       </div>
 
       <div class="btn-group space-between">
-        <button class="btn-ghost">Cancel</button>
+        <button class="btn-ghost" @click.prevent="cancel">Cancel</button>
         <button type="submit" class="btn-blue">Save</button>
       </div>
     </form>

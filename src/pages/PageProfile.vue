@@ -1,39 +1,24 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import { computed } from "vue";
 import PostList from "../components/PostList.vue";
 import ProfileCard from "../components/ProfileCard.vue";
 import ProfileCardEditor from "../components/ProfileCardEditor.vue";
 import { useMainStore } from "../store";
-import {
-  diffFromUnix,
-  formatMonthYearFromUnix,
-} from "../utils/dateTimeDiffFormat";
+
+// TODO: refactor activity to component and migrate page to separate page
+
+defineProps<{
+  edit?: boolean;
+}>();
 
 const { authUser } = storeToRefs(useMainStore());
-
-const memberSince = computed(() =>
-  formatMonthYearFromUnix(authUser.value.registeredAt)
-);
-
-const lasVisited = computed(() => diffFromUnix(authUser.value.lastVisitAt));
 </script>
 
 <template>
   <div class="flex-grid">
     <div class="col-3 push-top">
-      <profile-card :auth-user="authUser" />
-      <profile-card-editor :user="authUser" />
-
-      <p class="text-xsmall text-faded text-center">
-        <span v-text="`Member since ${memberSince}, `" />
-        <span v-text="`last visited ${lasVisited}`" />
-      </p>
-
-      <div class="text-center">
-        <hr />
-        <a href="edit-profile.html" class="btn-green btn-small">Edit Profile</a>
-      </div>
+      <profile-card v-if="!edit" :auth-user="authUser" />
+      <profile-card-editor v-else :user="authUser" />
     </div>
 
     <div class="col-7 push-top">

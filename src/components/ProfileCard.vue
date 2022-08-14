@@ -1,9 +1,20 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { IAuthUser } from "../types/IAuthUser";
+import {
+  diffFromUnix,
+  formatMonthYearFromUnix,
+} from "../utils/dateTimeDiffFormat";
 
-defineProps<{
+const props = defineProps<{
   authUser: IAuthUser;
 }>();
+
+const memberSince = computed(() =>
+  formatMonthYearFromUnix(props.authUser.registeredAt)
+);
+
+const lasVisited = computed(() => diffFromUnix(props.authUser.lastVisitAt));
 </script>
 
 <template>
@@ -38,6 +49,18 @@ defineProps<{
       <i class="fa fa-globe"></i>
       <a :href="authUser.website" v-text="authUser.website" />
     </p>
+  </div>
+
+  <p class="text-xsmall text-faded text-center">
+    <span v-text="`Member since ${memberSince}, `" />
+    <span v-text="`last visited ${lasVisited}`" />
+  </p>
+
+  <div class="text-center">
+    <hr />
+    <router-link :to="{ name: 'ProfileEdit' }" class="btn-green btn-small">
+      Edit Profile
+    </router-link>
   </div>
 </template>
 
