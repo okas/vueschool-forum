@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { computed, reactive } from "vue";
 import { ThreadVMFormInput } from "../types/ThreadVMTypes";
 
 const props = defineProps<{
@@ -16,6 +16,8 @@ const form = reactive({
   title: props.title,
   text: props.text,
 });
+
+const submitButtonWord = computed(() => (props.title ? "Update" : "Publish"));
 
 function save() {
   emits("save", { ...form });
@@ -62,7 +64,12 @@ function clearForm() {
       <button class="btn btn-ghost" type="button" @click.prevent="cancel">
         Cancel
       </button>
-      <button class="btn btn-blue" type="submit" name="Publish">Publish</button>
+      <button
+        class="btn btn-blue"
+        type="submit"
+        name="Publish"
+        v-text="submitButtonWord"
+      ></button>
     </div>
   </form>
 </template>

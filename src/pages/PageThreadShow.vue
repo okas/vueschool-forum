@@ -36,7 +36,17 @@ function addPost(dto: PostVMFormInput) {
       <li><a href="category.html">Discussions</a></li>
       <li class="active"><a href="#">Cooking</a></li>
     </ul> -->
-    <h1 v-text="thread.title" />
+
+    <span>
+      <h1 v-text="thread.title" />
+      <router-link
+        class="btn-green btn-small"
+        :to="{ name: 'ThreadEdit', params: { threadId } }"
+      >
+        Edit thread
+      </router-link>
+    </span>
+
     <!-- <p>
       By <a href="#" class="link-unstyled">Robin</a>, 2 hours ago.
       <span
@@ -46,6 +56,7 @@ function addPost(dto: PostVMFormInput) {
       >
     </p> -->
     <post-list :posts="posts" />
+
     <post-editor class="col-full" @save="addPost">
       {{ thread.title }}
     </post-editor>
