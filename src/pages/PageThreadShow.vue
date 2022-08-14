@@ -29,7 +29,7 @@ function addPost(dto: PostVMFormInput) {
 
 <template>
   <div>
-    <!-- <ul class="breadcrumbs">
+    <!-- <ul class="breadcrumbs"></ul>
       <li>
         <a href="#"><i class="fa fa-home fa-btn"></i>Home</a>
       </li>
@@ -40,10 +40,13 @@ function addPost(dto: PostVMFormInput) {
     <span>
       <h1 v-text="thread.title" />
       <router-link
-        class="btn-green btn-small"
+        v-slot="{ navigate }"
         :to="{ name: 'ThreadEdit', params: { threadId } }"
+        custom
       >
-        Edit thread
+        <button class="btn-green btn-small" @click="navigate">
+          Edit thread
+        </button>
       </router-link>
     </span>
 
