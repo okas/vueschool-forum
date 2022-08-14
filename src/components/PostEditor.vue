@@ -17,6 +17,10 @@ function save() {
 
   text.value = null;
 }
+
+function cancel() {
+  text.value = null;
+}
 </script>
 
 <template>
@@ -37,7 +41,9 @@ function save() {
         />
       </div>
       <div class="btn-group">
-        <button class="btn btn-ghost">Cancel</button>
+        <button class="btn btn-ghost" type="button" @click.prevent="cancel">
+          Cancel
+        </button>
         <button class="btn btn-blue" type="submit" name="Publish">
           Publish
         </button>
