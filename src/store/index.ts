@@ -8,6 +8,7 @@ import { StatsVM } from "../models/StatsVM";
 import { ThreadVM } from "../models/ThreadVM";
 import { UserVM } from "../models/UserVM";
 import { IAuthUser } from "../types/IAuthUser";
+import { PostVMNew } from "../types/PostVMTypes";
 import { guidAsBase64 } from "../utils/misc";
 
 export interface StateMainStore {
@@ -27,7 +28,7 @@ export interface StateMainStore {
   getUserThreadsCountFn: ComputedRef<(userId: string) => number>;
 
   // ACTIONS
-  createPost(dto: Omit<PostVm, "id">): Promise<void>;
+  createPost(dto: PostVMNew): Promise<void>;
   editUser(dto: UserVM): Promise<void>;
 }
 
@@ -86,7 +87,7 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
   );
 
   // ACTIONS
-  async function createPost(dto: Omit<PostVm, "id">) {
+  async function createPost(dto: PostVMNew) {
     const id = guidAsBase64();
 
     posts.push({ ...dto, id });

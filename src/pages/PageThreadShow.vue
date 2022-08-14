@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import PostEditor, { PostVMFormInput } from "../components/PostEditor.vue";
+import PostEditor from "../components/PostEditor.vue";
 import PostList from "../components/PostList.vue";
 import { PostVm } from "../models/PostVm";
 import { useMainStore } from "../store";
+import { PostVMFormInput } from "../types/PostVMTypes";
 
 const props = defineProps<{
   threadId: string;
@@ -18,7 +19,7 @@ const posts = computed(() =>
 );
 
 function addPost(dto: PostVMFormInput) {
-  const post: Omit<PostVm, "id"> = {
+  const post: Omit<PostVm, "id" | "userId" | "publishedAt"> = {
     threadId: props.threadId,
     ...dto,
   };

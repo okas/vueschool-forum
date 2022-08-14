@@ -1,12 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { PostVm } from "../models/PostVm";
-import { useMainStore } from "../store";
-
-export type PostVMFormInput = Omit<
-  PostVm,
-  "id" | "threadId" | "edited" | "reactions"
->;
+import { PostVMFormInput } from "../types/PostVMTypes";
 
 const emits = defineEmits<{
   (e: "save", dto: PostVMFormInput): void;
