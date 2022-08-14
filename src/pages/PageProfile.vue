@@ -23,7 +23,9 @@ const { authUser } = storeToRefs(useMainStore());
 
     <div class="col-7 push-top">
       <div class="profile-header">
-        <span class="text-lead">{{ authUser.name }}'s recent activity </span>
+        <span class="text-lead"
+          >{{ authUser.username }}'s recent activity
+        </span>
         <a href="#">See only started threads?</a>
       </div>
 
