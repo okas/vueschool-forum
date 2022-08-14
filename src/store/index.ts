@@ -9,6 +9,7 @@ import { ThreadVM } from "../models/ThreadVM";
 import { UserVM } from "../models/UserVM";
 import { IAuthUser } from "../types/IAuthUser";
 import { PostVMNew } from "../types/PostVMTypes";
+import { ThreadVMNew } from "../types/ThreadVMTypes";
 import { guidAsBase64 } from "../utils/misc";
 
 export interface StateMainStore {
@@ -29,7 +30,8 @@ export interface StateMainStore {
 
   // ACTIONS
   editUser(dto: UserVM): Promise<void>;
-  createPost(dto: PostVMNew): Promise<void>;
+  createPost(dto: PostVMNew): Promise<string>;
+  createThread(dto: ThreadVMNew): Promise<string>;
 }
 
 export const useMainStore = defineStore("main", (): StateMainStore => {
@@ -91,16 +93,68 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     Object.assign(users[users.findIndex(({ id }) => id === dto.id)], dto);
   }
 
-  async function createPost(dto: PostVMNew) {
+  async function createPost({ threadId, ...rest }: PostVMNew): Promise<string> {
     const id = guidAsBase64();
     const userId = authId.value;
     const publishedAt = Math.floor(Date.now() / 1000);
 
-    const newPost = { ...dto, id, userId, publishedAt } as PostVm;
+    const newPost = { threadId, id, userId, publishedAt, ...rest } as PostVm;
 
     posts.push(newPost);
 
-    threads.find(({ id }) => id === dto.threadId)?.posts.push(id);
+    appendPostToThread(threadId, id);
+
+    return id;
+  }
+
+  async function createThread({
+    text,
+    forumId,
+    ...rest
+  }: ThreadVMNew): Promise<string> {
+    const id = guidAsBase64();
+    const userId = authId.value;
+    const publishedAt = Math.floor(Date.now() / 1000);
+    const posts: string[] = [];
+
+    const newThread = {
+      ...rest,
+      forumId,
+      id,
+      userId,
+      publishedAt,
+      posts,
+    } as ThreadVM;
+
+    threads.push(newThread);
+
+    await createPost({
+      text,
+      threadId: id,
+    });
+
+    appendThreadToForum(forumId, id);
+
+    return id;
+  }
+
+  // INTERNALS
+  function appendPostToThread(threadId: string, postId: string) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const thread = threads.find(({ id }) => id === threadId)!;
+
+    thread.posts ??= [];
+
+    thread.posts.push(postId);
+  }
+
+  function appendThreadToForum(forumId: string, threadId: string) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const forum = forums.find(({ id }) => id === forumId)!;
+
+    forum.threads ??= [];
+
+    forum?.threads?.push(threadId);
   }
 
   return {
@@ -120,5 +174,6 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     // ACTIONS
     editUser,
     createPost,
+    createThread,
   };
 });

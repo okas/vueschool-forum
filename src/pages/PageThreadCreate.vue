@@ -1,12 +1,24 @@
 <script setup lang="ts">
 import { ref } from "vue";
+import { useMainStore } from "../store/index";
 
-const props = defineProps();
+const props = defineProps<{
+  forumId: string;
+  forumName: string;
+}>();
 
 const title = ref<string>(null);
 const text = ref<string>(null);
 
-function save() {}
+function save() {
+  useMainStore().createThread({
+    forumId: props.forumId,
+    title: title.value,
+    text: text.value,
+  });
+
+  title.value = text.value = null;
+}
 
 function cancel() {}
 </script>
