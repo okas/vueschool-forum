@@ -16,28 +16,26 @@ const { name: forumName } = useMainStore().forums.find(
   ({ id }) => id === props.forumId
 );
 
-function save() {
-  useMainStore().createThread({
+async function save() {
+  const threadId = await useMainStore().createThread({
     forumId: props.forumId,
     title: title.value,
     text: text.value,
   });
-  clear();
-  goToForum();
+
+  clearForm();
+
+  router.push({ name: "ThreadShow", params: { threadId } });
 }
 
 function cancel() {
-  clear();
-  goToForum();
+  clearForm();
+  router.push({ name: "Forum", params: { forumId: props.forumId } });
 }
 
-function clear() {
+function clearForm() {
   title.value = null;
   text.value = null;
-}
-
-function goToForum() {
-  router.push({ name: "Forum" });
 }
 </script>
 
