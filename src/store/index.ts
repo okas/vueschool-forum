@@ -9,7 +9,7 @@ import { ThreadVM } from "../models/ThreadVM";
 import { UserVM } from "../models/UserVM";
 import { IAuthUser } from "../types/IAuthUser";
 import { PostVMNew } from "../types/PostVMTypes";
-import { ThreadVMNew } from "../types/ThreadVMTypes";
+import { ThreadVMEdit, ThreadVMNew } from "../types/ThreadVMTypes";
 import { guidAsBase64 } from "../utils/misc";
 
 export interface StateMainStore {
@@ -32,6 +32,7 @@ export interface StateMainStore {
   editUser(dto: UserVM): Promise<void>;
   createPost(dto: PostVMNew): Promise<string>;
   createThread(dto: ThreadVMNew): Promise<string>;
+  editThread(dto: ThreadVMEdit): Promise<void>;
 }
 
 export const useMainStore = defineStore("main", (): StateMainStore => {
@@ -137,6 +138,15 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
 
     return id;
   }
+  async function editThread({ id: threadId, title, text }: ThreadVMEdit) {
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const thread = threads.find(({ id }) => id === threadId)!;
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    const post = posts.find(({ id }) => id === thread.posts[0])!;
+
+    thread.title = title;
+    post.text = text;
+  }
 
   // INTERNALS
   function appendPostToThread(threadId: string, postId: string) {
@@ -175,5 +185,6 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     editUser,
     createPost,
     createThread,
+    editThread,
   };
 });

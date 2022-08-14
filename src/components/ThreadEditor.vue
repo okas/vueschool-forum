@@ -1,20 +1,24 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { reactive } from "vue";
 import { ThreadVMFormInput } from "../types/ThreadVMTypes";
+
+const props = defineProps<{
+  title?: string;
+  text?: string;
+}>();
 
 const emits = defineEmits<{
   (e: "save", dto: ThreadVMFormInput): void;
   (e: "cancel"): void;
 }>();
 
-const title = ref<string>(null);
-const text = ref<string>(null);
+const form = reactive({
+  title: props.title,
+  text: props.text,
+});
 
 function save() {
-  emits("save", {
-    title: title.value,
-    text: text.value,
-  });
+  emits("save", { ...form });
   clearForm();
 }
 
@@ -24,8 +28,8 @@ function cancel() {
 }
 
 function clearForm() {
-  title.value = null;
-  text.value = null;
+  form.title = null;
+  form.text = null;
 }
 </script>
 
@@ -35,7 +39,7 @@ function clearForm() {
       <label for="thread_title">Title:</label>
       <input
         id="thread_title"
-        v-model="title"
+        v-model="form.title"
         type="text"
         class="form-input"
         name="title"
@@ -46,7 +50,7 @@ function clearForm() {
       <label for="thread_content">Content:</label>
       <textarea
         id="thread_content"
-        v-model="text"
+        v-model="form.text"
         class="form-input"
         name="content"
         rows="8"
