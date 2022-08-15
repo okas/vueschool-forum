@@ -25,17 +25,15 @@ const userEditorObj = reactive({
   twitter,
 });
 
-function goToProfile() {
-  router.push({ name: "Profile" });
-}
+const routeToReturn = { name: "Profile" };
 
 async function save() {
   await useMainStore().editUser(userEditorObj as UserVM);
-  goToProfile();
+  router.push(routeToReturn);
 }
 
 function cancel() {
-  goToProfile();
+  router.push(routeToReturn);
 }
 </script>
 
