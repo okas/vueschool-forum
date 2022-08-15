@@ -4,7 +4,6 @@ import PostEditor from "../components/PostEditor.vue";
 import PostList from "../components/PostList.vue";
 import { useMainStore } from "../store";
 import { PostVMFormInput, PostVMNew } from "../types/PostVMTypes";
-import { findById } from "../utils/array-helpers";
 
 const props = defineProps<{
   threadId: string;
@@ -12,10 +11,15 @@ const props = defineProps<{
 
 const store = useMainStore();
 
-const thread = findById(store.threads, props.threadId);
+const thread = store.getThreadMetaInfoFn(props.threadId);
 
 const posts = computed(() =>
   store.posts.filter(({ threadId }) => threadId === thread.id)
+);
+
+const statsPhrase = computed(
+  () =>
+    `${thread.repliesCount} replies by ${thread.contributors.length} contributors.`
 );
 
 function addPost(dto: PostVMFormInput) {
@@ -51,14 +55,18 @@ function addPost(dto: PostVMFormInput) {
       </router-link>
     </span>
 
-    <!-- <p>
-      By <a href="#" class="link-unstyled">Robin</a>, 2 hours ago.
+    <p>
+      By
+      <a href="#" class="link-unstyled">{{ thread.authorName }}</a
+      >,
+      <app-date :timestamp="thread.lastPostAt" />
       <span
         style="float: right; margin-top: 2px"
         class="hide-mobile text-faded text-small"
-        >3 replies by 3 contributors</span
-      >
-    </p> -->
+        v-text="statsPhrase"
+      />
+    </p>
+
     <post-list :posts="posts" />
 
     <post-editor class="col-full" @save="addPost">

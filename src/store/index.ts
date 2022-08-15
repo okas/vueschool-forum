@@ -13,6 +13,7 @@ import { PostVMNew } from "../types/PostVMTypes";
 import { ThreadVMEdit, ThreadVMNew } from "../types/ThreadVMTypes";
 import { countBy, findById } from "../utils/array-helpers";
 import { guidAsBase64 } from "../utils/misc";
+import { ThreadVMWithMeta } from "./../types/ThreadVMTypes";
 
 export interface StateMainStore {
   // STATE
@@ -29,6 +30,7 @@ export interface StateMainStore {
   getUserByIdFn: ComputedRef<(userId: string) => UserVM | undefined>;
   getUserPostsCountFn: ComputedRef<(userId: string) => number>;
   getUserThreadsCountFn: ComputedRef<(userId: string) => number>;
+  getThreadMetaInfoFn: ComputedRef<(threadId: string) => ThreadVMWithMeta>;
 
   // ACTIONS
   editUser(dto: UserVM): Promise<void>;
@@ -89,6 +91,25 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     () => (id: string) => countBy(threads, ({ userId }) => userId === id)
   );
 
+  const getThreadMetaInfoFn = computed(() => (threadId: string) => {
+    const thread = findById(threads, threadId);
+    ok(thread, `No thread with id: "${threadId}".`);
+
+    const result: ThreadVMWithMeta = {
+      ...thread,
+
+      get authorName() {
+        return findById(users, thread.userId)?.name ?? "<missing>";
+      },
+
+      get repliesCount() {
+        return thread.posts.length - 1;
+      },
+    };
+
+    return result;
+  });
+
   // ACTIONS
   async function editUser(dto: UserVM) {
     Object.assign(users[users.findIndex(({ id }) => id === dto.id)], dto);
@@ -105,6 +126,7 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     posts.push(newPost);
 
     tryAppendPostToThreadOrThrow(threadId, id);
+    tryAppendContributorToThreadOrThrow(threadId, userId);
 
     return id;
   }
@@ -149,14 +171,19 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
   }
 
   // INTERNALS
-  const tryAppendPostToThreadOrThrow = _makeParentChildAppenderFn(
+  const tryAppendPostToThreadOrThrow = _makeParentChildUniqueAppenderFn(
     threads,
     "posts"
   );
 
-  const tryAppendThreadToForumOrThrow = _makeParentChildAppenderFn(
+  const tryAppendThreadToForumOrThrow = _makeParentChildUniqueAppenderFn(
     forums,
     "threads"
+  );
+
+  const tryAppendContributorToThreadOrThrow = _makeParentChildUniqueAppenderFn(
+    threads,
+    "contributors"
   );
 
   return {
@@ -173,6 +200,7 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     getUserByIdFn,
     getUserPostsCountFn,
     getUserThreadsCountFn,
+    getThreadMetaInfoFn,
     // ACTIONS
     editUser,
     createPost,
@@ -181,7 +209,7 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
   };
 });
 
-function _makeParentChildAppenderFn<
+function _makeParentChildUniqueAppenderFn<
   TId,
   TParent extends { id: TId } & Record<string, unknown>,
   PropChild extends keyof TParent
@@ -191,10 +219,12 @@ function _makeParentChildAppenderFn<
 
     ok(parent, `Append error: non-existing parent.`);
 
-    if (parent[childArrayProp] as Array<TAppendValue>) {
-      (parent[childArrayProp] as Array<TAppendValue>).push(appendValue);
-    } else {
+    const childArray = parent[childArrayProp] as Array<TAppendValue>;
+
+    if (!childArray) {
       (parent[childArrayProp] as Array<TAppendValue>) = [appendValue];
+    } else if (!childArray.includes(appendValue)) {
+      childArray.push(appendValue);
     }
   };
 }

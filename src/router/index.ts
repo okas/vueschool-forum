@@ -53,7 +53,7 @@ const routes: Readonly<RouteRecordRaw[]> = [
   {
     path: "/thread/:threadId",
     name: "ThreadShow",
-    component: () => import("../pages/PageThreadShow.vue"),
+    component: () => import("../pages/PageThread.vue"),
     props: true,
     beforeEnter: (
       routeObj,
