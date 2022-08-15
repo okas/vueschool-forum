@@ -1,5 +1,6 @@
-export class UserVM {
-  id!: string;
+import { HasId } from "../types/HasId";
+
+export class UserVM extends HasId {
   name!: string;
   avatar!: string;
   email!: string;

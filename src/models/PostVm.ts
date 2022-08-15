@@ -1,5 +1,6 @@
-export class PostVm {
-  id!: string;
+import { HasId } from "../types/HasId";
+
+export class PostVm extends HasId {
   userId!: string;
   publishedAt!: number;
   text!: string;

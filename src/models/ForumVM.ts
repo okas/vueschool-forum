@@ -1,5 +1,6 @@
-export class ForumVM {
-  id!: string;
+import { HasId } from "../types/HasId";
+
+export class ForumVM extends HasId {
   name!: string;
   categoryId!: string;
   description!: string;

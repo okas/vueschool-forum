@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { IAuthUser } from "../types/IAuthUser";
+import { IAuthUser } from "../types/AuthUser";
 import {
   diffFromUnix,
   formatMonthYearFromUnix,

@@ -8,7 +8,7 @@ import { PostVm } from "../models/PostVm";
 import { StatsVM } from "../models/StatsVM";
 import { ThreadVM } from "../models/ThreadVM";
 import { UserVM } from "../models/UserVM";
-import { IAuthUser } from "../types/IAuthUser";
+import { IAuthUser as AuthUser } from "../types/AuthUser";
 import { PostVMNew } from "../types/PostVMTypes";
 import { ThreadVMEdit, ThreadVMNew } from "../types/ThreadVMTypes";
 import { countBy, findById } from "../utils/array-helpers";
@@ -26,7 +26,7 @@ export interface StateMainStore {
   stats: StatsVM;
 
   // GETTERS
-  authUser: ComputedRef<IAuthUser | undefined>;
+  authUser: ComputedRef<AuthUser | undefined>;
   getUserByIdFn: ComputedRef<(userId: string) => UserVM | undefined>;
   getUserPostsCountFn: ComputedRef<(userId: string) => number>;
   getUserThreadsCountFn: ComputedRef<(userId: string) => number>;
@@ -58,7 +58,7 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
       return undefined;
     }
 
-    return {
+    const result: AuthUser = {
       ...user,
 
       get posts() {
@@ -76,7 +76,9 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
       get threadsCount() {
         return this.threads.length;
       },
-    } as IAuthUser;
+    };
+
+    return result;
   });
 
   const getUserByIdFn = computed(

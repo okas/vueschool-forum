@@ -1,5 +1,6 @@
-export class ThreadVM {
-  id!: string;
+import { HasId } from "../types/HasId";
+
+export class ThreadVM extends HasId {
   userId!: string;
   firstPostId!: string;
   forumId!: string;
