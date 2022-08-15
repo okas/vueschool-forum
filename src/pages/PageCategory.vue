@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import CategoryListItem from "../components/CategoryListItem.vue";
 import { useMainStore } from "../store";
+import { findById } from "../utils/array-helpers";
 
 const props = defineProps<{
   categoryId: string;
@@ -8,7 +9,7 @@ const props = defineProps<{
 
 const store = useMainStore();
 
-const { name } = store.categories.find(({ id }) => id === props.categoryId);
+const { name } = findById(store.categories, props.categoryId);
 
 const categoryForums = store.forums.filter(
   ({ categoryId }) => categoryId === props.categoryId

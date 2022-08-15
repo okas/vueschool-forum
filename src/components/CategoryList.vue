@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useMainStore } from "../store";
-import { groupByToMap } from "../utils/array-helpers";
+import { findById, groupByToMap } from "../utils/array-helpers";
 import CategoryListItem from "./CategoryListItem.vue";
 
 const store = useMainStore();
@@ -11,7 +11,7 @@ const groupedForums = groupByToMap(
 );
 
 function getCategoryName(categoryId: string) {
-  return store.categories.find(({ id }) => id === categoryId).name;
+  return findById(store.categories, categoryId)?.name;
 }
 </script>
 

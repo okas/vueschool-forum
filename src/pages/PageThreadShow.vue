@@ -4,6 +4,7 @@ import PostEditor from "../components/PostEditor.vue";
 import PostList from "../components/PostList.vue";
 import { useMainStore } from "../store";
 import { PostVMFormInput, PostVMNew } from "../types/PostVMTypes";
+import { findById } from "../utils/array-helpers";
 
 const props = defineProps<{
   threadId: string;
@@ -11,7 +12,7 @@ const props = defineProps<{
 
 const store = useMainStore();
 
-const thread = store.threads.find(({ id }) => id === props.threadId);
+const thread = findById(store.threads, props.threadId);
 
 const posts = computed(() =>
   store.posts.filter(({ threadId }) => threadId === thread.id)

@@ -4,6 +4,7 @@ import { useRouter } from "vue-router";
 import ThreadEditor from "../components/ThreadEditor.vue";
 import { useMainStore } from "../store/index";
 import { ThreadVMFormInput } from "../types/ThreadVMTypes";
+import { findById } from "../utils/array-helpers";
 
 const props = defineProps<{
   threadId: string;
@@ -12,12 +13,10 @@ const props = defineProps<{
 const store = useMainStore();
 const router = useRouter();
 
-const thread = computed(() =>
-  store.threads.find(({ id }) => id === props.threadId)
-);
+const thread = computed(() => findById(store.threads, props.threadId));
 
 const firstPostText = computed(
-  () => store.posts.find(({ id }) => id === thread.value.posts[0]).text
+  () => findById(store.posts, thread.value.posts[0])?.text
 );
 
 async function save({ title, text }: ThreadVMFormInput) {

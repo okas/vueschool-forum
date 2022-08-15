@@ -10,6 +10,7 @@ import { UserVM } from "../models/UserVM";
 import { IAuthUser } from "../types/IAuthUser";
 import { PostVMNew } from "../types/PostVMTypes";
 import { ThreadVMEdit, ThreadVMNew } from "../types/ThreadVMTypes";
+import { findById } from "../utils/array-helpers";
 import { guidAsBase64 } from "../utils/misc";
 
 export interface StateMainStore {
@@ -48,7 +49,7 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
 
   // GETTERS
   const authUser = computed(() => {
-    const user = users.find(({ id }) => id === authId.value);
+    const user = findById(users, authId.value);
 
     if (!user) {
       return undefined;
@@ -76,7 +77,7 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
   });
 
   const getUserByIdFn = computed(
-    () => (userId: string) => users.find(({ id }) => id === userId)
+    () => (userId: string) => findById(users, userId)
   );
 
   const getUserPostsCountFn = computed(
@@ -140,9 +141,9 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
   }
   async function editThread({ id: threadId, title, text }: ThreadVMEdit) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const thread = threads.find(({ id }) => id === threadId)!;
+    const thread = findById(threads, threadId)!;
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const post = posts.find(({ id }) => id === thread.posts[0])!;
+    const post = findById(posts, thread.posts[0])!;
 
     thread.title = title;
     post.text = text;
@@ -151,7 +152,7 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
   // INTERNALS
   function appendPostToThread(threadId: string, postId: string) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const thread = threads.find(({ id }) => id === threadId)!;
+    const thread = findById(threads, threadId)!;
 
     thread.posts ??= [];
 
@@ -160,7 +161,7 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
 
   function appendThreadToForum(forumId: string, threadId: string) {
     // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const forum = forums.find(({ id }) => id === forumId)!;
+    const forum = findById(forums, forumId)!;
 
     forum.threads ??= [];
 

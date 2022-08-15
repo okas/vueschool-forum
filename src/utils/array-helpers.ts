@@ -15,3 +15,10 @@ export function groupByToMap<T, Q>(
     return map;
   }, new Map<Q, T[]>());
 }
+
+export function findById<TId, TItem extends { id: TId }>(
+  array: Array<TItem>,
+  findId: TId
+): TItem | undefined {
+  return array.find(({ id }) => id === findId);
+}

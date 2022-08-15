@@ -3,6 +3,7 @@ import { useRouter } from "vue-router";
 import ThreadEditor from "../components/ThreadEditor.vue";
 import { useMainStore } from "../store/index";
 import { ThreadVMFormInput } from "../types/ThreadVMTypes";
+import { findById } from "../utils/array-helpers";
 
 const props = defineProps<{
   forumId: string;
@@ -10,9 +11,7 @@ const props = defineProps<{
 
 const router = useRouter();
 
-const { name: forumName } = useMainStore().forums.find(
-  ({ id }) => id === props.forumId
-);
+const { name: forumName } = findById(useMainStore().forums, props.forumId);
 
 async function save({ title, text }: ThreadVMFormInput) {
   const threadId = await useMainStore().createThread({

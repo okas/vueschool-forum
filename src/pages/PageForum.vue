@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ThreadList from "../components/ThreadList.vue";
 import { useMainStore } from "../store";
+import { findById } from "../utils/array-helpers";
 
 const props = defineProps<{
   forumId: string;
@@ -8,9 +9,7 @@ const props = defineProps<{
 
 const store = useMainStore();
 
-const { name, description } = store.forums.find(
-  ({ id }) => id === props.forumId
-);
+const { name, description } = findById(store.forums, props.forumId);
 
 const threads = store.threads.filter(
   ({ forumId }) => forumId === props.forumId
