@@ -22,3 +22,17 @@ export function findById<TId, TItem extends { id: TId }>(
 ): TItem | undefined {
   return array.find(({ id }) => id === findId);
 }
+
+export function countBy<TItem>(
+  array: Array<TItem>,
+  predicate: (item: TItem) => boolean
+): number {
+  return array.reduce((count, item) => count + Number(predicate(item)), 0);
+}
+
+export function countById<TId, TItem extends { id: TId }>(
+  array: Array<TItem>,
+  countId: TId
+): number {
+  return countBy(array, ({ id }) => id === countId);
+}

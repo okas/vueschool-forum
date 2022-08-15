@@ -10,7 +10,7 @@ import { UserVM } from "../models/UserVM";
 import { IAuthUser } from "../types/IAuthUser";
 import { PostVMNew } from "../types/PostVMTypes";
 import { ThreadVMEdit, ThreadVMNew } from "../types/ThreadVMTypes";
-import { findById } from "../utils/array-helpers";
+import { countBy, findById } from "../utils/array-helpers";
 import { guidAsBase64 } from "../utils/misc";
 
 export interface StateMainStore {
@@ -81,13 +81,11 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
   );
 
   const getUserPostsCountFn = computed(
-    () => (id: string) =>
-      posts.reduce((count, { userId }) => count + Number(userId === id), 0)
+    () => (id: string) => countBy(posts, ({ userId }) => userId === id)
   );
 
   const getUserThreadsCountFn = computed(
-    () => (id: string) =>
-      threads.reduce((count, { userId }) => count + Number(userId === id), 0)
+    () => (id: string) => countBy(threads, ({ userId }) => userId === id)
   );
 
   // ACTIONS
