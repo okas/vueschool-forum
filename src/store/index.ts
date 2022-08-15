@@ -1,3 +1,4 @@
+import { ok } from "assert";
 import { defineStore } from "pinia";
 import { computed, ComputedRef, reactive, Ref, ref } from "vue";
 import sourceData from "../data.json";
@@ -103,7 +104,7 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     // @ts-expect-error Emojis as keys in `.reactions`!
     posts.push(newPost);
 
-    appendPostToThread(threadId, id);
+    tryAppendPostToThreadOrThrow(threadId, id);
 
     return id;
   }
@@ -134,37 +135,43 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
       threadId: id,
     });
 
-    appendThreadToForum(forumId, id);
+    tryAppendThreadToForumOrThrow(forumId, id);
 
     return id;
   }
+
   async function editThread({ id: threadId, title, text }: ThreadVMEdit) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const thread = findById(threads, threadId)!;
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const post = findById(posts, thread.posts[0])!;
+    const thread = findById(threads, threadId);
+    ok(thread, `Edit thread error: no thread with id: "${threadId}".`);
+
+    const post = findById(posts, thread.posts[0]);
+    ok(post, `Edit thread error: no post with id: ${thread.posts[0]}.`);
 
     thread.title = title;
     post.text = text;
   }
 
   // INTERNALS
-  function appendPostToThread(threadId: string, postId: string) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const thread = findById(threads, threadId)!;
+  function tryAppendPostToThreadOrThrow(
+    threadId: string,
+    postId: string,
+    errorMessagePart = "cannot append post to non-existing thread"
+  ) {
+    const thread = findById(threads, threadId);
+    ok(thread, `Append error: ${errorMessagePart}.`);
 
-    thread.posts ??= [];
-
-    thread.posts.push(postId);
+    (thread.posts ??= []).push(postId);
   }
 
-  function appendThreadToForum(forumId: string, threadId: string) {
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    const forum = findById(forums, forumId)!;
+  function tryAppendThreadToForumOrThrow(
+    forumId: string,
+    threadId: string,
+    errorMessagePart = "cannot append thread to non-existing forum"
+  ) {
+    const forum = findById(forums, forumId);
+    ok(forum, `Append error: ${errorMessagePart}.`);
 
-    forum.threads ??= [];
-
-    forum.threads.push(threadId);
+    (forum.threads ??= []).push(threadId);
   }
 
   return {

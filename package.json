@@ -9,6 +9,7 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
+    "assert": "^2.0.0",
     "core-js": "^3.24.1",
     "dayjs": "^1.11.5",
     "pinia": "^2.0.18",
