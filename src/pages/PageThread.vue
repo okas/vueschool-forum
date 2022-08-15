@@ -33,7 +33,7 @@ function addPost(dto: PostVMFormInput) {
 </script>
 
 <template>
-  <div>
+  <div class="col-large push-top">
     <!-- <ul class="breadcrumbs"></ul>
       <li>
         <a href="#"><i class="fa fa-home fa-btn"></i>Home</a>
@@ -42,8 +42,8 @@ function addPost(dto: PostVMFormInput) {
       <li class="active"><a href="#">Cooking</a></li>
     </ul> -->
 
-    <span>
-      <h1 v-text="thread.title" />
+    <header style="display: flex">
+      <h1 style="margin-right: 1rem" v-text="thread.title" />
       <router-link
         v-slot="{ navigate }"
         :to="{ name: 'ThreadEdit', params: { threadId } }"
@@ -53,15 +53,16 @@ function addPost(dto: PostVMFormInput) {
           Edit thread
         </button>
       </router-link>
-    </span>
+    </header>
 
-    <p>
-      By
-      <a href="#" class="link-unstyled">{{ thread.authorName }}</a
-      >,
-      <app-date :timestamp="thread.lastPostAt" />
+    <p style="display: flex; justify-content: space-between">
+      <span style="margin-top: 0.125rem">
+        By
+        <a href="#" class="link-unstyled">{{ thread.authorName }}</a
+        >, <app-date :timestamp="thread.lastPostAt" />.
+      </span>
       <span
-        style="float: right; margin-top: 2px"
+        style="margin-top: 0.125rem"
         class="hide-mobile text-faded text-small"
         v-text="statsPhrase"
       />
