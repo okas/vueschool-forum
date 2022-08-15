@@ -16,11 +16,11 @@ import { guidAsBase64 } from "../utils/misc";
 export interface StateMainStore {
   // STATE
   authId: Ref<string | undefined>;
-  categories: CategoryVM[];
-  forums: ForumVM[];
-  posts: PostVm[];
-  threads: ThreadVM[];
-  users: UserVM[];
+  categories: Array<CategoryVM>;
+  forums: Array<ForumVM>;
+  posts: Array<PostVm>;
+  threads: Array<ThreadVM>;
+  users: Array<UserVM>;
   stats: StatsVM;
 
   // GETTERS
@@ -98,8 +98,9 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     const userId = authId.value;
     const publishedAt = Math.floor(Date.now() / 1000);
 
-    const newPost = { threadId, id, userId, publishedAt, ...rest } as PostVm;
+    const newPost: PostVm = { ...rest, threadId, id, userId, publishedAt };
 
+    // @ts-expect-error Emojis as keys in `.reactions`!
     posts.push(newPost);
 
     appendPostToThread(threadId, id);
@@ -163,7 +164,7 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
 
     forum.threads ??= [];
 
-    forum?.threads?.push(threadId);
+    forum.threads.push(threadId);
   }
 
   return {
