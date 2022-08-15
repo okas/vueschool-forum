@@ -130,10 +130,7 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
 
     threads.push(newThread);
 
-    await createPost({
-      text,
-      threadId: id,
-    });
+    await createPost({ text, threadId: id });
 
     tryAppendThreadToForumOrThrow(forumId, id);
 
@@ -152,27 +149,15 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
   }
 
   // INTERNALS
-  function tryAppendPostToThreadOrThrow(
-    threadId: string,
-    postId: string,
-    errorMessagePart = "cannot append post to non-existing thread"
-  ) {
-    const thread = findById(threads, threadId);
-    ok(thread, `Append error: ${errorMessagePart}.`);
+  const tryAppendPostToThreadOrThrow = _makeParentChildAppenderFn(
+    threads,
+    "posts"
+  );
 
-    (thread.posts ??= []).push(postId);
-  }
-
-  function tryAppendThreadToForumOrThrow(
-    forumId: string,
-    threadId: string,
-    errorMessagePart = "cannot append thread to non-existing forum"
-  ) {
-    const forum = findById(forums, forumId);
-    ok(forum, `Append error: ${errorMessagePart}.`);
-
-    (forum.threads ??= []).push(threadId);
-  }
+  const tryAppendThreadToForumOrThrow = _makeParentChildAppenderFn(
+    forums,
+    "threads"
+  );
 
   return {
     // STATE
@@ -195,3 +180,21 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     editThread,
   };
 });
+
+function _makeParentChildAppenderFn<
+  TId,
+  TParent extends { id: TId } & Record<string, unknown>,
+  PropChild extends keyof TParent
+>(array: Array<TParent>, childArrayProp: PropChild) {
+  return <TAppendValue>(parentId: TId, appendValue: TAppendValue) => {
+    const parent = findById(array, parentId);
+
+    ok(parent, `Append error: non-existing parent.`);
+
+    if (parent[childArrayProp] as Array<TAppendValue>) {
+      (parent[childArrayProp] as Array<TAppendValue>).push(appendValue);
+    } else {
+      (parent[childArrayProp] as Array<TAppendValue>) = [appendValue];
+    }
+  };
+}
