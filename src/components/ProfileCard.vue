@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { IAuthUser } from "../types/AuthUser";
+import { AuthUser } from "../types/UserVMTypes";
 import {
   diffFromUnix,
   formatMonthYearFromUnix,
 } from "../utils/dateTimeDiffFormat";
 
 const props = defineProps<{
-  authUser: IAuthUser;
+  authUser: AuthUser;
 }>();
 
 const memberSince = computed(() =>
