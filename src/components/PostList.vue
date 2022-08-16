@@ -7,13 +7,16 @@ const props = defineProps<{
   posts: Array<PostVm>;
 }>();
 
-const { getUserByIdFn, getUserPostsCountFn } = useMainStore();
+const { getUserByIdFn } = useMainStore();
 
 const renderData = computed(() =>
   props.posts.map(({ id, userId, text, publishedAt }) => {
-    const { name: userName, avatar: userAvatar } = getUserByIdFn(userId);
-
-    const userPostsCount = getUserPostsCountFn(userId);
+    const {
+      name: userName,
+      avatar: userAvatar,
+      postsCount,
+      threadsCount,
+    } = getUserByIdFn(userId);
 
     return {
       id,
@@ -21,7 +24,8 @@ const renderData = computed(() =>
       publishedAt,
       userName,
       userAvatar,
-      userPostsCount,
+      postsCount,
+      threadsCount,
     };
   })
 );
@@ -36,7 +40,8 @@ const renderData = computed(() =>
         publishedAt,
         userAvatar,
         userName,
-        userPostsCount,
+        postsCount,
+        threadsCount,
       } of renderData"
       :key="id"
       class="post"
@@ -50,7 +55,8 @@ const renderData = computed(() =>
           <img class="avatar-large" :src="userAvatar" alt="" />
         </a>
 
-        <p class="desktop-only text-small" v-text="userPostsCount" />
+        <p class="desktop-only text-small" v-text="`${postsCount} posts`" />
+        <p class="desktop-only text-small" v-text="`${threadsCount} threads`" />
 
         <!-- <p class="desktop-only text-small">23 threads</p>
           <span class="online desktop-only">online</span> -->

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useMainStore } from "../store";
 
-const { name, avatar } = useMainStore().authUser;
+const { name, avatar } = useMainStore().getAuthUser;
 </script>
 
 <template>

@@ -10,14 +10,14 @@ import { ThreadVM } from "../models/ThreadVM";
 import { UserVM } from "../models/UserVM";
 import { PostVMNew } from "../types/PostVMTypes";
 import { ThreadVMEdit, ThreadVMNew } from "../types/ThreadVMTypes";
-import { AuthUser } from "../types/UserVMTypes";
+import { UserVMWithActivity } from "../types/UserVMTypes";
 import { countBy, findById } from "../utils/array-helpers";
 import { guidAsBase64 } from "../utils/misc";
 import { ThreadVMWithMeta } from "./../types/ThreadVMTypes";
 
 export interface StateMainStore {
   // STATE
-  authId: Ref<string | undefined>;
+  authUserId: Ref<string | undefined>;
   categories: Array<CategoryVM>;
   forums: Array<ForumVM>;
   posts: Array<PostVm>;
@@ -26,8 +26,8 @@ export interface StateMainStore {
   stats: StatsVM;
 
   // GETTERS
-  authUser: ComputedRef<AuthUser | undefined>;
-  getUserByIdFn: ComputedRef<(userId: string) => UserVM | undefined>;
+  getAuthUser: ComputedRef<UserVMWithActivity>;
+  getUserByIdFn: ComputedRef<(userId: string) => UserVMWithActivity>;
   getUserPostsCountFn: ComputedRef<(userId: string) => number>;
   getUserThreadsCountFn: ComputedRef<(userId: string) => number>;
   getThreadMetaInfoFn: ComputedRef<(threadId: string) => ThreadVMWithMeta>;
@@ -41,7 +41,7 @@ export interface StateMainStore {
 
 export const useMainStore = defineStore("main", (): StateMainStore => {
   // STATE
-  const authId = ref("Qc4Pz_28PEqITnCQ21T6Vw");
+  const authUserId = ref("Qc4Pz_28PEqITnCQ21T6Vw");
 
   const categories = reactive(sourceData.categories);
   const forums = reactive(sourceData.forums);
@@ -51,39 +51,35 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
   const stats = reactive(sourceData.stats);
 
   // GETTERS
-  const authUser = computed(() => {
-    const user = findById(users, authId.value);
+  const getAuthUser = computed(() => getUserByIdFn.value(authUserId.value));
 
-    if (!user) {
-      return undefined;
-    }
+  const getUserByIdFn = computed(() => (id: string) => {
+    const user = findById(users, id);
 
-    const result: AuthUser = {
+    ok(user, `Cannot get user by id "${id}".`);
+
+    const result: UserVMWithActivity = {
       ...user,
 
       get posts() {
-        return posts.filter(({ userId }) => userId === authId.value);
+        return posts.filter(({ userId }) => userId === id);
       },
 
       get threads() {
-        return threads.filter(({ userId }) => userId === authId.value);
+        return threads.filter(({ userId }) => userId === id);
       },
 
       get postsCount() {
-        return this.posts.length;
+        return this.posts?.length ?? 0;
       },
 
       get threadsCount() {
-        return this.threads.length;
+        return this.threads?.length ?? 0;
       },
     };
 
     return result;
   });
-
-  const getUserByIdFn = computed(
-    () => (userId: string) => findById(users, userId)
-  );
 
   const getUserPostsCountFn = computed(
     () => (id: string) => countBy(posts, ({ userId }) => userId === id)
@@ -119,7 +115,7 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
 
   async function createPost({ threadId, ...rest }: PostVMNew): Promise<string> {
     const id = guidAsBase64();
-    const userId = authId.value;
+    const userId = authUserId.value;
     const publishedAt = Math.floor(Date.now() / 1000);
 
     const newPost: PostVm = { ...rest, threadId, id, userId, publishedAt };
@@ -139,7 +135,7 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     ...rest
   }: ThreadVMNew): Promise<string> {
     const id = guidAsBase64();
-    const userId = authId.value;
+    const userId = authUserId.value;
     const publishedAt = Math.floor(Date.now() / 1000);
     const posts: string[] = [];
 
@@ -190,15 +186,15 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
 
   return {
     // STATE
-    authId,
+    authUserId,
     categories,
     forums,
     posts,
     threads,
     users,
     stats,
-    authUser,
     // GETTERS
+    getAuthUser,
     getUserByIdFn,
     getUserPostsCountFn,
     getUserThreadsCountFn,

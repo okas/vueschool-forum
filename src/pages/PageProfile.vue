@@ -11,7 +11,7 @@ defineProps<{
   edit?: boolean;
 }>();
 
-const { authUser } = storeToRefs(useMainStore());
+const { getAuthUser: authUser } = storeToRefs(useMainStore());
 </script>
 
 <template>
