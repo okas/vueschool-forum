@@ -19,7 +19,9 @@ const posts = computed(() =>
 
 const statsPhrase = computed(
   () =>
-    `${thread.repliesCount} replies by ${thread.contributors.length} contributors.`
+    `${thread.repliesCount} replies by ${
+      thread.contributors?.length ?? 0
+    } contributors.`
 );
 
 function addPost(dto: PostVMFormInput) {
