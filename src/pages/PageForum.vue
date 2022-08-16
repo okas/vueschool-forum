@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import ThreadList from "../components/ThreadList.vue";
 import { useMainStore } from "../store";
+import { ThreadVMWithMeta } from "../types/ThreadVMTypes";
 import { findById } from "../utils/array-helpers";
 
 const props = defineProps<{
@@ -9,10 +10,14 @@ const props = defineProps<{
 
 const store = useMainStore();
 
-const { name, description } = findById(store.forums, props.forumId);
+const {
+  name,
+  description,
+  threads: threadIds,
+} = findById(store.forums, props.forumId);
 
-const threads = store.threads.filter(
-  ({ forumId }) => forumId === props.forumId
+const forumThreads: ThreadVMWithMeta[] = threadIds.map((id) =>
+  store.getThreadMetaInfoFn(id)
 );
 </script>
 
@@ -33,7 +38,7 @@ const threads = store.threads.filter(
   </div>
 
   <div class="col-full push-top">
-    <thread-list :threads="threads" />
+    <thread-list :threads="forumThreads" />
   </div>
 </template>
 

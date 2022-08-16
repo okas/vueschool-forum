@@ -1,34 +1,32 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { ThreadVM } from "../models/ThreadVM";
 import { useMainStore } from "../store";
+import { ThreadVMWithMeta } from "../types/ThreadVMTypes";
 
 const props = defineProps<{
-  threads: Array<ThreadVM>;
+  threads: Array<ThreadVMWithMeta>;
 }>();
 
 const { getUserByIdFn } = useMainStore();
 
 const renderData = computed(() =>
-  props.threads.map(
-    ({ id, title, userId, publishedAt, posts: { length: postsCount } }) => {
-      const { name: userName, avatar: userAvatar } = getUserByIdFn(userId);
+  props.threads.map(({ id, title, userId, publishedAt, repliesCount }) => {
+    const { name: userName, avatar: userAvatar } = getUserByIdFn(userId);
 
-      return {
-        threadId: id,
-        title,
-        publishedAt,
-        postsCount,
-        userName,
-        userAvatar,
-      };
-    }
-  )
+    return {
+      threadId: id,
+      title,
+      publishedAt,
+      repliesCount,
+      userName,
+      userAvatar,
+    };
+  })
 );
 
 function countPhrase(count: number) {
-  return `${count}${
-    count === 1 ? " reply" : count ? " replies" : "no replies"
+  return `${
+    count === 1 ? `${count} reply` : count ? `${count} replies` : "no replies"
   }`;
 }
 </script>
@@ -43,7 +41,7 @@ function countPhrase(count: number) {
           threadId,
           title,
           publishedAt,
-          postsCount,
+          repliesCount,
           userName,
           userAvatar,
         } of renderData"
@@ -64,7 +62,7 @@ function countPhrase(count: number) {
         </div>
 
         <div class="activity">
-          <p class="replies-count" v-text="countPhrase(postsCount)" />
+          <p class="replies-count" v-text="countPhrase(repliesCount)" />
 
           <img class="avatar-medium" :src="userAvatar" alt="" />
 
