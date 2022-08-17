@@ -9,6 +9,6 @@ export class ThreadVM extends HasId {
   publishedAt!: number;
   slug!: string;
   title!: string;
-  contributors?: Array<string>;
+  contributors!: Array<string>;
   posts!: Array<string>;
 }

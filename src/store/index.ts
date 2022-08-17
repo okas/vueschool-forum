@@ -74,7 +74,7 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
       },
 
       get threadsCount() {
-        return this.threads?.length ?? 0;
+        return this.threads.length ?? 0;
       },
     };
 
