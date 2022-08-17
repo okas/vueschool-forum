@@ -2,7 +2,7 @@ import { initializeApp } from "firebase/app";
 import { createPinia } from "pinia";
 import { createApp } from "vue";
 import AppRoot from "./App.vue";
-import firebaseConfig from "./config/firebase";
+import firebaseConfig from "./config/firebase.js";
 import router from "./router";
 import registerGlobalComponents from "./utils/useAutoComponentRegistrator";
 
