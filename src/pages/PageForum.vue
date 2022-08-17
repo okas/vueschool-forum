@@ -16,7 +16,7 @@ const {
   threads: threadIds,
 } = findById(store.forums, props.forumId);
 
-const forumThreads: ThreadVMWithMeta[] = threadIds.map((id) =>
+const forumThreads: ThreadVMWithMeta[] = threadIds?.map((id) =>
   store.getThreadMetaInfoFn(id)
 );
 </script>
@@ -38,7 +38,8 @@ const forumThreads: ThreadVMWithMeta[] = threadIds.map((id) =>
   </div>
 
   <div class="col-full push-top">
-    <thread-list :threads="forumThreads" />
+    <thread-list v-if="forumThreads" :threads="forumThreads" />
+    <div v-else>No threads</div>
   </div>
 </template>
 
