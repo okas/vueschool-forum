@@ -10,23 +10,24 @@ const props = defineProps<{
 
 const store = useMainStore();
 
-const {
-  name,
-  description,
-  threads: threadIds,
-} = findById(store.forums, props.forumId);
-
-const forumThreads: ThreadVMWithMeta[] = threadIds?.map((id) =>
-  store.getThreadMetaInfoFn(id)
+await store.fetchUsers(
+  (
+    await store.fetchThreads((await store.fetchForum(props.forumId)).threads)
+  ).map(({ userId }) => userId)
 );
+
+const forum = findById(store.forums, props.forumId);
+
+const forumThreads: ThreadVMWithMeta[] =
+  forum.threads?.map((id) => store.getThreadMetaInfoFn(id)) ?? [];
 </script>
 
 <template>
   <div class="col-full push-top">
     <div class="forum-header">
-      <div class="forum-details">
-        <h1 v-text="name" />
-        <p class="text-lead" v-text="description" />
+      <div v-if="forum" class="forum-details">
+        <h1 v-text="forum.name" />
+        <p class="text-lead" v-text="forum.description" />
       </div>
       <router-link
         :to="{ name: 'ThreadCreate', params: { forumId } }"

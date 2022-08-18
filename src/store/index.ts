@@ -61,6 +61,7 @@ export interface StateMainStore {
   fetchThread(id: string): Promise<ThreadVM | undefined>;
   fetchUser(id: string): Promise<UserVM | undefined>;
   fetchPost(id: string): Promise<PostVm | undefined>;
+  fetchForum(id: string): Promise<ForumVM | undefined>;
   fetchThreads(ids?: Array<string>): Promise<Array<ThreadVM>>;
   fetchUsers(ids?: Array<string>): Promise<Array<UserVM>>;
   fetchPosts(ids?: Array<string>): Promise<Array<PostVm>>;
@@ -214,6 +215,8 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
 
   const fetchPost = _makeFirebaseFetchDocFn(posts, "posts");
 
+  const fetchForum = _makeFirebaseFetchDocFn(forums, "forums");
+
   const fetchThreads = _makeFirebaseFetchDocsFn(threads, "threads");
 
   const fetchUsers = _makeFirebaseFetchDocsFn(users, "users");
@@ -266,6 +269,7 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     fetchThread,
     fetchUser,
     fetchPost,
+    fetchForum,
     fetchThreads,
     fetchUsers,
     fetchPosts,
