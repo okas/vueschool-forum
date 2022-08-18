@@ -2,7 +2,7 @@
 import { reactive, toRaw } from "vue";
 import { useRouter } from "vue-router";
 import { UserVM } from "../models/UserVM";
-import { useMainStore } from "../store";
+import { useMainStore } from "../stores/main-store";
 
 const props = defineProps<{
   user: UserVM;

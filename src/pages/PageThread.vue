@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import PostEditor from "../components/PostEditor.vue";
 import PostList from "../components/PostList.vue";
-import { useMainStore } from "../store";
+import { useMainStore } from "../stores/main-store";
 import { PostVMFormInput, PostVMNew } from "../types/PostVMTypes";
 import { getCountPhrase } from "../utils/misc";
 

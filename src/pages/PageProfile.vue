@@ -3,7 +3,7 @@ import { storeToRefs } from "pinia";
 import PostList from "../components/PostList.vue";
 import ProfileCard from "../components/ProfileCard.vue";
 import ProfileCardEditor from "../components/ProfileCardEditor.vue";
-import { useMainStore } from "../store";
+import { useMainStore } from "../stores/main-store";
 
 // TODO: refactor activity to component and migrate page to separate page
 

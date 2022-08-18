@@ -6,7 +6,7 @@ import {
   RouteLocationRaw,
   RouteRecordRaw,
 } from "vue-router";
-import { useMainStore } from "./../store/index";
+import { useMainStore } from "../stores/main-store";
 
 const routes: Readonly<RouteRecordRaw[]> = [
   {

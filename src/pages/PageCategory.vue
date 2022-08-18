@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import CategoryListItem from "../components/CategoryListItem.vue";
-import { useMainStore } from "../store";
+import { useMainStore } from "../stores/main-store";
 import { findById } from "../utils/array-helpers";
 
 const props = defineProps<{

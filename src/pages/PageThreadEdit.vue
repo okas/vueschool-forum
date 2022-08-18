@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import ThreadEditor from "../components/ThreadEditor.vue";
-import { useMainStore } from "../store/index";
+import { useMainStore } from "../stores/main-store";
 import { ThreadVMFormInput } from "../types/ThreadVMTypes";
 import { findById } from "../utils/array-helpers";
 

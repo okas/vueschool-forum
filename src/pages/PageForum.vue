@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import ThreadList from "../components/ThreadList.vue";
-import { useMainStore } from "../store";
+import { useMainStore } from "../stores/main-store";
 import { ThreadVMWithMeta } from "../types/ThreadVMTypes";
 import { findById } from "../utils/array-helpers";
 

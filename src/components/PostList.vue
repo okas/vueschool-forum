@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { PostVm } from "../models/PostVm";
-import { useMainStore } from "../store";
+import { useMainStore } from "../stores/main-store";
 import { getCountPhrase } from "../utils/misc";
 
 const props = defineProps<{

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useMainStore } from "../store";
+import { useMainStore } from "../stores/main-store";
 import { findById, groupByToMap } from "../utils/array-helpers";
 import CategoryListItem from "./CategoryListItem.vue";
 

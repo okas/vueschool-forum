@@ -9,11 +9,14 @@ import { ThreadVM } from "../models/ThreadVM";
 import { UserVM } from "../models/UserVM";
 import { PostVMNew } from "../types/PostVMTypes";
 import { StateMainStore } from "../types/StateMainStore";
-import { ThreadVMEdit, ThreadVMNew } from "../types/ThreadVMTypes";
+import {
+  ThreadVMEdit,
+  ThreadVMNew,
+  ThreadVMWithMeta,
+} from "../types/ThreadVMTypes";
 import { UserVMWithActivity } from "../types/UserVMTypes";
 import { countBy, findById } from "../utils/array-helpers";
 import { guidAsBase64 } from "../utils/misc";
-import { ThreadVMWithMeta } from "./../types/ThreadVMTypes";
 import {
   makeFirebaseFetchMultiDocsFn,
   makeFirebaseFetchSingleDocFn,
