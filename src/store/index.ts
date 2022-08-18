@@ -1,6 +1,18 @@
 import { ok } from "assert";
 import { initializeApp } from "firebase/app";
-import { doc, getDoc, getFirestore } from "firebase/firestore";
+import {
+  collection,
+  doc,
+  DocumentData,
+  documentId,
+  getDoc,
+  getDocs,
+  getFirestore,
+  query,
+  QueryDocumentSnapshot,
+  QuerySnapshot,
+  where,
+} from "firebase/firestore";
 import { defineStore } from "pinia";
 import { computed, ComputedRef, reactive, Ref, ref } from "vue";
 import firebaseConfig from "../config/firebase.js";
@@ -14,8 +26,9 @@ import { HasId } from "../types/HasId";
 import { PostVMNew } from "../types/PostVMTypes";
 import { ThreadVMEdit, ThreadVMNew } from "../types/ThreadVMTypes";
 import { UserVMWithActivity } from "../types/UserVMTypes";
-import { countBy, findById } from "../utils/array-helpers";
+import { countBy, findById, toBuckets } from "../utils/array-helpers";
 import { guidAsBase64 } from "../utils/misc";
+import { _isFulFilled } from "../utils/promise-helpers";
 import { ThreadVMWithMeta } from "./../types/ThreadVMTypes";
 
 const { warn } = console;
@@ -49,6 +62,9 @@ export interface StateMainStore {
   fetchThread(id: string): Promise<ThreadVM | undefined>;
   fetchUser(id: string): Promise<UserVM | undefined>;
   fetchPost(id: string): Promise<PostVm | undefined>;
+  fetchThreads(...ids: Array<string>): Promise<Array<ThreadVM>>;
+  fetchUsers(...ids: Array<string>): Promise<Array<UserVM>>;
+  fetchPosts(...ids: Array<string>): Promise<Array<PostVm>>;
 }
 
 export const useMainStore = defineStore("main", (): StateMainStore => {
@@ -197,6 +213,11 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
 
   const fetchPost = _makeFirebaseFetchDocFn(posts, "posts");
 
+  const fetchThreads = _makeFirebaseFetchDocsFn(threads, "threads");
+
+  const fetchUsers = _makeFirebaseFetchDocsFn(users, "users");
+
+  const fetchPosts = _makeFirebaseFetchDocsFn(posts, "posts");
   // INTERNALS
   const tryAppendPostToThreadOrThrow = _makeParentChildUniqueAppenderFn(
     threads,
@@ -236,6 +257,9 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     fetchThread,
     fetchUser,
     fetchPost,
+    fetchThreads,
+    fetchUsers,
+    fetchPosts,
   };
 });
 
@@ -277,6 +301,48 @@ function _makeFirebaseFetchDocFn<TViewModel extends HasId>(
 
     return viewModel;
   };
+}
+
+function _makeFirebaseFetchDocsFn<TViewModel extends HasId>(
+  array: Array<TViewModel>,
+  collectionName: string
+): (...ids: Array<string>) => Promise<Array<TViewModel>> {
+  return async (...ids: Array<string>) => {
+    const queries = _getBucketedBulkQueries(ids, collectionName);
+
+    const settledPromises = await Promise.allSettled(queries.map(getDocs));
+
+    const querySnaps: QuerySnapshot<DocumentData>[] = [];
+
+    settledPromises.forEach((x) => _isFulFilled(x) && querySnaps.push(x.value));
+
+    const viewModels = querySnaps.flatMap((qs) =>
+      qs.docs.map((doc) => _vmMapper<TViewModel>(doc))
+    );
+
+    if (!viewModels.length) {
+      _warn(collectionName, ...ids);
+    } else {
+      array.push(...viewModels);
+    }
+
+    return viewModels;
+  };
+}
+
+function _getBucketedBulkQueries(ids: string[], collectionName: string) {
+  const queries = [];
+
+  for (const bucket of toBuckets(ids, 10)) {
+    queries.push(
+      query(
+        collection(firestoreDb, collectionName),
+        where(documentId(), "in", bucket)
+      )
+    );
+  }
+
+  return queries;
 }
 
 function _warn(collectionName: string, ...ids: string[]) {

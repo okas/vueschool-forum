@@ -36,3 +36,21 @@ export function countById<TId, TItem extends { id: TId }>(
 ): number {
   return countBy(array, ({ id }) => id === countId);
 }
+
+export function* toBuckets<T>(
+  array: Array<T>,
+  size: number
+): Generator<Array<T>> {
+  if (!size) {
+    return;
+  }
+
+  let start = 0;
+  let end = 0;
+
+  while (start < array.length) {
+    end = start + size - 1;
+    yield array.slice(start, end);
+    start = end + 1;
+  }
+}

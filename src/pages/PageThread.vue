@@ -17,9 +17,9 @@ const { userId: threadUserId, posts: threadPostIds } = await store.fetchThread(
 );
 
 await Promise.allSettled([
-  store.fetchUser(threadUserId),
-  ...threadPostIds.map((id) =>
-    store.fetchPost(id).then(({ userId }) => store.fetchUser(userId))
+  store.fetchUsers(
+    threadUserId,
+    ...(await store.fetchPosts(...threadPostIds)).map(({ userId }) => userId)
   ),
 ]);
 
