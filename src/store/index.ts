@@ -1,74 +1,25 @@
 import { ok } from "assert";
-import { initializeApp } from "firebase/app";
-import {
-  collection,
-  doc,
-  DocumentData,
-  documentId,
-  getDoc,
-  getDocs,
-  getFirestore,
-  Query,
-  query,
-  QueryDocumentSnapshot,
-  QuerySnapshot,
-  where,
-} from "firebase/firestore";
 import { defineStore } from "pinia";
-import { computed, ComputedRef, reactive, Ref, ref } from "vue";
-import firebaseConfig from "../config/firebase.js";
+import { computed, reactive, ref } from "vue";
 import { CategoryVM } from "../models/CategoryVM";
 import { ForumVM } from "../models/ForumVM";
 import { PostVm } from "../models/PostVm";
 import { StatsVM } from "../models/StatsVM";
 import { ThreadVM } from "../models/ThreadVM";
 import { UserVM } from "../models/UserVM";
-import { HasId } from "../types/HasId";
 import { PostVMNew } from "../types/PostVMTypes";
+import { StateMainStore } from "../types/StateMainStore";
 import { ThreadVMEdit, ThreadVMNew } from "../types/ThreadVMTypes";
 import { UserVMWithActivity } from "../types/UserVMTypes";
-import { countBy, findById, toBuckets } from "../utils/array-helpers";
+import { countBy, findById } from "../utils/array-helpers";
 import { guidAsBase64 } from "../utils/misc";
-import { _isFulFilled } from "../utils/promise-helpers";
 import { ThreadVMWithMeta } from "./../types/ThreadVMTypes";
+import {
+  makeFirebaseFetchMultiDocsFn,
+  makeFirebaseFetchSingleDocFn,
+} from "./firebase-action-sinks";
 
 const { warn } = console;
-const firebaseApp = initializeApp(firebaseConfig);
-const firestoreDb = getFirestore(firebaseApp);
-
-export interface StateMainStore {
-  // STATE
-  authUserId: Ref<string | undefined>;
-  categories: Array<CategoryVM>;
-  forums: Array<ForumVM>;
-  posts: Array<PostVm>;
-  threads: Array<ThreadVM>;
-  users: Array<UserVM>;
-  stats: StatsVM;
-
-  // GETTERS
-  getAuthUser: ComputedRef<UserVMWithActivity | undefined>;
-  getUserByIdFn: ComputedRef<(id: string) => UserVMWithActivity | undefined>;
-  getUserPostsCountFn: ComputedRef<(userId: string) => number>;
-  getUserThreadsCountFn: ComputedRef<(userId: string) => number>;
-  getThreadMetaInfoFn: ComputedRef<(threadId: string) => ThreadVMWithMeta>;
-
-  // ACTIONS
-  editUser(dto: UserVM): Promise<void>;
-  createPost(dto: PostVMNew): Promise<string>;
-  createThread(dto: ThreadVMNew): Promise<string>;
-  editThread(dto: ThreadVMEdit): Promise<void>;
-  fetchThread(id: string): Promise<ThreadVM | undefined>;
-  fetchUser(id: string): Promise<UserVM | undefined>;
-  fetchPost(id: string): Promise<PostVm | undefined>;
-  fetchForum(id: string): Promise<ForumVM | undefined>;
-  fetchCategory(id: string): Promise<CategoryVM | undefined>;
-  fetchThreads(ids?: Array<string>): Promise<Array<ThreadVM>>;
-  fetchUsers(ids?: Array<string>): Promise<Array<UserVM>>;
-  fetchPosts(ids?: Array<string>): Promise<Array<PostVm>>;
-  fetchForums(ids?: Array<string>): Promise<Array<ForumVM>>;
-  fetchAllCategories(): Promise<Array<CategoryVM>>;
-}
 
 export const useMainStore = defineStore("main", (): StateMainStore => {
   // --------------------------
@@ -218,26 +169,26 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     post.text = text;
   }
 
-  const fetchThread = _makeFirebaseFetchDocFn(threads, "threads");
+  const fetchThread = makeFirebaseFetchSingleDocFn(threads, "threads");
 
-  const fetchUser = _makeFirebaseFetchDocFn(users, "users");
+  const fetchUser = makeFirebaseFetchSingleDocFn(users, "users");
 
-  const fetchPost = _makeFirebaseFetchDocFn(posts, "posts");
+  const fetchPost = makeFirebaseFetchSingleDocFn(posts, "posts");
 
-  const fetchForum = _makeFirebaseFetchDocFn(forums, "forums");
+  const fetchForum = makeFirebaseFetchSingleDocFn(forums, "forums");
 
-  const fetchCategory = _makeFirebaseFetchDocFn(categories, "categories");
+  const fetchCategory = makeFirebaseFetchSingleDocFn(categories, "categories");
 
-  const fetchThreads = _makeFirebaseFetchDocsFn(threads, "threads");
+  const fetchThreads = makeFirebaseFetchMultiDocsFn(threads, "threads");
 
-  const fetchUsers = _makeFirebaseFetchDocsFn(users, "users");
+  const fetchUsers = makeFirebaseFetchMultiDocsFn(users, "users");
 
-  const fetchPosts = _makeFirebaseFetchDocsFn(posts, "posts");
+  const fetchPosts = makeFirebaseFetchMultiDocsFn(posts, "posts");
 
-  const fetchForums = _makeFirebaseFetchDocsFn(forums, "forums");
+  const fetchForums = makeFirebaseFetchMultiDocsFn(forums, "forums");
 
   function fetchAllCategories() {
-    return _makeFirebaseFetchDocsFn(categories, "categories")();
+    return makeFirebaseFetchMultiDocsFn(categories, "categories")();
   }
 
   // --------------------------
@@ -315,92 +266,4 @@ function _makeParentChildUniqueAppenderFn<
       childArray.push(appendValue);
     }
   };
-}
-
-function _makeFirebaseFetchDocFn<TViewModel extends HasId>(
-  array: Array<TViewModel>,
-  collectionName: string
-): (id: string) => Promise<TViewModel | undefined> {
-  return async (id: string) => {
-    const docSnap = await getDoc(doc(firestoreDb, collectionName, id));
-
-    if (!docSnap.exists()) {
-      _warn(collectionName, id);
-      return;
-    }
-
-    const viewModel = _vmMapper<TViewModel>(docSnap);
-
-    array.push(viewModel);
-
-    return viewModel;
-  };
-}
-
-function _makeFirebaseFetchDocsFn<TViewModel extends HasId>(
-  array: Array<TViewModel>,
-  collectionName: string
-): (ids?: Array<string>) => Promise<Array<TViewModel>> {
-  return async (ids?: Array<string>) => {
-    const queries = _getQueries(collectionName, ids);
-
-    const settledPromises = await Promise.allSettled(queries.map(getDocs));
-
-    const querySnaps: QuerySnapshot<DocumentData>[] = [];
-
-    settledPromises.forEach((x) => _isFulFilled(x) && querySnaps.push(x.value));
-
-    const viewModels = querySnaps.flatMap((qs) =>
-      qs.docs.map((doc) => _vmMapper<TViewModel>(doc))
-    );
-
-    if (!viewModels.length) {
-      _warn(collectionName, ...(ids ?? []));
-    } else {
-      array.push(...viewModels);
-    }
-
-    return viewModels;
-  };
-}
-
-function _getQueries(
-  collectionName: string,
-  ids?: string[]
-): Array<Query<DocumentData>> {
-  if (!ids?.length) {
-    return [query(collection(firestoreDb, collectionName))];
-  }
-
-  return _createBucketedQueries(ids, collectionName);
-}
-
-function _createBucketedQueries(
-  ids: string[],
-  collectionName: string
-): Array<Query<DocumentData>> {
-  const queries: Query<DocumentData>[] = [];
-
-  for (const bucket of toBuckets(ids, 10)) {
-    queries.push(
-      query(
-        collection(firestoreDb, collectionName),
-        where(documentId(), "in", bucket)
-      )
-    );
-  }
-
-  return queries;
-}
-
-function _warn(collectionName: string, ...ids: string[]) {
-  warn(
-    `Fetch documents warning: no documents in collection "${collectionName}" with id(s) "${ids}"!`
-  );
-}
-
-function _vmMapper<TViewModel extends HasId>(
-  snap: QueryDocumentSnapshot<DocumentData>
-): TViewModel {
-  return { ...snap.data(), id: snap.id } as TViewModel;
 }
