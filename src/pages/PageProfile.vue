@@ -11,27 +11,27 @@ defineProps<{
   edit?: boolean;
 }>();
 
-const { getAuthUser: authUser } = storeToRefs(useMainStore());
+const { getAuthUser } = storeToRefs(useMainStore());
 </script>
 
 <template>
   <div class="flex-grid">
     <div class="col-3 push-top">
-      <profile-card v-if="!edit" :auth-user="authUser" />
-      <profile-card-editor v-else :user="authUser" />
+      <profile-card v-if="!edit" :auth-user="getAuthUser" />
+      <profile-card-editor v-else :user="getAuthUser" />
     </div>
 
     <div class="col-7 push-top">
       <div class="profile-header">
         <span class="text-lead"
-          >{{ authUser.username }}'s recent activity
+          >{{ getAuthUser.username }}'s recent activity
         </span>
         <a href="#">See only started threads?</a>
       </div>
 
       <hr />
 
-      <post-list :posts="authUser.posts" />
+      <post-list :posts="getAuthUser.posts" />
       <!-- <div class="activity-list">
         <div class="activity">
           <div class="activity-header">
