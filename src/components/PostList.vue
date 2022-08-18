@@ -49,10 +49,8 @@ const renderData = computed(() =>
     >
       <div class="user-info">
         <a href="#" class="user-name" v-text="userName" />
-        <!-- <a  v-text="userById(userId).name" href="profile.html#profile-details" class="user-name"></a> -->
 
         <a href="#">
-          <!-- <a href="profile.html#profile-details"> -->
           <img class="avatar-large" :src="userAvatar" alt="" />
         </a>
 
@@ -65,8 +63,7 @@ const renderData = computed(() =>
           v-text="getCountPhrase(threadsCount, 'thread')"
         />
 
-        <!-- <p class="desktop-only text-small">23 threads</p>
-          <span class="online desktop-only">online</span> -->
+        <span class="online desktop-only">online</span>
       </div>
 
       <div class="post-content">

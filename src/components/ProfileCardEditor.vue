@@ -76,11 +76,6 @@ function cancel() {
         ></textarea>
       </div>
 
-      <!-- <div class="stats">
-        <span v-text="`${postsCount} posts`" />
-        <span v-text="`${threadsCount} threads`" />
-      </div> -->
-
       <hr />
 
       <div class="form-group">

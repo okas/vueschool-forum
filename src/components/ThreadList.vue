@@ -51,7 +51,6 @@ const renderData = computed(() =>
         <p class="text-faded text-xsmall">
           By <a href="#" v-text="userName" />,
           <app-date :timestamp="publishedAt" />.
-          <!-- By <a href="profile.html" v-text="userById(userId).name" />, {{ publishedAt }}. -->
         </p>
       </div>
 
@@ -66,7 +65,6 @@ const renderData = computed(() =>
         <div>
           <p class="text-xsmall">
             <a href="#" v-text="userName" />
-            <!-- <a href="profile.html" v-text="userById(userId)" /> -->
           </p>
           <p class="text-xsmall text-faded">
             <app-date :timestamp="publishedAt" />
