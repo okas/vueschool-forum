@@ -191,11 +191,11 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     post.text = text;
   }
 
-  const fetchThread = _makeFirebaseFetchFn(threads, "threads");
+  const fetchThread = _makeFirebaseFetchDocFn(threads, "threads");
 
-  const fetchUser = _makeFirebaseFetchFn(users, "users");
+  const fetchUser = _makeFirebaseFetchDocFn(users, "users");
 
-  const fetchPost = _makeFirebaseFetchFn(posts, "posts");
+  const fetchPost = _makeFirebaseFetchDocFn(posts, "posts");
 
   // INTERNALS
   const tryAppendPostToThreadOrThrow = _makeParentChildUniqueAppenderFn(
@@ -259,7 +259,7 @@ function _makeParentChildUniqueAppenderFn<
   };
 }
 
-function _makeFirebaseFetchFn<TViewModel extends HasId>(
+function _makeFirebaseFetchDocFn<TViewModel extends HasId>(
   array: Array<TViewModel>,
   collectionName: string
 ): (id: string) => Promise<TViewModel | undefined> {
@@ -267,14 +267,26 @@ function _makeFirebaseFetchFn<TViewModel extends HasId>(
     const docSnap = await getDoc(doc(firestoreDb, collectionName, id));
 
     if (!docSnap.exists()) {
-      warn(`No document in collection "${collectionName}" with id "${id}"!`);
+      _warn(collectionName, id);
       return;
     }
 
-    const viewModel = { ...docSnap.data(), id } as TViewModel;
+    const viewModel = _vmMapper<TViewModel>(docSnap);
 
     array.push(viewModel);
 
     return viewModel;
   };
+}
+
+function _warn(collectionName: string, ...ids: string[]) {
+  warn(
+    `Fetch documents warning: no documents in collection "${collectionName}" with id(s) "${ids}"!`
+  );
+}
+
+function _vmMapper<TViewModel extends HasId>(
+  snap: QueryDocumentSnapshot<DocumentData>
+): TViewModel {
+  return { ...snap.data(), id: snap.id } as TViewModel;
 }
