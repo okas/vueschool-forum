@@ -48,9 +48,7 @@ export interface StateMainStore {
 
   // GETTERS
   getAuthUser: ComputedRef<UserVMWithActivity | undefined>;
-  getUserByIdFn: ComputedRef<
-    (userId: string) => UserVMWithActivity | undefined
-  >;
+  getUserByIdFn: ComputedRef<(id: string) => UserVMWithActivity | undefined>;
   getUserPostsCountFn: ComputedRef<(userId: string) => number>;
   getUserThreadsCountFn: ComputedRef<(userId: string) => number>;
   getThreadMetaInfoFn: ComputedRef<(threadId: string) => ThreadVMWithMeta>;
