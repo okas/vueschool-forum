@@ -1,19 +1,26 @@
 import { ok } from "assert";
+import { initializeApp } from "firebase/app";
+import { doc, getDoc, getFirestore } from "firebase/firestore";
 import { defineStore } from "pinia";
 import { computed, ComputedRef, reactive, Ref, ref } from "vue";
-import sourceData from "../data.json";
+import firebaseConfig from "../config/firebase.js";
 import { CategoryVM } from "../models/CategoryVM";
 import { ForumVM } from "../models/ForumVM";
 import { PostVm } from "../models/PostVm";
 import { StatsVM } from "../models/StatsVM";
 import { ThreadVM } from "../models/ThreadVM";
 import { UserVM } from "../models/UserVM";
+import { HasId } from "../types/HasId";
 import { PostVMNew } from "../types/PostVMTypes";
 import { ThreadVMEdit, ThreadVMNew } from "../types/ThreadVMTypes";
 import { UserVMWithActivity } from "../types/UserVMTypes";
 import { countBy, findById } from "../utils/array-helpers";
 import { guidAsBase64 } from "../utils/misc";
 import { ThreadVMWithMeta } from "./../types/ThreadVMTypes";
+
+const { warn } = console;
+const firebaseApp = initializeApp(firebaseConfig);
+const firestoreDb = getFirestore(firebaseApp);
 
 export interface StateMainStore {
   // STATE
@@ -26,8 +33,10 @@ export interface StateMainStore {
   stats: StatsVM;
 
   // GETTERS
-  getAuthUser: ComputedRef<UserVMWithActivity>;
-  getUserByIdFn: ComputedRef<(userId: string) => UserVMWithActivity>;
+  getAuthUser: ComputedRef<UserVMWithActivity | undefined>;
+  getUserByIdFn: ComputedRef<
+    (userId: string) => UserVMWithActivity | undefined
+  >;
   getUserPostsCountFn: ComputedRef<(userId: string) => number>;
   getUserThreadsCountFn: ComputedRef<(userId: string) => number>;
   getThreadMetaInfoFn: ComputedRef<(threadId: string) => ThreadVMWithMeta>;
@@ -37,18 +46,26 @@ export interface StateMainStore {
   createPost(dto: PostVMNew): Promise<string>;
   createThread(dto: ThreadVMNew): Promise<string>;
   editThread(dto: ThreadVMEdit): Promise<void>;
+  fetchThread(id: string): Promise<ThreadVM | undefined>;
+  fetchUser(id: string): Promise<UserVM | undefined>;
+  fetchPost(id: string): Promise<PostVm | undefined>;
 }
 
 export const useMainStore = defineStore("main", (): StateMainStore => {
   // STATE
   const authUserId = ref("Qc4Pz_28PEqITnCQ21T6Vw");
 
-  const categories = reactive(sourceData.categories);
-  const forums = reactive(sourceData.forums);
-  const posts = reactive(sourceData.posts);
-  const threads = reactive(sourceData.threads);
-  const users = reactive(sourceData.users);
-  const stats = reactive(sourceData.stats);
+  const categories = reactive<Array<CategoryVM>>([]);
+  const forums = reactive<Array<ForumVM>>([]);
+  const posts = reactive<Array<PostVm>>([]);
+  const threads = reactive<Array<ThreadVM>>([]);
+  const users = reactive<Array<UserVM>>([]);
+  const stats = reactive<StatsVM>({
+    postsCount: 0,
+    threadsCount: 0,
+    usersCount: 0,
+    usersOnline: 0,
+  });
 
   // GETTERS
   const getAuthUser = computed(() => getUserByIdFn.value(authUserId.value));
@@ -56,7 +73,10 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
   const getUserByIdFn = computed(() => (id: string) => {
     const user = findById(users, id);
 
-    ok(user, `Cannot get user by id "${id}".`);
+    if (!user) {
+      warn(`Cannot get user by id "${id}".`);
+      return;
+    }
 
     const result: UserVMWithActivity = {
       ...user,
@@ -120,7 +140,6 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
 
     const newPost: PostVm = { ...rest, threadId, id, userId, publishedAt };
 
-    // @ts-expect-error Emojis as keys in `.reactions`!
     posts.push(newPost);
 
     tryAppendPostToThreadOrThrow(threadId, id);
@@ -168,6 +187,12 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     post.text = text;
   }
 
+  const fetchThread = _makeFirebaseFetchFn(threads, "threads");
+
+  const fetchUser = _makeFirebaseFetchFn(users, "users");
+
+  const fetchPost = _makeFirebaseFetchFn(posts, "posts");
+
   // INTERNALS
   const tryAppendPostToThreadOrThrow = _makeParentChildUniqueAppenderFn(
     threads,
@@ -204,6 +229,9 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     createPost,
     createThread,
     editThread,
+    fetchThread,
+    fetchUser,
+    fetchPost,
   };
 });
 
@@ -224,5 +252,25 @@ function _makeParentChildUniqueAppenderFn<
     } else if (!childArray.includes(appendValue)) {
       childArray.push(appendValue);
     }
+  };
+}
+
+function _makeFirebaseFetchFn<TViewModel extends HasId>(
+  array: Array<TViewModel>,
+  collectionName: string
+): (id: string) => Promise<TViewModel | undefined> {
+  return async (id: string) => {
+    const docSnap = await getDoc(doc(firestoreDb, collectionName, id));
+
+    if (!docSnap.exists()) {
+      warn(`No document in collection "${collectionName}" with id "${id}"!`);
+      return;
+    }
+
+    const viewModel = { ...docSnap.data(), id } as TViewModel;
+
+    array.push(viewModel);
+
+    return viewModel;
   };
 }

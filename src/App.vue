@@ -3,9 +3,13 @@ import TheNavBar from "./components/TheNavBar.vue";
 </script>
 
 <template>
-  <the-nav-bar />
+  <suspense>
+    <the-nav-bar />
+  </suspense>
   <div class="container">
-    <router-view />
+    <suspense>
+      <router-view />
+    </suspense>
   </div>
 </template>
 

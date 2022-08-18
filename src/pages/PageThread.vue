@@ -11,6 +11,17 @@ const props = defineProps<{
 
 const store = useMainStore();
 
+const { userId: threadUserId, posts: threadPostIds } = await store.fetchThread(
+  props.threadId
+);
+
+await Promise.allSettled([
+  store.fetchUser(threadUserId),
+  ...threadPostIds.map((id) =>
+    store.fetchPost(id).then(({ userId }) => store.fetchUser(userId))
+  ),
+]);
+
 const thread = store.getThreadMetaInfoFn(props.threadId);
 
 const posts = computed(() =>
@@ -43,7 +54,7 @@ function addPost(dto: PostVMFormInput) {
     </ul> -->
 
     <header style="display: flex">
-      <h1 style="margin-right: 1rem" v-text="thread.title" />
+      <h1 style="margin-right: 1rem" v-text="thread?.title" />
       <router-link
         v-slot="{ navigate }"
         :to="{ name: 'ThreadEdit', params: { threadId } }"
@@ -71,7 +82,7 @@ function addPost(dto: PostVMFormInput) {
     <post-list :posts="posts" />
 
     <post-editor class="col-full" @save="addPost">
-      {{ thread.title }}
+      {{ thread?.title }}
     </post-editor>
   </div>
 </template>

@@ -55,11 +55,11 @@ const routes: Readonly<RouteRecordRaw[]> = [
     name: "ThreadShow",
     component: () => import("../pages/PageThread.vue"),
     props: true,
-    beforeEnter: (
-      routeObj,
-      _: unknown,
-      next: (p: RouteLocationRaw | undefined) => void
-    ) => next(testForNotFound(routeObj)),
+    // beforeEnter: (
+    //   routeObj,
+    //   _: unknown,
+    //   next: (p: RouteLocationRaw | undefined) => void
+    // ) => next(testForNotFound(routeObj)),
   },
   {
     // will match everything and put it under `$route.params.pathMatch`

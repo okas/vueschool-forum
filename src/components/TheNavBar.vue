@@ -1,6 +1,10 @@
 <script setup lang="ts">
 import { useMainStore } from "../store";
 
+const store = useMainStore();
+
+await store.fetchUser(store.authUserId);
+
 const { name, avatar } = useMainStore().getAuthUser;
 </script>
 
@@ -20,7 +24,7 @@ const { name, avatar } = useMainStore().getAuthUser;
     <!-- use .navbar-open to open nav -->
     <nav class="navbar">
       <ul>
-        <li class="navbar-user">
+        <li v-if="name" class="navbar-user">
           <router-link :to="{ name: 'Profile' }">
             <img
               class="avatar-small"

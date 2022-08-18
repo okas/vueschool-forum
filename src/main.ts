@@ -1,15 +1,12 @@
-import { initializeApp } from "firebase/app";
 import { createPinia } from "pinia";
 import { createApp } from "vue";
 import AppRoot from "./App.vue";
-import firebaseConfig from "./config/firebase.js";
+
 import router from "./router";
 import registerGlobalComponents from "./utils/useAutoComponentRegistrator";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
-
-const app = initializeApp(firebaseConfig);
 
 const forumApp = createApp(AppRoot);
 
