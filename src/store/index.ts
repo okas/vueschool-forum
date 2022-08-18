@@ -8,6 +8,7 @@ import {
   getDoc,
   getDocs,
   getFirestore,
+  Query,
   query,
   QueryDocumentSnapshot,
   QuerySnapshot,
@@ -62,9 +63,11 @@ export interface StateMainStore {
   fetchThread(id: string): Promise<ThreadVM | undefined>;
   fetchUser(id: string): Promise<UserVM | undefined>;
   fetchPost(id: string): Promise<PostVm | undefined>;
-  fetchThreads(...ids: Array<string>): Promise<Array<ThreadVM>>;
-  fetchUsers(...ids: Array<string>): Promise<Array<UserVM>>;
-  fetchPosts(...ids: Array<string>): Promise<Array<PostVm>>;
+  fetchThreads(ids?: Array<string>): Promise<Array<ThreadVM>>;
+  fetchUsers(ids?: Array<string>): Promise<Array<UserVM>>;
+  fetchPosts(ids?: Array<string>): Promise<Array<PostVm>>;
+  fetchForums(ids?: Array<string>): Promise<Array<ForumVM>>;
+  fetchAllCategories(): Promise<Array<CategoryVM>>;
 }
 
 export const useMainStore = defineStore("main", (): StateMainStore => {
@@ -218,7 +221,15 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
   const fetchUsers = _makeFirebaseFetchDocsFn(users, "users");
 
   const fetchPosts = _makeFirebaseFetchDocsFn(posts, "posts");
+
+  const fetchForums = _makeFirebaseFetchDocsFn(forums, "forums");
+
+  function fetchAllCategories() {
+    return _makeFirebaseFetchDocsFn(categories, "categories")();
+  }
+
   // INTERNALS
+
   const tryAppendPostToThreadOrThrow = _makeParentChildUniqueAppenderFn(
     threads,
     "posts"
@@ -260,6 +271,8 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     fetchThreads,
     fetchUsers,
     fetchPosts,
+    fetchForums,
+    fetchAllCategories,
   };
 });
 
@@ -306,9 +319,9 @@ function _makeFirebaseFetchDocFn<TViewModel extends HasId>(
 function _makeFirebaseFetchDocsFn<TViewModel extends HasId>(
   array: Array<TViewModel>,
   collectionName: string
-): (...ids: Array<string>) => Promise<Array<TViewModel>> {
-  return async (...ids: Array<string>) => {
-    const queries = _getBucketedBulkQueries(ids, collectionName);
+): (ids?: Array<string>) => Promise<Array<TViewModel>> {
+  return async (ids?: Array<string>) => {
+    const queries = _getQueries(collectionName, ids);
 
     const settledPromises = await Promise.allSettled(queries.map(getDocs));
 
@@ -321,7 +334,7 @@ function _makeFirebaseFetchDocsFn<TViewModel extends HasId>(
     );
 
     if (!viewModels.length) {
-      _warn(collectionName, ...ids);
+      _warn(collectionName, ...(ids ?? []));
     } else {
       array.push(...viewModels);
     }
@@ -330,8 +343,22 @@ function _makeFirebaseFetchDocsFn<TViewModel extends HasId>(
   };
 }
 
-function _getBucketedBulkQueries(ids: string[], collectionName: string) {
-  const queries = [];
+function _getQueries(
+  collectionName: string,
+  ids?: string[]
+): Array<Query<DocumentData>> {
+  if (!ids?.length) {
+    return [query(collection(firestoreDb, collectionName))];
+  }
+
+  return _createBucketedQueries(ids, collectionName);
+}
+
+function _createBucketedQueries(
+  ids: string[],
+  collectionName: string
+): Array<Query<DocumentData>> {
+  const queries: Query<DocumentData>[] = [];
 
   for (const bucket of toBuckets(ids, 10)) {
     queries.push(

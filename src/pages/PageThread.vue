@@ -17,10 +17,10 @@ const { userId: threadUserId, posts: threadPostIds } = await store.fetchThread(
 );
 
 await Promise.allSettled([
-  store.fetchUsers(
+  store.fetchUsers([
     threadUserId,
-    ...(await store.fetchPosts(...threadPostIds)).map(({ userId }) => userId)
-  ),
+    ...(await store.fetchPosts(threadPostIds)).map(({ userId }) => userId),
+  ]),
 ]);
 
 const thread = store.getThreadMetaInfoFn(props.threadId);
