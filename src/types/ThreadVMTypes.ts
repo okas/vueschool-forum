@@ -10,4 +10,5 @@ export type ThreadVMEdit = Pick<ThreadVM, "id"> & ThreadVMFormInput;
 export type ThreadVMWithMeta = ThreadVM & {
   authorName: string;
   repliesCount: number;
+  contributorsCount: number;
 };

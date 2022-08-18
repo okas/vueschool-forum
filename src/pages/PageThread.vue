@@ -4,6 +4,7 @@ import PostEditor from "../components/PostEditor.vue";
 import PostList from "../components/PostList.vue";
 import { useMainStore } from "../store";
 import { PostVMFormInput, PostVMNew } from "../types/PostVMTypes";
+import { getCountPhrase } from "../utils/misc";
 
 const props = defineProps<{
   threadId: string;
@@ -30,7 +31,10 @@ const posts = computed(() =>
 
 const statsPhrase = computed(
   () =>
-    `${thread.repliesCount} replies by ${thread.contributors.length} contributors.`
+    `${getCountPhrase(thread.repliesCount, "reply")} by ${getCountPhrase(
+      thread.contributorsCount,
+      "contributor"
+    )}`
 );
 
 function addPost(dto: PostVMFormInput) {

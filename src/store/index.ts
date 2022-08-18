@@ -123,6 +123,10 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
       get repliesCount() {
         return thread.posts.length - 1;
       },
+
+      get contributorsCount() {
+        return new Set(thread.contributors).size;
+      },
     };
 
     return result;
