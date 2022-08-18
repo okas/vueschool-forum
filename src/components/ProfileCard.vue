@@ -5,6 +5,7 @@ import {
   diffFromUnix,
   formatMonthYearFromUnix,
 } from "../utils/dateTimeDiffFormat";
+import { getCountPhrase } from "../utils/misc";
 
 const props = defineProps<{
   authUser: UserVMWithActivity;
@@ -39,8 +40,8 @@ const lasVisited = computed(() => diffFromUnix(props.authUser.lastVisitAt));
     <span class="online" v-text="`${authUser.username} is online`" />
 
     <div class="stats">
-      <span v-text="`${authUser.postsCount} posts`" />
-      <span v-text="`${authUser.threadsCount} threads`" />
+      <span v-text="getCountPhrase(authUser.postsCount, 'post')" />
+      <span v-text="getCountPhrase(authUser.threadsCount, 'thread')" />
     </div>
 
     <hr />

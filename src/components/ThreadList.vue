@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { useMainStore } from "../store";
 import { ThreadVMWithMeta } from "../types/ThreadVMTypes";
+import { getCountPhrase } from "../utils/misc";
 
 const props = defineProps<{
   threads: Array<ThreadVMWithMeta>;
@@ -23,12 +24,6 @@ const renderData = computed(() =>
     };
   })
 );
-
-function countPhrase(count: number) {
-  return `${
-    count === 1 ? `${count} reply` : count ? `${count} replies` : "no replies"
-  }`;
-}
 </script>
 
 <template>
@@ -61,7 +56,10 @@ function countPhrase(count: number) {
       </div>
 
       <div class="activity">
-        <p class="replies-count" v-text="countPhrase(repliesCount)" />
+        <p
+          class="replies-count"
+          v-text="getCountPhrase(repliesCount, 'reply')"
+        />
 
         <img class="avatar-medium" :src="userAvatar" alt="" />
 

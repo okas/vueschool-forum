@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { PostVm } from "../models/PostVm";
 import { useMainStore } from "../store";
+import { getCountPhrase } from "../utils/misc";
 
 const props = defineProps<{
   posts: Array<PostVm>;
@@ -55,8 +56,14 @@ const renderData = computed(() =>
           <img class="avatar-large" :src="userAvatar" alt="" />
         </a>
 
-        <p class="desktop-only text-small" v-text="`${postsCount} posts`" />
-        <p class="desktop-only text-small" v-text="`${threadsCount} threads`" />
+        <p
+          class="desktop-only text-small"
+          v-text="getCountPhrase(postsCount, 'post')"
+        />
+        <p
+          class="desktop-only text-small"
+          v-text="getCountPhrase(threadsCount, 'thread')"
+        />
 
         <!-- <p class="desktop-only text-small">23 threads</p>
           <span class="online desktop-only">online</span> -->
