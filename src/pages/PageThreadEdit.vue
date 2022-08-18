@@ -11,6 +11,9 @@ const props = defineProps<{
 }>();
 
 const store = useMainStore();
+
+await store.fetchPost((await store.fetchThread(props.threadId)).posts[0]);
+
 const router = useRouter();
 
 const thread = computed(() => findById(store.threads, props.threadId));
@@ -39,7 +42,7 @@ function functionGoToThread() {
 </script>
 
 <template>
-  <div class="col-full push-top">
+  <div v-if="thread && firstPostText" class="col-full push-top">
     <h1>Editing <i v-text="thread.title" /></h1>
 
     <thread-editor

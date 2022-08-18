@@ -9,12 +9,16 @@ const props = defineProps<{
   forumId: string;
 }>();
 
+const store = useMainStore();
+
+await store.fetchForum(props.forumId);
+
 const router = useRouter();
 
-const { name: forumName } = findById(useMainStore().forums, props.forumId);
+const { name: forumName } = findById(store.forums, props.forumId);
 
 async function save({ title, text }: ThreadVMFormInput) {
-  const threadId = await useMainStore().createThread({
+  const threadId = await store.createThread({
     forumId: props.forumId,
     title,
     text,
@@ -29,7 +33,7 @@ function cancel() {
 </script>
 
 <template>
-  <div class="col-full push-top">
+  <div v-if="forumName" class="col-full push-top">
     <h1>
       Create new thread in
       <i v-text="forumName" />

@@ -9,6 +9,8 @@ const props = defineProps<{
 
 const store = useMainStore();
 
+await store.fetchForums((await store.fetchCategory(props.categoryId)).forums);
+
 const { name } = findById(store.categories, props.categoryId);
 
 const categoryForums = store.forums.filter(

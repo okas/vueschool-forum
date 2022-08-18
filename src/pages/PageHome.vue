@@ -3,7 +3,7 @@ import CategoryList from "../components/CategoryList.vue";
 import { useMainStore } from "../store";
 
 const store = useMainStore();
-//
+
 await store.fetchForums(
   (await store.fetchAllCategories()).flatMap(({ forums }) => forums)
 );
