@@ -70,7 +70,9 @@ export interface StateMainStore {
 }
 
 export const useMainStore = defineStore("main", (): StateMainStore => {
-  // STATE
+  // --------------------------
+  //        STATE
+  // --------------------------
   const authUserId = ref("Qc4Pz_28PEqITnCQ21T6Vw");
 
   const categories = reactive<Array<CategoryVM>>([]);
@@ -85,7 +87,10 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     usersOnline: 0,
   });
 
-  // GETTERS
+  // --------------------------
+  //        GETTERS
+  // --------------------------
+
   const getAuthUser = computed(() => getUserByIdFn.value(authUserId.value));
 
   const getUserByIdFn = computed(() => (id: string) => {
@@ -150,7 +155,10 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     return result;
   });
 
-  // ACTIONS
+  // --------------------------
+  //        ACTIONS
+  // --------------------------
+
   async function editUser(dto: UserVM) {
     Object.assign(users[users.findIndex(({ id }) => id === dto.id)], dto);
   }
@@ -229,7 +237,9 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     return _makeFirebaseFetchDocsFn(categories, "categories")();
   }
 
-  // INTERNALS
+  // --------------------------
+  //        __ INTERNALS __
+  // --------------------------
 
   const tryAppendPostToThreadOrThrow = _makeParentChildUniqueAppenderFn(
     threads,
@@ -248,6 +258,7 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
 
   return {
     // STATE
+
     authUserId,
     categories,
     forums,
@@ -255,13 +266,17 @@ export const useMainStore = defineStore("main", (): StateMainStore => {
     threads,
     users,
     stats,
+
     // GETTERS
+
     getAuthUser,
     getUserByIdFn,
     getUserPostsCountFn,
     getUserThreadsCountFn,
     getThreadMetaInfoFn,
+
     // ACTIONS
+
     editUser,
     createPost,
     createThread,
