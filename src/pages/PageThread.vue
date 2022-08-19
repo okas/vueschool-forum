@@ -26,7 +26,9 @@ await Promise.allSettled([
 const thread = store.getThreadMetaInfoFn(props.threadId);
 
 const posts = computed(() =>
-  store.posts.filter(({ threadId }) => threadId === thread.id)
+  store.posts
+    .filter(({ threadId }) => threadId === thread.id)
+    .sort(({ publishedAt: a }, { publishedAt: b }) => a - b)
 );
 
 const statsPhrase = computed(
