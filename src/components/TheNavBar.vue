@@ -1,11 +1,12 @@
 <script setup lang="ts">
+import { storeToRefs } from "pinia";
 import { useMainStore } from "../stores/main-store";
 
 const store = useMainStore();
 
 await store.fetchUser(store.authUserId);
 
-const { name, avatar } = useMainStore().getAuthUser;
+const { getAuthUser } = storeToRefs(store);
 </script>
 
 <template>
@@ -24,15 +25,15 @@ const { name, avatar } = useMainStore().getAuthUser;
     <!-- use .navbar-open to open nav -->
     <nav class="navbar">
       <ul>
-        <li v-if="name" class="navbar-user">
+        <li v-if="getAuthUser" class="navbar-user">
           <router-link :to="{ name: 'Profile' }">
             <img
               class="avatar-small"
-              :src="avatar"
-              :alt="`${name} profile picture`"
+              :src="getAuthUser.avatar"
+              :alt="`${getAuthUser.name} profile picture`"
             />
             <span>
-              {{ name }}
+              {{ getAuthUser.name }}
               <img
                 class="icon-profile"
                 src="../assets/svg/arrow-profile.svg"

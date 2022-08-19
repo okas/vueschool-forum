@@ -20,8 +20,7 @@ import { _isFulFilled } from "../utils/promise-helpers";
 
 const { warn } = console;
 
-const firebaseApp = initializeApp(firebaseConfig);
-const firestoreDb = getFirestore(firebaseApp);
+const firestoreDb = getFirestore(initializeApp(firebaseConfig));
 
 export function makeFirebaseFetchSingleDocFn<TViewModel extends HasId>(
   array: Array<TViewModel>,
