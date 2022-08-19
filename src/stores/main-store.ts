@@ -7,8 +7,12 @@ import { PostVm } from "../models/PostVm";
 import { StatsVM } from "../models/StatsVM";
 import { ThreadVM } from "../models/ThreadVM";
 import { UserVM } from "../models/UserVM";
+import {
+  MainStoreActions,
+  MainStoreGetters,
+  MainStoreState,
+} from "../types/MainStore";
 import { PostVMNew } from "../types/PostVMTypes";
-import { StateMainStore } from "../types/StateMainStore";
 import {
   ThreadVMEdit,
   ThreadVMNew,
@@ -24,232 +28,239 @@ import {
 
 const { warn } = console;
 
-export const useMainStore = defineStore("main", (): StateMainStore => {
-  // --------------------------
-  //        STATE
-  // --------------------------
-  const authUserId = ref("Qc4Pz_28PEqITnCQ21T6Vw");
+export const useMainStore = defineStore(
+  "main",
+  (): MainStoreState & MainStoreGetters & MainStoreActions => {
+    // --------------------------
+    //        STATE
+    // --------------------------
+    const authUserId = ref("Qc4Pz_28PEqITnCQ21T6Vw");
 
-  const categories = reactive<Array<CategoryVM>>([]);
-  const forums = reactive<Array<ForumVM>>([]);
-  const posts = reactive<Array<PostVm>>([]);
-  const threads = reactive<Array<ThreadVM>>([]);
-  const users = reactive<Array<UserVM>>([]);
-  const stats = reactive<StatsVM>({
-    postsCount: 0,
-    threadsCount: 0,
-    usersCount: 0,
-    usersOnline: 0,
-  });
+    const categories = reactive<Array<CategoryVM>>([]);
+    const forums = reactive<Array<ForumVM>>([]);
+    const posts = reactive<Array<PostVm>>([]);
+    const threads = reactive<Array<ThreadVM>>([]);
+    const users = reactive<Array<UserVM>>([]);
+    const stats = reactive<StatsVM>({
+      postsCount: 0,
+      threadsCount: 0,
+      usersCount: 0,
+      usersOnline: 0,
+    });
 
-  // --------------------------
-  //        GETTERS
-  // --------------------------
+    // --------------------------
+    //        GETTERS
+    // --------------------------
 
-  const getAuthUser = computed(() => getUserByIdFn.value(authUserId.value));
+    const getAuthUser = computed(() => getUserByIdFn.value(authUserId.value));
 
-  const getUserByIdFn = computed(() => (id: string) => {
-    const user = findById(users, id);
+    const getUserByIdFn = computed(() => (id: string) => {
+      const user = findById(users, id);
 
-    if (!user) {
-      warn(`Cannot get user by id "${id}".`);
-      return;
+      if (!user) {
+        warn(`Cannot get user by id "${id}".`);
+        return;
+      }
+
+      const result: UserVMWithActivity = {
+        ...user,
+
+        get posts() {
+          return posts.filter(({ userId }) => userId === id);
+        },
+
+        get threads() {
+          return threads.filter(({ userId }) => userId === id);
+        },
+
+        get postsCount() {
+          return this.posts?.length ?? 0;
+        },
+
+        get threadsCount() {
+          return this.threads.length ?? 0;
+        },
+      };
+
+      return result;
+    });
+
+    const getUserPostsCountFn = computed(
+      () => (id: string) => countBy(posts, ({ userId }) => userId === id)
+    );
+
+    const getUserThreadsCountFn = computed(
+      () => (id: string) => countBy(threads, ({ userId }) => userId === id)
+    );
+
+    const getThreadMetaInfoFn = computed(() => (threadId: string) => {
+      const thread = findById(threads, threadId);
+      ok(thread, `No thread with id: "${threadId}".`);
+
+      const result: ThreadVMWithMeta = {
+        ...thread,
+
+        get authorName() {
+          return findById(users, thread.userId)?.name ?? "<missing>";
+        },
+
+        get repliesCount() {
+          return thread.posts.length - 1;
+        },
+
+        get contributorsCount() {
+          return new Set(thread.contributors).size;
+        },
+      };
+
+      return result;
+    });
+
+    // --------------------------
+    //        ACTIONS
+    // --------------------------
+
+    async function editUser(dto: UserVM) {
+      Object.assign(users[users.findIndex(({ id }) => id === dto.id)], dto);
     }
 
-    const result: UserVMWithActivity = {
-      ...user,
+    async function createPost({
+      threadId,
+      ...rest
+    }: PostVMNew): Promise<string> {
+      const id = guidAsBase64();
+      const userId = authUserId.value;
+      const publishedAt = Math.floor(Date.now() / 1000);
 
-      get posts() {
-        return posts.filter(({ userId }) => userId === id);
-      },
+      const newPost: PostVm = { ...rest, threadId, id, userId, publishedAt };
 
-      get threads() {
-        return threads.filter(({ userId }) => userId === id);
-      },
+      posts.push(newPost);
 
-      get postsCount() {
-        return this.posts?.length ?? 0;
-      },
+      tryAppendPostToThreadOrThrow(threadId, id);
+      tryAppendContributorToThreadOrThrow(threadId, userId);
 
-      get threadsCount() {
-        return this.threads.length ?? 0;
-      },
-    };
+      return id;
+    }
 
-    return result;
-  });
-
-  const getUserPostsCountFn = computed(
-    () => (id: string) => countBy(posts, ({ userId }) => userId === id)
-  );
-
-  const getUserThreadsCountFn = computed(
-    () => (id: string) => countBy(threads, ({ userId }) => userId === id)
-  );
-
-  const getThreadMetaInfoFn = computed(() => (threadId: string) => {
-    const thread = findById(threads, threadId);
-    ok(thread, `No thread with id: "${threadId}".`);
-
-    const result: ThreadVMWithMeta = {
-      ...thread,
-
-      get authorName() {
-        return findById(users, thread.userId)?.name ?? "<missing>";
-      },
-
-      get repliesCount() {
-        return thread.posts.length - 1;
-      },
-
-      get contributorsCount() {
-        return new Set(thread.contributors).size;
-      },
-    };
-
-    return result;
-  });
-
-  // --------------------------
-  //        ACTIONS
-  // --------------------------
-
-  async function editUser(dto: UserVM) {
-    Object.assign(users[users.findIndex(({ id }) => id === dto.id)], dto);
-  }
-
-  async function createPost({ threadId, ...rest }: PostVMNew): Promise<string> {
-    const id = guidAsBase64();
-    const userId = authUserId.value;
-    const publishedAt = Math.floor(Date.now() / 1000);
-
-    const newPost: PostVm = { ...rest, threadId, id, userId, publishedAt };
-
-    posts.push(newPost);
-
-    tryAppendPostToThreadOrThrow(threadId, id);
-    tryAppendContributorToThreadOrThrow(threadId, userId);
-
-    return id;
-  }
-
-  async function createThread({
-    text,
-    forumId,
-    ...rest
-  }: ThreadVMNew): Promise<string> {
-    const id = guidAsBase64();
-    const userId = authUserId.value;
-    const publishedAt = Math.floor(Date.now() / 1000);
-    const posts: string[] = [];
-
-    const newThread = {
-      ...rest,
+    async function createThread({
+      text,
       forumId,
-      id,
-      userId,
-      publishedAt,
+      ...rest
+    }: ThreadVMNew): Promise<string> {
+      const id = guidAsBase64();
+      const userId = authUserId.value;
+      const publishedAt = Math.floor(Date.now() / 1000);
+      const posts: string[] = [];
+
+      const newThread = {
+        ...rest,
+        forumId,
+        id,
+        userId,
+        publishedAt,
+        posts,
+      } as ThreadVM;
+
+      threads.push(newThread);
+
+      await createPost({ text, threadId: id });
+
+      tryAppendThreadToForumOrThrow(forumId, id);
+
+      return id;
+    }
+
+    async function editThread({ id: threadId, title, text }: ThreadVMEdit) {
+      const thread = findById(threads, threadId);
+      ok(thread, `Edit thread error: no thread with id: "${threadId}".`);
+
+      const post = findById(posts, thread.posts[0]);
+      ok(post, `Edit thread error: no post with id: ${thread.posts[0]}.`);
+
+      thread.title = title;
+      post.text = text;
+    }
+
+    const fetchThread = makeFirebaseFetchSingleDocFn(threads, "threads");
+
+    const fetchUser = makeFirebaseFetchSingleDocFn(users, "users");
+
+    const fetchPost = makeFirebaseFetchSingleDocFn(posts, "posts");
+
+    const fetchForum = makeFirebaseFetchSingleDocFn(forums, "forums");
+
+    const fetchCategory = makeFirebaseFetchSingleDocFn(
+      categories,
+      "categories"
+    );
+
+    const fetchThreads = makeFirebaseFetchMultiDocsFn(threads, "threads");
+
+    const fetchUsers = makeFirebaseFetchMultiDocsFn(users, "users");
+
+    const fetchPosts = makeFirebaseFetchMultiDocsFn(posts, "posts");
+
+    const fetchForums = makeFirebaseFetchMultiDocsFn(forums, "forums");
+
+    function fetchAllCategories() {
+      return makeFirebaseFetchMultiDocsFn(categories, "categories")();
+    }
+
+    // --------------------------
+    //        __ INTERNALS __
+    // --------------------------
+
+    const tryAppendPostToThreadOrThrow = _makeParentChildUniqueAppenderFn(
+      threads,
+      "posts"
+    );
+
+    const tryAppendThreadToForumOrThrow = _makeParentChildUniqueAppenderFn(
+      forums,
+      "threads"
+    );
+
+    const tryAppendContributorToThreadOrThrow =
+      _makeParentChildUniqueAppenderFn(threads, "contributors");
+
+    return {
+      // STATE
+
+      authUserId,
+      categories,
+      forums,
       posts,
-    } as ThreadVM;
+      threads,
+      users,
+      stats,
 
-    threads.push(newThread);
+      // GETTERS
 
-    await createPost({ text, threadId: id });
+      getAuthUser,
+      getUserByIdFn,
+      getUserPostsCountFn,
+      getUserThreadsCountFn,
+      getThreadMetaInfoFn,
 
-    tryAppendThreadToForumOrThrow(forumId, id);
+      // ACTIONS
 
-    return id;
+      editUser,
+      createPost,
+      createThread,
+      editThread,
+      fetchThread,
+      fetchUser,
+      fetchPost,
+      fetchForum,
+      fetchCategory,
+      fetchThreads,
+      fetchUsers,
+      fetchPosts,
+      fetchForums,
+      fetchAllCategories,
+    };
   }
-
-  async function editThread({ id: threadId, title, text }: ThreadVMEdit) {
-    const thread = findById(threads, threadId);
-    ok(thread, `Edit thread error: no thread with id: "${threadId}".`);
-
-    const post = findById(posts, thread.posts[0]);
-    ok(post, `Edit thread error: no post with id: ${thread.posts[0]}.`);
-
-    thread.title = title;
-    post.text = text;
-  }
-
-  const fetchThread = makeFirebaseFetchSingleDocFn(threads, "threads");
-
-  const fetchUser = makeFirebaseFetchSingleDocFn(users, "users");
-
-  const fetchPost = makeFirebaseFetchSingleDocFn(posts, "posts");
-
-  const fetchForum = makeFirebaseFetchSingleDocFn(forums, "forums");
-
-  const fetchCategory = makeFirebaseFetchSingleDocFn(categories, "categories");
-
-  const fetchThreads = makeFirebaseFetchMultiDocsFn(threads, "threads");
-
-  const fetchUsers = makeFirebaseFetchMultiDocsFn(users, "users");
-
-  const fetchPosts = makeFirebaseFetchMultiDocsFn(posts, "posts");
-
-  const fetchForums = makeFirebaseFetchMultiDocsFn(forums, "forums");
-
-  function fetchAllCategories() {
-    return makeFirebaseFetchMultiDocsFn(categories, "categories")();
-  }
-
-  // --------------------------
-  //        __ INTERNALS __
-  // --------------------------
-
-  const tryAppendPostToThreadOrThrow = _makeParentChildUniqueAppenderFn(
-    threads,
-    "posts"
-  );
-
-  const tryAppendThreadToForumOrThrow = _makeParentChildUniqueAppenderFn(
-    forums,
-    "threads"
-  );
-
-  const tryAppendContributorToThreadOrThrow = _makeParentChildUniqueAppenderFn(
-    threads,
-    "contributors"
-  );
-
-  return {
-    // STATE
-
-    authUserId,
-    categories,
-    forums,
-    posts,
-    threads,
-    users,
-    stats,
-
-    // GETTERS
-
-    getAuthUser,
-    getUserByIdFn,
-    getUserPostsCountFn,
-    getUserThreadsCountFn,
-    getThreadMetaInfoFn,
-
-    // ACTIONS
-
-    editUser,
-    createPost,
-    createThread,
-    editThread,
-    fetchThread,
-    fetchUser,
-    fetchPost,
-    fetchForum,
-    fetchCategory,
-    fetchThreads,
-    fetchUsers,
-    fetchPosts,
-    fetchForums,
-    fetchAllCategories,
-  };
-});
+);
 
 function _makeParentChildUniqueAppenderFn<
   TId,
