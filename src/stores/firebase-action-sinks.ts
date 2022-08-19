@@ -1,4 +1,3 @@
-import { initializeApp } from "firebase/app";
 import {
   collection,
   doc,
@@ -6,21 +5,18 @@ import {
   documentId,
   getDoc,
   getDocs,
-  getFirestore,
   Query,
   query,
   QueryDocumentSnapshot,
   QuerySnapshot,
   where,
 } from "firebase/firestore";
-import firebaseConfig from "../config/firebase.js";
 import { HasId } from "../types/HasId";
 import { toBuckets } from "../utils/array-helpers";
 import { _isFulFilled } from "../utils/promise-helpers";
+import { firestoreDb } from "./../firebase/index";
 
 const { warn } = console;
-
-const firestoreDb = getFirestore(initializeApp(firebaseConfig));
 
 export function makeFirebaseFetchSingleDocFn<TViewModel extends HasId>(
   array: Array<TViewModel>,
