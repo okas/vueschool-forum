@@ -1,3 +1,4 @@
+import { arrayUnion, collection, doc, writeBatch } from "@firebase/firestore";
 import { ok } from "assert";
 import { defineStore } from "pinia";
 import { computed, reactive, ref } from "vue";
@@ -21,6 +22,7 @@ import {
 import { UserVMWithActivity } from "../types/userVm-types";
 import { countBy, findById } from "../utils/array-helpers";
 import { guidAsBase64 } from "../utils/misc";
+import { firestoreDb as db } from "./../firebase/index";
 import {
   makeFirebaseFetchMultiDocsFn,
   makeFirebaseFetchSingleDocFn,
@@ -132,18 +134,33 @@ export const useMainStore = defineStore(
       threadId,
       ...rest
     }: PostVMNew): Promise<string> {
-      const id = guidAsBase64();
       const userId = authUserId.value;
       const publishedAt = Math.floor(Date.now() / 1000);
 
-      const newPost: PostVm = { ...rest, threadId, id, userId, publishedAt };
+      const postDto: Omit<PostVm, "id"> = {
+        ...rest,
+        threadId,
+        userId,
+        publishedAt,
+      };
 
-      posts.push(newPost);
+      const postRef = doc(collection(db, "posts"));
+      const threadRef = doc(db, "threads", threadId);
 
-      tryAppendPostToThreadOrThrow(threadId, id);
+      await writeBatch(db)
+        .set(postRef, postDto)
+        .update(threadRef, {
+          posts: arrayUnion(postRef.id),
+          contributors: arrayUnion(userId),
+        })
+        .commit();
+
+      posts.push({ ...postDto, id: postRef.id });
+
+      tryAppendPostToThreadOrThrow(threadId, postRef.id);
       tryAppendContributorToThreadOrThrow(threadId, userId);
 
-      return id;
+      return postRef.id;
     }
 
     async function createThread({
