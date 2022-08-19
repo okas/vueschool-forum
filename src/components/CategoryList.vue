@@ -1,18 +1,16 @@
 <script setup lang="ts">
+import { storeToRefs } from "pinia";
+import { ForumVM } from "../models/ForumVM";
 import { useMainStore } from "../stores/main-store";
-import { findById, groupByToMap } from "../utils/array-helpers";
 import CategoryListItem from "./CategoryListItem.vue";
+
+defineProps<{
+  groupedForums: Map<string, Array<ForumVM>>;
+}>();
 
 const store = useMainStore();
 
-const groupedForums = groupByToMap(
-  store.forums,
-  ({ categoryId }) => categoryId
-);
-
-function getCategoryName(categoryId: string) {
-  return findById(store.categories, categoryId)?.name;
-}
+const { getCategoryNamedFn } = storeToRefs(store);
 </script>
 
 <template>
@@ -20,7 +18,7 @@ function getCategoryName(categoryId: string) {
     <category-list-item
       v-for="[categoryId, forums] of groupedForums"
       :key="categoryId"
-      v-bind="{ categoryId, name: getCategoryName(categoryId), forums }"
+      v-bind="{ categoryId, name: getCategoryNamedFn(categoryId), forums }"
     />
   </div>
 </template>

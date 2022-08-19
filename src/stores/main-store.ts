@@ -116,6 +116,10 @@ export const useMainStore = defineStore(
       return result;
     });
 
+    const getCategoryNamedFn = computed(
+      () => (categoryId: string) => findById(categories, categoryId)?.name
+    );
+
     // --------------------------
     //        ACTIONS
     // --------------------------
@@ -241,6 +245,7 @@ export const useMainStore = defineStore(
       getUserPostsCountFn,
       getUserThreadsCountFn,
       getThreadMetaInfoFn,
+      getCategoryNamedFn,
 
       // ACTIONS
 

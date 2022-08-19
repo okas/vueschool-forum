@@ -25,6 +25,7 @@ export interface MainStoreGetters {
   getUserPostsCountFn: ComputedRef<(userId: string) => number>;
   getUserThreadsCountFn: ComputedRef<(userId: string) => number>;
   getThreadMetaInfoFn: ComputedRef<(threadId: string) => ThreadVMWithMeta>;
+  getCategoryNamedFn: ComputedRef<(categoryId: string) => string | undefined>;
 }
 
 export interface MainStoreActions {
