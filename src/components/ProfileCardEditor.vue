@@ -8,6 +8,8 @@ const props = defineProps<{
   user: UserVM;
 }>();
 
+const { editUser } = useMainStore();
+
 const router = useRouter();
 
 const { id, name, username, bio, email, website, location, avatar, twitter } =
@@ -28,7 +30,7 @@ const userEditorObj = reactive({
 const routeToReturn = { name: "Profile" };
 
 async function save() {
-  await useMainStore().editUser(userEditorObj as UserVM);
+  await editUser(userEditorObj as UserVM);
   router.push(routeToReturn);
 }
 

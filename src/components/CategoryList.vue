@@ -8,9 +8,7 @@ defineProps<{
   groupedForums: Map<string, Array<ForumVM>>;
 }>();
 
-const store = useMainStore();
-
-const { getCategoryNamedFn } = storeToRefs(store);
+const { getCategoryNamedFn } = storeToRefs(useMainStore());
 </script>
 
 <template>
