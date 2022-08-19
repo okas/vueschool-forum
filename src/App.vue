@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import TheNavBar from "./components/TheNavBar.vue";
+import { useMainStore } from "./stores/main-store";
+
+useMainStore().fetchAuthUser();
 </script>
 
 <template>
-  <suspense>
-    <the-nav-bar />
-  </suspense>
+  <the-nav-bar />
   <div class="container">
     <suspense>
       <router-view />

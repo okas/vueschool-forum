@@ -210,6 +210,10 @@ export const useMainStore = defineStore(
       return makeFirebaseFetchMultiDocsFn(categories, "categories")();
     }
 
+    function fetchAuthUser() {
+      return makeFirebaseFetchSingleDocFn(users, "users")(authUserId.value);
+    }
+
     // --------------------------
     //        __ INTERNALS __
     // --------------------------
@@ -263,6 +267,7 @@ export const useMainStore = defineStore(
       fetchPosts,
       fetchForums,
       fetchAllCategories,
+      fetchAuthUser,
     };
   }
 );

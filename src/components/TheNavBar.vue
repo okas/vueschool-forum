@@ -2,11 +2,7 @@
 import { storeToRefs } from "pinia";
 import { useMainStore } from "../stores/main-store";
 
-const store = useMainStore();
-
-await store.fetchUser(store.authUserId);
-
-const { getAuthUser } = storeToRefs(store);
+const { getAuthUser } = storeToRefs(useMainStore());
 </script>
 
 <template>
