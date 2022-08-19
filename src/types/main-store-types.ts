@@ -5,28 +5,30 @@ import { PostVm } from "../models/PostVm";
 import { StatsVM } from "../models/StatsVM";
 import { ThreadVM } from "../models/ThreadVM";
 import { UserVM } from "../models/UserVM";
-import { PostVMNew } from "./PostVMTypes";
-import { ThreadVMEdit, ThreadVMNew, ThreadVMWithMeta } from "./ThreadVMTypes";
-import { UserVMWithActivity } from "./UserVMTypes";
+import { PostVMNew } from "./postVm-types";
+import { ThreadVMEdit, ThreadVMNew, ThreadVMWithMeta } from "./threadVm-types";
+import { UserVMWithActivity } from "./userVm-types";
 
-export interface StateMainStore {
-  // STATE
-  authUserId: Ref<string | undefined>;
+export interface MainStoreState {
+  authUserId: Ref<string>;
   categories: Array<CategoryVM>;
   forums: Array<ForumVM>;
   posts: Array<PostVm>;
   threads: Array<ThreadVM>;
   users: Array<UserVM>;
   stats: StatsVM;
+}
 
-  // GETTERS
+export interface MainStoreGetters {
   getAuthUser: ComputedRef<UserVMWithActivity | undefined>;
   getUserByIdFn: ComputedRef<(id: string) => UserVMWithActivity | undefined>;
   getUserPostsCountFn: ComputedRef<(userId: string) => number>;
   getUserThreadsCountFn: ComputedRef<(userId: string) => number>;
   getThreadMetaInfoFn: ComputedRef<(threadId: string) => ThreadVMWithMeta>;
+  getCategoryNamedFn: ComputedRef<(categoryId: string) => string | undefined>;
+}
 
-  // ACTIONS
+export interface MainStoreActions {
   editUser(dto: UserVM): Promise<void>;
   createPost(dto: PostVMNew): Promise<string>;
   createThread(dto: ThreadVMNew): Promise<string>;
@@ -41,4 +43,5 @@ export interface StateMainStore {
   fetchPosts(ids?: Array<string>): Promise<Array<PostVm>>;
   fetchForums(ids?: Array<string>): Promise<Array<ForumVM>>;
   fetchAllCategories(): Promise<Array<CategoryVM>>;
+  fetchAuthUser(): Promise<UserVM | undefined>;
 }

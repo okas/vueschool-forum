@@ -1,5 +1,5 @@
-import { ThreadVM } from "./../models/ThreadVM";
-import { PostVMFormInput } from "./PostVMTypes";
+import { ThreadVM } from "../models/ThreadVM";
+import { PostVMFormInput } from "./postVm-types";
 
 export type ThreadVMFormInput = Pick<ThreadVM, "title"> & PostVMFormInput;
 

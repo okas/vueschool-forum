@@ -11,14 +11,14 @@ import {
   MainStoreActions,
   MainStoreGetters,
   MainStoreState,
-} from "../types/MainStore";
-import { PostVMNew } from "../types/PostVMTypes";
+} from "../types/main-store-types";
+import { PostVMNew } from "../types/postVm-types";
 import {
   ThreadVMEdit,
   ThreadVMNew,
   ThreadVMWithMeta,
-} from "../types/ThreadVMTypes";
-import { UserVMWithActivity } from "../types/UserVMTypes";
+} from "../types/threadVm-types";
+import { UserVMWithActivity } from "../types/userVm-types";
 import { countBy, findById } from "../utils/array-helpers";
 import { guidAsBase64 } from "../utils/misc";
 import {
