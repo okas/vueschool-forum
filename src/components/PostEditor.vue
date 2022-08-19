@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { PostVMFormInput } from "../types/PostVMTypes";
+import { PostVMFormInput } from "../types/postVm-types";
 
 const emits = defineEmits<{
   (e: "save", dto: PostVMFormInput): void;

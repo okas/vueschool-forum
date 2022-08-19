@@ -3,7 +3,7 @@ import { computed } from "vue";
 import PostEditor from "../components/PostEditor.vue";
 import PostList from "../components/PostList.vue";
 import { useMainStore } from "../stores/main-store";
-import { PostVMFormInput, PostVMNew } from "../types/PostVMTypes";
+import { PostVMFormInput, PostVMNew } from "../types/postVm-types";
 import { getCountPhrase } from "../utils/misc";
 
 const props = defineProps<{

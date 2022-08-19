@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ThreadList from "../components/ThreadList.vue";
 import { useMainStore } from "../stores/main-store";
-import { ThreadVMWithMeta } from "../types/ThreadVMTypes";
+import { ThreadVMWithMeta } from "../types/threadVm-types";
 import { findById } from "../utils/array-helpers";
 
 const props = defineProps<{

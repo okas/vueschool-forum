@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { UserVMWithActivity } from "../types/UserVMTypes";
+import { UserVMWithActivity } from "../types/userVm-types";
 import {
   diffFromUnix,
   formatMonthYearFromUnix,
