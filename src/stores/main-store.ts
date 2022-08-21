@@ -202,11 +202,23 @@ export const useMainStore = defineStore(
       post.text = text;
     }
 
-    const fetchThread = makeFirebaseFetchSingleDocFn(threads, "threads");
+    const fetchThread = makeFirebaseFetchSingleDocFn(
+      threads,
+      "threads",
+      threadVmConverter
+    );
 
-    const fetchUser = makeFirebaseFetchSingleDocFn(users, "users");
+    const fetchUser = makeFirebaseFetchSingleDocFn(
+      users,
+      "users",
+      userVmConverter
+    );
 
-    const fetchPost = makeFirebaseFetchSingleDocFn(posts, "posts");
+    const fetchPost = makeFirebaseFetchSingleDocFn(
+      posts,
+      "posts",
+      postVmConverter
+    );
 
     const fetchForum = makeFirebaseFetchSingleDocFn(forums, "forums");
 
@@ -215,11 +227,23 @@ export const useMainStore = defineStore(
       "categories"
     );
 
-    const fetchThreads = makeFirebaseFetchMultiDocsFn(threads, "threads");
+    const fetchThreads = makeFirebaseFetchMultiDocsFn(
+      threads,
+      "threads",
+      threadVmConverter
+    );
 
-    const fetchUsers = makeFirebaseFetchMultiDocsFn(users, "users");
+    const fetchUsers = makeFirebaseFetchMultiDocsFn(
+      users,
+      "users",
+      userVmConverter
+    );
 
-    const fetchPosts = makeFirebaseFetchMultiDocsFn(posts, "posts");
+    const fetchPosts = makeFirebaseFetchMultiDocsFn(
+      posts,
+      "posts",
+      postVmConverter
+    );
 
     const fetchForums = makeFirebaseFetchMultiDocsFn(forums, "forums");
 
@@ -228,7 +252,11 @@ export const useMainStore = defineStore(
     }
 
     function fetchAuthUser() {
-      return makeFirebaseFetchSingleDocFn(users, "users")(authUserId.value);
+      return makeFirebaseFetchSingleDocFn(
+        users,
+        "users",
+        userVmConverter
+      )(authUserId.value);
     }
 
     // --------------------------

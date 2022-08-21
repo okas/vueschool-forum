@@ -3,6 +3,7 @@ import {
   doc,
   DocumentData,
   documentId,
+  FirestoreDataConverter,
   getDoc,
   getDocs,
   Query,
@@ -20,10 +21,15 @@ const { warn } = console;
 
 export function makeFirebaseFetchSingleDocFn<TViewModel extends HasId>(
   array: Array<TViewModel>,
-  collectionName: string
+  collectionName: string,
+  converter?: FirestoreDataConverter<TViewModel>
 ): (id: string) => Promise<TViewModel | undefined> {
   return async (id: string) => {
-    const docSnap = await getDoc(doc(firestoreDb, collectionName, id));
+    const docRef = doc(firestoreDb, collectionName, id);
+
+    const docSnap = await getDoc(
+      converter ? docRef.withConverter(converter) : docRef
+    );
 
     if (!docSnap.exists()) {
       _warn(collectionName, id);
@@ -40,10 +46,13 @@ export function makeFirebaseFetchSingleDocFn<TViewModel extends HasId>(
 
 export function makeFirebaseFetchMultiDocsFn<TViewModel extends HasId>(
   array: Array<TViewModel>,
-  collectionName: string
+  collectionName: string,
+  converter?: FirestoreDataConverter<TViewModel>
 ): (ids?: Array<string>) => Promise<Array<TViewModel>> {
   return async (ids?: Array<string>) => {
-    const queries = getQueries(collectionName, ids);
+    const queries = ids
+      ? createBucketedQueries(ids, collectionName, converter)
+      : [getAllQuery(collectionName, converter)];
 
     const settledPromises = await Promise.allSettled(queries.map(getDocs));
 
@@ -65,30 +74,29 @@ export function makeFirebaseFetchMultiDocsFn<TViewModel extends HasId>(
   };
 }
 
-function getQueries(
+function getAllQuery<TViewModel extends HasId>(
   collectionName: string,
-  ids?: string[]
-): Array<Query<DocumentData>> {
-  if (!ids?.length) {
-    return [query(collection(firestoreDb, collectionName))];
-  }
+  converter?: FirestoreDataConverter<TViewModel>
+): Query<DocumentData> {
+  const q = query(collection(firestoreDb, collectionName));
 
-  return createBucketedQueries(ids, collectionName);
+  return converter ? q.withConverter(converter) : q;
 }
 
-function createBucketedQueries(
+function createBucketedQueries<TViewModel extends HasId>(
   ids: string[],
-  collectionName: string
+  collectionName: string,
+  converter?: FirestoreDataConverter<TViewModel>
 ): Array<Query<DocumentData>> {
   const queries: Query<DocumentData>[] = [];
 
   for (const bucket of toBuckets(ids, 10)) {
-    queries.push(
-      query(
-        collection(firestoreDb, collectionName),
-        where(documentId(), "in", bucket)
-      )
+    const q = query(
+      collection(firestoreDb, collectionName),
+      where(documentId(), "in", bucket)
     );
+
+    queries.push(converter ? q.withConverter(converter) : q);
   }
 
   return queries;
