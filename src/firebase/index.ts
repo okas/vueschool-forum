@@ -4,4 +4,4 @@ import firebaseConfig from "../config/firebase.js";
 
 export const app = initializeApp(firebaseConfig);
 
-export const firestoreDb = getFirestore();
+export const firestoreDb = getFirestore(app);
