@@ -1,7 +1,20 @@
-import { arrayUnion, collection, doc, writeBatch } from "@firebase/firestore";
+import {
+  arrayUnion,
+  collection,
+  doc,
+  FieldValue,
+  getDoc,
+  serverTimestamp,
+  writeBatch,
+} from "@firebase/firestore";
 import { ok } from "assert";
 import { defineStore } from "pinia";
 import { computed, reactive, ref } from "vue";
+import {
+  postVmConverter,
+  threadVmConverter,
+  userVmConverter,
+} from "../firebase/firebase-converters";
 import { CategoryVM } from "../models/CategoryVM";
 import { ForumVM } from "../models/ForumVM";
 import { PostVm } from "../models/PostVm";
@@ -134,14 +147,13 @@ export const useMainStore = defineStore(
       threadId,
       ...rest
     }: PostVMNew): Promise<string> {
-      const userId = authUserId.value;
-      const publishedAt = Math.floor(Date.now() / 1000);
-
-      const postDto: Omit<PostVm, "id"> = {
+      const postDto: Omit<PostVm, "id" | "publishedAt"> & {
+        publishedAt: FieldValue;
+      } = {
         ...rest,
         threadId,
-        userId,
-        publishedAt,
+        userId: authUserId.value,
+        publishedAt: serverTimestamp(),
       };
 
       const postRef = doc(collection(db, "posts"));
@@ -151,14 +163,18 @@ export const useMainStore = defineStore(
         .set(postRef, postDto)
         .update(threadRef, {
           posts: arrayUnion(postRef.id),
-          contributors: arrayUnion(userId),
+          contributors: arrayUnion(authUserId.value),
         })
         .commit();
 
-      posts.push({ ...postDto, id: postRef.id });
+      const newPost = (
+        await getDoc(postRef.withConverter(postVmConverter))
+      ).data();
+
+      posts.push(newPost!);
 
       tryAppendPostToThreadOrThrow(threadId, postRef.id);
-      tryAppendContributorToThreadOrThrow(threadId, userId);
+      tryAppendContributorToThreadOrThrow(threadId, authUserId.value);
 
       return postRef.id;
     }
