@@ -350,7 +350,7 @@ function _makeParentChildUniqueAppenderFn<
   TParent extends { id: TId } & Record<string, unknown>,
   PropChild extends keyof TParent
 >(array: Array<TParent>, childArrayProp: PropChild) {
-  return <TAppendValue>(parentId: TId, appendValue: TAppendValue) => {
+  return <TAppendValue>(parentId: TId, ...appendValue: Array<TAppendValue>) => {
     const parent = findById(array, parentId);
 
     ok(parent, `Append error: non-existing parent.`);
@@ -358,9 +358,11 @@ function _makeParentChildUniqueAppenderFn<
     const childArray = parent[childArrayProp] as Array<TAppendValue>;
 
     if (!childArray) {
-      (parent[childArrayProp] as Array<TAppendValue>) = [appendValue];
-    } else if (!childArray.includes(appendValue)) {
-      childArray.push(appendValue);
+      (parent[childArrayProp] as Array<TAppendValue>) = [...appendValue];
+    } else {
+      appendValue.forEach(
+        (val) => !childArray.includes(val) && childArray.push(val)
+      );
     }
   };
 }
