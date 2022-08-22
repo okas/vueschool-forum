@@ -34,6 +34,7 @@ import {
 } from "../types/threadVm-types";
 import { UserVMWithActivity } from "../types/userVm-types";
 import { countBy, findById } from "../utils/array-helpers";
+import { hasIdVmConverter } from "./../firebase/firebase-converters";
 import { firestoreDb as db } from "./../firebase/index";
 import {
   makeFirebaseFetchMultiDocsFn,
@@ -258,11 +259,16 @@ export const useMainStore = defineStore(
       postVmConverter
     );
 
-    const fetchForum = makeFirebaseFetchSingleDocFn(forums, "forums");
+    const fetchForum = makeFirebaseFetchSingleDocFn(
+      forums,
+      "forums",
+      hasIdVmConverter
+    );
 
     const fetchCategory = makeFirebaseFetchSingleDocFn(
       categories,
-      "categories"
+      "categories",
+      hasIdVmConverter
     );
 
     const fetchThreads = makeFirebaseFetchMultiDocsFn(
@@ -283,10 +289,18 @@ export const useMainStore = defineStore(
       postVmConverter
     );
 
-    const fetchForums = makeFirebaseFetchMultiDocsFn(forums, "forums");
+    const fetchForums = makeFirebaseFetchMultiDocsFn(
+      forums,
+      "forums",
+      hasIdVmConverter
+    );
 
     function fetchAllCategories() {
-      return makeFirebaseFetchMultiDocsFn(categories, "categories")();
+      return makeFirebaseFetchMultiDocsFn(
+        categories,
+        "categories",
+        hasIdVmConverter
+      )();
     }
 
     function fetchAuthUser() {

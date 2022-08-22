@@ -2,6 +2,7 @@ import { FirestoreDataConverter } from "firebase/firestore";
 import { PostVm } from "../models/PostVm";
 import { ThreadVM } from "../models/ThreadVM";
 import { UserVM } from "../models/UserVM";
+import { HasId } from "../types/HasId";
 import { PostVmFireBase } from "../types/postVm-types";
 import { ThreadVmFireBase } from "../types/threadVm-types";
 import { tryGetSeconds } from "../utils/firebase-helpers";
@@ -70,5 +71,15 @@ export const userVmConverter: FirestoreDataConverter<UserVM> = {
     };
 
     return vm;
+  },
+};
+
+export const hasIdVmConverter: FirestoreDataConverter<HasId & any> = {
+  toFirestore: (dto) => dto,
+  fromFirestore: (snapShot) => {
+    return {
+      ...snapShot.data(),
+      id: snapShot.id,
+    };
   },
 };
