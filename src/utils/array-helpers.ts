@@ -45,13 +45,15 @@ export function* toBuckets<T>(
     return;
   }
 
+  const tempArray = [...array];
+
   let start = 0;
   let end = 0;
 
-  while (start < array.length) {
-    end = start + size - 1;
-    yield array.slice(start, end);
-    start = end + 1;
+  while (start < tempArray.length) {
+    end = start + size;
+    yield tempArray.slice(start, end);
+    start = end;
   }
 }
 
