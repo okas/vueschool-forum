@@ -233,12 +233,33 @@ export const useMainStore = defineStore(
     async function editThread({ id: threadId, title, text }: ThreadVMEdit) {
       const thread = findById(threads, threadId);
       ok(thread, `Edit thread error: no thread with id: "${threadId}".`);
+      ok(
+        thread.firstPostId,
+        `Edit thread error: thread: "${threadId}" is missing "firstPostId".`
+      );
 
-      const post = findById(posts, thread.posts[0]);
-      ok(post, `Edit thread error: no post with id: ${thread.posts[0]}.`);
+      const post = findById(posts, thread.firstPostId);
+      ok(post, `Edit thread error: no post with id: ${thread.firstPostId}.`);
 
-      thread.title = title;
-      post.text = text;
+      const postRef = doc(db, "posts", thread.firstPostId);
+      const threadRef = doc(db, "threads", threadId);
+
+      await writeBatch(db)
+        .update(threadRef, { title })
+        .update(postRef, {
+          text,
+          edited: {
+            at: serverTimestamp(),
+            by: authUserId.value,
+            moderated: false,
+          },
+        })
+        .commit();
+
+      await Promise.allSettled([
+        fetchThread(threadId),
+        fetchPost(thread.firstPostId),
+      ]);
     }
 
     const fetchThread = makeFirebaseFetchSingleDocFn(
