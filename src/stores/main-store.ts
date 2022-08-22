@@ -34,7 +34,6 @@ import {
 } from "../types/threadVm-types";
 import { UserVMWithActivity } from "../types/userVm-types";
 import { countBy, findById } from "../utils/array-helpers";
-import { guidAsBase64 } from "../utils/misc";
 import { firestoreDb as db } from "./../firebase/index";
 import {
   makeFirebaseFetchMultiDocsFn,
@@ -163,6 +162,7 @@ export const useMainStore = defineStore(
         .set(postRef, postDto)
         .update(threadRef, {
           posts: arrayUnion(postRef.id),
+          lastPostAt: serverTimestamp(),
           contributors: arrayUnion(authUserId.value),
         })
         .commit();
@@ -184,27 +184,39 @@ export const useMainStore = defineStore(
       forumId,
       ...rest
     }: ThreadVMNew): Promise<string> {
-      const id = guidAsBase64();
-      const userId = authUserId.value;
-      const publishedAt = Math.floor(Date.now() / 1000);
-      const posts: string[] = [];
-
-      const newThread = {
+      const dto: Omit<ThreadVM, "id" | "publishedAt" | "lastPostAt"> & {
+        publishedAt: FieldValue;
+        lastPostAt: FieldValue;
+      } = {
         ...rest,
         forumId,
-        id,
-        userId,
-        publishedAt,
-        posts,
-      } as ThreadVM;
+        userId: authUserId.value,
+        publishedAt: serverTimestamp(),
+        lastPostAt: serverTimestamp(),
+        posts: [],
+      };
 
-      threads.push(newThread);
+      const threadRef = doc(collection(db, "threads"));
+      const forumRef = doc(db, "forums", forumId);
 
-      await createPost({ text, threadId: id });
+      await writeBatch(db)
+        .set(threadRef, dto)
+        .update(forumRef, {
+          threads: arrayUnion(threadRef.id),
+        })
+        .commit();
 
-      tryAppendThreadToForumOrThrow(forumId, id);
+      const newThread = (
+        await getDoc(threadRef.withConverter(threadVmConverter))
+      ).data();
 
-      return id;
+      threads.push(newThread!);
+
+      await createPost({ text, threadId: threadRef.id });
+
+      tryAppendThreadToForumOrThrow(forumId, threadRef.id);
+
+      return threadRef.id;
     }
 
     async function editThread({ id: threadId, title, text }: ThreadVMEdit) {
