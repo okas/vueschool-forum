@@ -4,11 +4,11 @@ import { useMainStore } from "../stores/main-store";
 import { groupByToMap } from "../utils/array-helpers";
 
 const store = useMainStore();
-
+// < FETCH
 await store.fetchForums(
   (await store.fetchAllCategories()).flatMap(({ forums }) => forums)
 );
-
+// > FETCH
 const groupedForums = groupByToMap(
   store.forums,
   ({ categoryId }) => categoryId

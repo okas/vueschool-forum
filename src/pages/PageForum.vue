@@ -9,13 +9,13 @@ const props = defineProps<{
 }>();
 
 const store = useMainStore();
-
+// < FETCH
 await store.fetchUsers(
   (
     await store.fetchThreads((await store.fetchForum(props.forumId)).threads)
   ).map(({ userId }) => userId)
 );
-
+// > FETCH
 const forum = findById(store.forums, props.forumId);
 
 const forumThreads: ThreadVMWithMeta[] =

@@ -11,7 +11,7 @@ const props = defineProps<{
 }>();
 
 const store = useMainStore();
-
+// < FETCH
 const { userId: threadUserId, posts: threadPostIds } = await store.fetchThread(
   props.threadId
 );
@@ -22,19 +22,19 @@ await Promise.allSettled([
     ...(await store.fetchPosts(threadPostIds)).map(({ userId }) => userId),
   ]),
 ]);
-
-const thread = store.getThreadMetaInfoFn(props.threadId);
+// > FETCH
+const thread = computed(() => store.getThreadMetaInfoFn(props.threadId));
 
 const posts = computed(() =>
   store.posts
-    .filter(({ threadId }) => threadId === thread.id)
+    .filter(({ threadId }) => threadId === thread.value.id)
     .sort(({ publishedAt: a }, { publishedAt: b }) => a - b)
 );
 
 const statsPhrase = computed(
   () =>
-    `${getCountPhrase(thread.repliesCount, "reply")} by ${getCountPhrase(
-      thread.contributorsCount,
+    `${getCountPhrase(thread.value.repliesCount, "reply")} by ${getCountPhrase(
+      thread.value.contributorsCount,
       "contributor"
     )}`
 );

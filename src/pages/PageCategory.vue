@@ -7,9 +7,9 @@ const props = defineProps<{
 }>();
 
 const store = useMainStore();
-
+// < FETCH
 await store.fetchForums((await store.fetchCategory(props.categoryId)).forums);
-
+// > FETCH
 const name = store.getCategoryNamedFn(props.categoryId);
 
 const categoryForums = store.forums.filter(

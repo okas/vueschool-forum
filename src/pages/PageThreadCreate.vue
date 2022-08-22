@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { useRouter } from "vue-router";
 import ThreadEditor from "../components/ThreadEditor.vue";
 import { useMainStore } from "../stores/main-store";
@@ -10,12 +11,12 @@ const props = defineProps<{
 }>();
 
 const store = useMainStore();
-
+// < FETCH
 await store.fetchForum(props.forumId);
-
+// > FETCH
 const router = useRouter();
 
-const { name: forumName } = findById(store.forums, props.forumId);
+const forum = computed(() => findById(store.forums, props.forumId));
 
 async function save({ title, text }: ThreadVMFormInput) {
   const threadId = await store.createThread({
@@ -33,10 +34,10 @@ function cancel() {
 </script>
 
 <template>
-  <div v-if="forumName" class="col-full push-top">
+  <div v-if="forum.name" class="col-full push-top">
     <h1>
       Create new thread in
-      <i v-text="forumName" />
+      <i v-text="forum.name" />
     </h1>
 
     <thread-editor @save="save" @cancel="cancel" />

@@ -11,9 +11,9 @@ const props = defineProps<{
 }>();
 
 const store = useMainStore();
-
+// < FETCH
 await store.fetchPost((await store.fetchThread(props.threadId)).posts[0]);
-
+// > FETCH
 const router = useRouter();
 
 const thread = computed(() => findById(store.threads, props.threadId));
