@@ -33,7 +33,7 @@ import {
   ThreadVMWithMeta,
 } from "../types/threadVm-types";
 import { UserVMWithActivity } from "../types/userVm-types";
-import { countBy, findById } from "../utils/array-helpers";
+import { countBy, findById, upsert } from "../utils/array-helpers";
 import { firestoreDb as db } from "./../firebase/index";
 import {
   makeFirebaseFetchMultiDocsFn,
@@ -210,7 +210,7 @@ export const useMainStore = defineStore(
         await getDoc(threadRef.withConverter(threadVmConverter))
       ).data();
 
-      threads.push(newThread!);
+      upsert(threads, newThread!);
 
       await createPost({ text, threadId: threadRef.id });
 

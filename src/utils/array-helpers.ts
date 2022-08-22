@@ -54,3 +54,20 @@ export function* toBuckets<T>(
     start = end + 1;
   }
 }
+
+export function upsert<TId, TItem extends { id: TId }>(
+  array: Array<TItem>,
+  ...items: Array<TItem>
+): number {
+  items.forEach((item) => {
+    const existing = array.find(({ id }) => id === item.id);
+
+    if (existing) {
+      Object.assign(existing, item);
+    } else {
+      array.push(item);
+    }
+  });
+
+  return array.length;
+}

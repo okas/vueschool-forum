@@ -13,7 +13,7 @@ import {
   where,
 } from "firebase/firestore";
 import { HasId } from "../types/HasId";
-import { toBuckets } from "../utils/array-helpers";
+import { toBuckets, upsert } from "../utils/array-helpers";
 import { _isFulFilled } from "../utils/promise-helpers";
 import { firestoreDb } from "./../firebase/index";
 
@@ -38,7 +38,7 @@ export function makeFirebaseFetchSingleDocFn<TViewModel extends HasId>(
 
     const viewModel = vmMapper<TViewModel>(docSnap);
 
-    array.push(viewModel);
+    upsert(array, viewModel);
 
     return viewModel;
   };
@@ -67,7 +67,7 @@ export function makeFirebaseFetchMultiDocsFn<TViewModel extends HasId>(
     if (!viewModels.length) {
       _warn(collectionName, ...(ids ?? []));
     } else {
-      array.push(...viewModels);
+      upsert(array, ...viewModels);
     }
 
     return viewModels;
