@@ -5,6 +5,7 @@ import {
   FieldValue,
   getDoc,
   serverTimestamp,
+  updateDoc,
   writeBatch,
 } from "@firebase/firestore";
 import { ok } from "assert";
@@ -155,8 +156,11 @@ export const useMainStore = defineStore(
         publishedAt: serverTimestamp(),
       };
 
+      const thread = threads.find(({ id }) => id === threadId)!;
+
       const postRef = doc(collection(db, "posts"));
       const threadRef = doc(db, "threads", threadId);
+      const forumRef = doc(db, "forums", thread.forumId);
 
       await writeBatch(db)
         .set(postRef, postDto)
@@ -164,14 +168,21 @@ export const useMainStore = defineStore(
           posts: arrayUnion(postRef.id),
           lastPostAt: serverTimestamp(),
           contributors: arrayUnion(authUserId.value),
+          lastPostId: postRef.id,
+        })
+        .update(forumRef, {
+          lastPostId: postRef.id,
         })
         .commit();
 
       const newPost = (
         await getDoc(postRef.withConverter(postVmConverter))
-      ).data();
+      ).data()!;
 
-      posts.push(newPost!);
+      posts.push(newPost);
+
+      thread.lastPostAt = newPost.publishedAt;
+      thread.lastPostId = postRef.id;
 
       tryAppendPostToThreadOrThrow(threadId, postRef.id);
       tryAppendContributorToThreadOrThrow(threadId, authUserId.value);
@@ -184,7 +195,10 @@ export const useMainStore = defineStore(
       forumId,
       ...rest
     }: ThreadVMNew): Promise<string> {
-      const dto: Omit<ThreadVM, "id" | "publishedAt" | "lastPostAt"> & {
+      const dto: Omit<
+        ThreadVM,
+        "id" | "publishedAt" | "lastPostAt" | "firstPostId" | "lastPostId"
+      > & {
         publishedAt: FieldValue;
         lastPostAt: FieldValue;
       } = {
@@ -194,6 +208,8 @@ export const useMainStore = defineStore(
         publishedAt: serverTimestamp(),
         lastPostAt: serverTimestamp(),
         posts: [],
+        contributors: [authUserId.value],
+        slug: "",
       };
 
       const threadRef = doc(collection(db, "threads"));
@@ -212,7 +228,9 @@ export const useMainStore = defineStore(
 
       upsert(threads, newThread!);
 
-      await createPost({ text, threadId: threadRef.id });
+      const firstPostId = await createPost({ text, threadId: threadRef.id });
+
+      await updateDoc(threadRef, { firstPostId });
 
       tryAppendThreadToForumOrThrow(forumId, threadRef.id);
 
