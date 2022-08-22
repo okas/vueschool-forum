@@ -3,9 +3,8 @@ import {
   collection,
   doc,
   FieldValue,
-  getDoc,
+  increment,
   serverTimestamp,
-  updateDoc,
   writeBatch,
 } from "@firebase/firestore";
 import { ok } from "assert";
@@ -34,7 +33,7 @@ import {
   ThreadVMWithMeta,
 } from "../types/threadVm-types";
 import { UserVMWithActivity } from "../types/userVm-types";
-import { countBy, findById, upsert } from "../utils/array-helpers";
+import { countBy, findById } from "../utils/array-helpers";
 import { firestoreDb as db } from "./../firebase/index";
 import {
   makeFirebaseFetchMultiDocsFn,
@@ -87,14 +86,6 @@ export const useMainStore = defineStore(
         get threads() {
           return threads.filter(({ userId }) => userId === id);
         },
-
-        get postsCount() {
-          return this.posts?.length ?? 0;
-        },
-
-        get threadsCount() {
-          return this.threads.length ?? 0;
-        },
       };
 
       return result;
@@ -143,10 +134,10 @@ export const useMainStore = defineStore(
       Object.assign(users[users.findIndex(({ id }) => id === dto.id)], dto);
     }
 
-    async function createPost({
-      threadId,
-      ...rest
-    }: PostVMNew): Promise<string> {
+    async function createPost(
+      { threadId, ...rest }: PostVMNew,
+      threadCreation = false
+    ): Promise<string> {
       const postDto: Omit<PostVm, "id" | "publishedAt"> & {
         publishedAt: FieldValue;
       } = {
@@ -156,11 +147,14 @@ export const useMainStore = defineStore(
         publishedAt: serverTimestamp(),
       };
 
-      const thread = threads.find(({ id }) => id === threadId)!;
+      const thread = findById(threads, threadId);
+
+      ok(thread, `Cannot get thread by id "${threadId}".`);
 
       const postRef = doc(collection(db, "posts"));
       const threadRef = doc(db, "threads", threadId);
       const forumRef = doc(db, "forums", thread.forumId);
+      const userRef = doc(db, "users", authUserId.value);
 
       await writeBatch(db)
         .set(postRef, postDto)
@@ -169,23 +163,22 @@ export const useMainStore = defineStore(
           lastPostAt: serverTimestamp(),
           contributors: arrayUnion(authUserId.value),
           lastPostId: postRef.id,
+          ...(threadCreation && { firstPostId: postRef.id }),
         })
         .update(forumRef, {
           lastPostId: postRef.id,
         })
+        .update(userRef, {
+          postsCount: increment(1),
+        })
         .commit();
 
-      const newPost = (
-        await getDoc(postRef.withConverter(postVmConverter))
-      ).data()!;
-
-      posts.push(newPost);
-
-      thread.lastPostAt = newPost.publishedAt;
-      thread.lastPostId = postRef.id;
-
-      tryAppendPostToThreadOrThrow(threadId, postRef.id);
-      tryAppendContributorToThreadOrThrow(threadId, authUserId.value);
+      await Promise.allSettled([
+        fetchPost(postRef.id),
+        fetchThread(threadId),
+        fetchForum(forumRef.id),
+        fetchUser(authUserId.value),
+      ]);
 
       return postRef.id;
     }
@@ -195,7 +188,7 @@ export const useMainStore = defineStore(
       forumId,
       ...rest
     }: ThreadVMNew): Promise<string> {
-      const dto: Omit<
+      const threadDto: Omit<
         ThreadVM,
         "id" | "publishedAt" | "lastPostAt" | "firstPostId" | "lastPostId"
       > & {
@@ -214,25 +207,24 @@ export const useMainStore = defineStore(
 
       const threadRef = doc(collection(db, "threads"));
       const forumRef = doc(db, "forums", forumId);
+      const userRef = doc(db, "users", authUserId.value);
 
       await writeBatch(db)
-        .set(threadRef, dto)
+        .set(threadRef, threadDto)
         .update(forumRef, {
           threads: arrayUnion(threadRef.id),
         })
+        .update(userRef, {
+          threadsCount: increment(1),
+        })
         .commit();
 
-      const newThread = (
-        await getDoc(threadRef.withConverter(threadVmConverter))
-      ).data();
+      // Guarantees, that next step, createPost has required data for it's job.
+      await fetchThread(threadRef.id);
 
-      upsert(threads, newThread!);
-
-      const firstPostId = await createPost({ text, threadId: threadRef.id });
-
-      await updateDoc(threadRef, { firstPostId });
-
-      tryAppendThreadToForumOrThrow(forumId, threadRef.id);
+      // As `createPost` already fetches graph, there is no need to fetch
+      // anymore nor update store manually.
+      await createPost({ text, threadId: threadRef.id }, true);
 
       return threadRef.id;
     }
@@ -309,19 +301,6 @@ export const useMainStore = defineStore(
     //        __ INTERNALS __
     // --------------------------
 
-    const tryAppendPostToThreadOrThrow = _makeParentChildUniqueAppenderFn(
-      threads,
-      "posts"
-    );
-
-    const tryAppendThreadToForumOrThrow = _makeParentChildUniqueAppenderFn(
-      forums,
-      "threads"
-    );
-
-    const tryAppendContributorToThreadOrThrow =
-      _makeParentChildUniqueAppenderFn(threads, "contributors");
-
     return {
       // STATE
 
@@ -362,25 +341,3 @@ export const useMainStore = defineStore(
     };
   }
 );
-
-function _makeParentChildUniqueAppenderFn<
-  TId,
-  TParent extends { id: TId } & Record<string, unknown>,
-  PropChild extends keyof TParent
->(array: Array<TParent>, childArrayProp: PropChild) {
-  return <TAppendValue>(parentId: TId, ...appendValue: Array<TAppendValue>) => {
-    const parent = findById(array, parentId);
-
-    ok(parent, `Append error: non-existing parent.`);
-
-    const childArray = parent[childArrayProp] as Array<TAppendValue>;
-
-    if (!childArray) {
-      (parent[childArrayProp] as Array<TAppendValue>) = [...appendValue];
-    } else {
-      appendValue.forEach(
-        (val) => !childArray.includes(val) && childArray.push(val)
-      );
-    }
-  };
-}

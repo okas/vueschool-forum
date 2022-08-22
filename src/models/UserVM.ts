@@ -13,4 +13,6 @@ export class UserVM extends HasId {
   twitter?: string;
   website?: string;
   location?: string;
+  postsCount!: number;
+  threadsCount!: number;
 }
