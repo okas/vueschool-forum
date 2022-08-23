@@ -5,7 +5,7 @@ import { PostVm } from "../models/PostVm";
 import { StatsVM } from "../models/StatsVM";
 import { ThreadVM } from "../models/ThreadVM";
 import { UserVM } from "../models/UserVM";
-import { PostVMNew } from "./postVm-types";
+import { PostVMEdit, PostVMNew } from "./postVm-types";
 import { ThreadVMEdit, ThreadVMNew, ThreadVMWithMeta } from "./threadVm-types";
 import { UserVMWithActivity } from "./userVm-types";
 
@@ -33,6 +33,7 @@ export interface MainStoreGetters {
 export interface MainStoreActions {
   editUser(dto: UserVM): Promise<void>;
   createPost(dto: PostVMNew): Promise<string>;
+  editPost(dto: PostVMEdit): Promise<void>;
   createThread(dto: ThreadVMNew): Promise<string>;
   editThread(dto: ThreadVMEdit): Promise<void>;
   fetchThread(id: string): Promise<ThreadVM | undefined>;

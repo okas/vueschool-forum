@@ -26,7 +26,7 @@ import {
   MainStoreGetters,
   MainStoreState,
 } from "../types/main-store-types";
-import { PostVMNew } from "../types/postVm-types";
+import { PostVMEdit, PostVMNew } from "../types/postVm-types";
 import {
   ThreadVMEdit,
   ThreadVMNew,
@@ -182,6 +182,23 @@ export const useMainStore = defineStore(
       ]);
 
       return postRef.id;
+    }
+
+    async function editPost({ id, text }: PostVMEdit) {
+      const postRef = doc(db, "posts", id);
+
+      await writeBatch(db)
+        .update(postRef, {
+          text,
+          edited: {
+            at: serverTimestamp(),
+            by: authUserId.value,
+            moderated: false,
+          },
+        })
+        .commit();
+
+      await fetchPost(id);
     }
 
     async function createThread({
@@ -360,6 +377,7 @@ export const useMainStore = defineStore(
 
       editUser,
       createPost,
+      editPost,
       createThread,
       editThread,
       fetchThread,

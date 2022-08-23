@@ -2,7 +2,7 @@
 import { computed, ref } from "vue";
 import { PostVm } from "../models/PostVm";
 import { useMainStore } from "../stores/main-store";
-import { PostVMFormInput } from "../types/postVm-types";
+import { PostVMEdit, PostVMFormInput } from "../types/postVm-types";
 import { getCountPhrase } from "../utils/misc";
 import PostEditor from "./PostEditor.vue";
 
@@ -10,7 +10,7 @@ const props = defineProps<{
   posts: Array<PostVm>;
 }>();
 
-const { getUserByIdFn, posts } = useMainStore();
+const store = useMainStore();
 
 const renderData = computed(() =>
   props.posts.map(({ id, userId, text, publishedAt }) => {
@@ -19,7 +19,7 @@ const renderData = computed(() =>
       avatar: userAvatar,
       postsCount,
       threadsCount,
-    } = getUserByIdFn(userId);
+    } = store.getUserByIdFn(userId);
 
     return {
       id,
@@ -33,15 +33,24 @@ const renderData = computed(() =>
   })
 );
 
-const editingPostId = ref<string>(null);
+const editingPostId = ref<PostVm | null>(null);
 
 function toggleEditMode(postId: string) {
-  editingPostId.value = editingPostId.value === postId ? null : postId;
+  editingPostId.value =
+    editingPostId.value?.id === postId
+      ? null
+      : props.posts.find(({ id }) => id === postId);
 }
 
-function savePost({ text }: PostVMFormInput) {
-  posts.find(({ id }) => id === editingPostId.value).text = text;
-  toggleEditMode(editingPostId.value);
+function savePost(dto: PostVMFormInput) {
+  const post: PostVMEdit = {
+    id: editingPostId.value.id,
+    ...dto,
+  };
+
+  toggleEditMode(editingPostId.value.id);
+
+  store.editPost(post);
 }
 </script>
 
@@ -82,7 +91,7 @@ function savePost({ text }: PostVMFormInput) {
       <div class="post-content">
         <div>
           <post-editor
-            v-if="editingPostId === id"
+            v-if="editingPostId?.id === id"
             :text="text"
             @save="savePost"
             @cancel="toggleEditMode(id)"
