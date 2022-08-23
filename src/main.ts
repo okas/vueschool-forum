@@ -1,7 +1,7 @@
 import { createPinia } from "pinia";
 import { createApp } from "vue";
 import AppRoot from "./App.vue";
-
+import fontAwesomePlugin from "./plugins/FontAwesome";
 import router from "./router";
 import registerGlobalComponents from "./utils/useAutoComponentRegistrator";
 
@@ -20,6 +20,7 @@ forumApp
       // eslint-disable-next-line @typescript-eslint/ban-ts-comment
       // @ts-ignore
       require.context("@/components/", true, /App[A-Z]\w+\.(vue|js)$/),
-  });
+  })
+  .use(fontAwesomePlugin);
 
 forumApp.mount("#app");

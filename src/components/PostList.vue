@@ -70,13 +70,14 @@ const renderData = computed(() =>
         <div>
           <p v-text="text" />
         </div>
-        <!-- <a
-            href="#"
-            style="margin-left: auto"
-            class="link-unstyled"
-            title="Make a change"
-            ><i class="fa fa-pencil"></i
-          ></a> -->
+        <a
+          href="#"
+          style="margin-left: auto; padding-left: 0.625rem"
+          class="link-unstyled"
+          title="Make a change"
+        >
+          <fa icon="pencil-alt" />
+        </a>
       </div>
 
       <div class="post-date text-faded">
