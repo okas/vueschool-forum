@@ -96,8 +96,17 @@ function scrollBehavior(to: RouteLocationNormalized): Promise<ScrollToOptions> {
   );
 }
 
-export default createRouter({
+const router = createRouter({
   routes,
   scrollBehavior,
   history: createWebHistory(),
 });
+
+router.beforeEach(async (_, from) => {
+  const store = useMainStore();
+  // < FETCH
+  await store.fetchAuthUser();
+  // > FETCH
+});
+
+export default router;

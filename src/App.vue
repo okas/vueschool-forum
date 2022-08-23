@@ -1,9 +1,5 @@
 <script setup lang="ts">
 import TheNavBar from "./components/TheNavBar.vue";
-import { useMainStore } from "./stores/main-store";
-// < FETCH
-useMainStore().fetchAuthUser();
-// > FETCH
 </script>
 
 <template>
