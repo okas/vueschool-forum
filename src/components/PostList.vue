@@ -13,7 +13,7 @@ const props = defineProps<{
 const store = useMainStore();
 
 const renderData = computed(() =>
-  props.posts.map(({ id, userId, text, publishedAt }) => {
+  props.posts.map(({ id, userId, text, publishedAt, edited }) => {
     const {
       name: userName,
       avatar: userAvatar,
@@ -29,6 +29,7 @@ const renderData = computed(() =>
       userAvatar,
       postsCount,
       threadsCount,
+      edited,
     };
   })
 );
@@ -65,6 +66,7 @@ function savePost(dto: PostVMFormInput) {
         userName,
         postsCount,
         threadsCount,
+        edited,
       } of renderData"
       :key="id"
       class="post"
@@ -110,7 +112,12 @@ function savePost(dto: PostVMFormInput) {
       </div>
 
       <div class="post-date text-faded">
-        <app-date :timestamp="publishedAt" />
+        <span v-if="edited?.at">
+          edited <em><app-date :timestamp="edited?.at" /></em> |
+        </span>
+        <span>
+          created <em><app-date :timestamp="publishedAt" /></em>
+        </span>
       </div>
 
       <!-- <div class="reactions">
