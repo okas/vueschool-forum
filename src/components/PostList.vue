@@ -1,14 +1,16 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { PostVm } from "../models/PostVm";
 import { useMainStore } from "../stores/main-store";
+import { PostVMFormInput } from "../types/postVm-types";
 import { getCountPhrase } from "../utils/misc";
+import PostEditor from "./PostEditor.vue";
 
 const props = defineProps<{
   posts: Array<PostVm>;
 }>();
 
-const { getUserByIdFn } = useMainStore();
+const { getUserByIdFn, posts } = useMainStore();
 
 const renderData = computed(() =>
   props.posts.map(({ id, userId, text, publishedAt }) => {
@@ -30,6 +32,17 @@ const renderData = computed(() =>
     };
   })
 );
+
+const editingPostId = ref<string>(null);
+
+function toggleEditMode(postId: string) {
+  editingPostId.value = editingPostId.value === postId ? null : postId;
+}
+
+function savePost({ text }: PostVMFormInput) {
+  posts.find(({ id }) => id === editingPostId.value).text = text;
+  toggleEditMode(editingPostId.value);
+}
 </script>
 
 <template>
@@ -68,13 +81,20 @@ const renderData = computed(() =>
 
       <div class="post-content">
         <div>
-          <p v-text="text" />
+          <post-editor
+            v-if="editingPostId === id"
+            :text="text"
+            @save="savePost"
+            @cancel="toggleEditMode(id)"
+          />
+          <p v-else v-text="text" />
         </div>
         <a
           href="#"
           style="margin-left: auto; padding-left: 0.625rem"
           class="link-unstyled"
           title="Make a change"
+          @click.prevent="toggleEditMode(id)"
         >
           <fa icon="pencil-alt" />
         </a>

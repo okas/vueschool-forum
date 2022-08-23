@@ -1,39 +1,46 @@
 <script setup lang="ts">
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { PostVMFormInput } from "../types/postVm-types";
+
+const props = defineProps<{
+  text?: string;
+}>();
 
 const emits = defineEmits<{
   (e: "save", dto: PostVMFormInput): void;
+  (e: "cancel"): void;
 }>();
 
-const text = ref<string>(null);
+const submitBtnPhrase = computed(
+  () => `${props.text ? "Update" : "Publish"} post`
+);
+
+const editorText = ref<string>(props.text);
 
 function save() {
-  const post: PostVMFormInput = {
-    text: text.value,
-  };
-
-  emits("save", post);
-
-  text.value = null;
+  emits("save", {
+    text: editorText.value,
+  });
+  editorText.value = null;
 }
 
 function cancel() {
-  text.value = null;
+  emits("cancel");
+  editorText.value = null;
 }
 </script>
 
 <template>
-  <div>
-    <h1>
+  <div class="col-full">
+    <h1 v-if="!text">
       Create new post in <i><slot>current thread</slot></i>
     </h1>
     <form @submit.prevent="save">
       <div class="form-group">
-        <label for="thread_content">Content:</label>
+        <label v-if="!text" for="thread_content">Content:</label>
         <textarea
           id="thread_content"
-          v-model="text"
+          v-model="editorText"
           class="form-input"
           name="content"
           rows="8"
@@ -41,12 +48,20 @@ function cancel() {
         />
       </div>
       <div class="btn-group">
-        <button class="btn btn-ghost" type="button" @click.prevent="cancel">
+        <button
+          v-if="editorText"
+          class="btn btn-ghost"
+          type="button"
+          @click.prevent="cancel"
+        >
           Cancel
         </button>
-        <button class="btn btn-blue" type="submit" name="Publish">
-          Publish
-        </button>
+        <button
+          class="btn btn-blue"
+          type="submit"
+          name="Publish"
+          v-text="submitBtnPhrase"
+        />
       </div>
     </form>
   </div>
