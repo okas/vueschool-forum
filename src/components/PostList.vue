@@ -25,6 +25,7 @@ const renderData = computed(() =>
       id,
       text,
       publishedAt,
+      userId,
       userName,
       userAvatar,
       postsCount,
@@ -62,6 +63,7 @@ function savePost(dto: PostVMFormInput) {
         id,
         text,
         publishedAt,
+        userId,
         userAvatar,
         userName,
         postsCount,
@@ -101,6 +103,7 @@ function savePost(dto: PostVMFormInput) {
           <p v-else v-text="text" />
         </div>
         <a
+          v-if="userId === store.authUserId"
           href="#"
           style="margin-left: auto; padding-left: 0.625rem"
           class="link-unstyled"
