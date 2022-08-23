@@ -11,7 +11,12 @@ defineProps<{
   edit?: boolean;
 }>();
 
-const { getAuthUser } = storeToRefs(useMainStore());
+const store = useMainStore();
+// < FETCH
+store.fetchAuthUser();
+// > FETCH
+
+const { getAuthUser } = storeToRefs(store);
 </script>
 
 <template>
