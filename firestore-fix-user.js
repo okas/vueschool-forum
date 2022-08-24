@@ -18,7 +18,7 @@ const { log } = console;
 const app = initializeApp(firebaseConfig);
 const db = getFirestore(app);
 
-log("-transaction start");
+log("- transaction start");
 
 const userCollRef = collection(db, "users");
 const postsCollRef = collection(db, "posts");
@@ -45,7 +45,7 @@ await runTransaction(db, async (tran) => {
             tran.update(userSnap.ref, dto);
 
             log(
-              `-updated user: ${userSnap.id} with "postsCount: ${dto.postsCount}" and "threadsCount: ${dto.threadsCount}"`
+              `- updated user: ${userSnap.id} with "postsCount: ${dto.postsCount}" and "threadsCount: ${dto.threadsCount}"`
             );
           })
         );
@@ -54,9 +54,9 @@ await runTransaction(db, async (tran) => {
 
   await Promise.allSettled(userTranUpdatePromises);
 
-  log("-all updates don");
+  log("- all updates done");
 });
 
-log("-transaction done");
+log("- transaction done");
 
 process.exit();
