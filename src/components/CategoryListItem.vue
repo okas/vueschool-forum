@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import { useRoute } from "vue-router";
 import { ForumVM } from "../models/ForumVM";
 import ForumList from "./ForumList.vue";
@@ -11,7 +12,7 @@ const props = defineProps<{
 
 const { params } = useRoute();
 
-const showCategoryLink = params.categoryId !== props.categoryId;
+const showCategoryLink = computed(() => params.categoryId !== props.categoryId);
 </script>
 
 <template>

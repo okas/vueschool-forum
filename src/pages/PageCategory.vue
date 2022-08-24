@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import CategoryListItem from "../components/CategoryListItem.vue";
 import { useMainStore } from "../stores/main-store";
 
@@ -10,10 +11,10 @@ const store = useMainStore();
 // < FETCH
 await store.fetchForums((await store.fetchCategory(props.categoryId)).forums);
 // > FETCH
-const name = store.getCategoryNamedFn(props.categoryId);
+const name = computed(() => store.getCategoryNamedFn(props.categoryId));
 
-const categoryForums = store.forums.filter(
-  ({ categoryId }) => categoryId === props.categoryId
+const categoryForums = computed(() =>
+  store.forums.filter(({ categoryId }) => categoryId === props.categoryId)
 );
 </script>
 

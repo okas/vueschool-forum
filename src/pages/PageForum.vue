@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import ThreadList from "../components/ThreadList.vue";
 import { useMainStore } from "../stores/main-store";
 import { findById } from "../utils/array-helpers";
@@ -15,9 +16,11 @@ await store.fetchUsers(
   ).map(({ userId }) => userId)
 );
 // > FETCH
-const forum = findById(store.forums, props.forumId);
+const forum = computed(() => findById(store.forums, props.forumId));
 
-const forumThreads = forum.threads?.map((id) => store.getThreadMetaInfoFn(id));
+const forumThreads = computed(() =>
+  forum.value.threads?.map((id) => store.getThreadMetaInfoFn(id))
+);
 </script>
 
 <template>

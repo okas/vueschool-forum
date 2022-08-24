@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { computed } from "vue";
 import CategoryList from "../components/CategoryList.vue";
 import { useMainStore } from "../stores/main-store";
 import { groupByToMap } from "../utils/array-helpers";
@@ -9,9 +10,8 @@ await store.fetchForums(
   (await store.fetchAllCategories()).flatMap(({ forums }) => forums)
 );
 // > FETCH
-const groupedForums = groupByToMap(
-  store.forums,
-  ({ categoryId }) => categoryId
+const groupedForums = computed(() =>
+  groupByToMap(store.forums, ({ categoryId }) => categoryId)
 );
 </script>
 
