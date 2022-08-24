@@ -5,6 +5,7 @@ import {
   FieldValue,
   increment,
   serverTimestamp,
+  Unsubscribe,
   writeBatch,
 } from "@firebase/firestore";
 import { ok } from "assert";
@@ -62,6 +63,7 @@ export const useMainStore = defineStore(
       usersCount: 0,
       usersOnline: 0,
     });
+    const _dbUnsubscribes = reactive<Array<Unsubscribe>>([]);
 
     // --------------------------
     //        GETTERS
@@ -282,54 +284,63 @@ export const useMainStore = defineStore(
     const fetchThread = makeFirebaseFetchSingleDocFn(
       threads,
       "threads",
+      _dbUnsubscribes,
       threadVmConverter
     );
 
     const fetchUser = makeFirebaseFetchSingleDocFn(
       users,
       "users",
+      _dbUnsubscribes,
       userVmConverter
     );
 
     const fetchPost = makeFirebaseFetchSingleDocFn(
       posts,
       "posts",
+      _dbUnsubscribes,
       postVmConverter
     );
 
     const fetchForum = makeFirebaseFetchSingleDocFn(
       forums,
       "forums",
+      _dbUnsubscribes,
       hasIdVmConverter
     );
 
     const fetchCategory = makeFirebaseFetchSingleDocFn(
       categories,
       "categories",
+      _dbUnsubscribes,
       hasIdVmConverter
     );
 
     const fetchThreads = makeFirebaseFetchMultiDocsFn(
       threads,
       "threads",
+      _dbUnsubscribes,
       threadVmConverter
     );
 
     const fetchUsers = makeFirebaseFetchMultiDocsFn(
       users,
       "users",
+      _dbUnsubscribes,
       userVmConverter
     );
 
     const fetchPosts = makeFirebaseFetchMultiDocsFn(
       posts,
       "posts",
+      _dbUnsubscribes,
       postVmConverter
     );
 
     const fetchForums = makeFirebaseFetchMultiDocsFn(
       forums,
       "forums",
+      _dbUnsubscribes,
       hasIdVmConverter
     );
 
@@ -337,6 +348,7 @@ export const useMainStore = defineStore(
       return makeFirebaseFetchMultiDocsFn(
         categories,
         "categories",
+        _dbUnsubscribes,
         hasIdVmConverter
       )();
     }
@@ -345,13 +357,16 @@ export const useMainStore = defineStore(
       return makeFirebaseFetchSingleDocFn(
         users,
         "users",
+        _dbUnsubscribes,
         userVmConverter
       )(authUserId.value);
     }
 
-    // --------------------------
-    //        __ INTERNALS __
-    // --------------------------
+    async function clearDbSubscriptions() {
+      console.debug("----- about to delete subscriptions");
+      _dbUnsubscribes.forEach((unsubscribe) => unsubscribe());
+      _dbUnsubscribes.splice(0);
+    }
 
     return {
       // STATE
@@ -363,6 +378,7 @@ export const useMainStore = defineStore(
       threads,
       users,
       stats,
+      _dbUnsubscribes,
 
       // GETTERS
 
@@ -391,6 +407,7 @@ export const useMainStore = defineStore(
       fetchForums,
       fetchAllCategories,
       fetchAuthUser,
+      clearDbSubscriptions,
     };
   }
 );

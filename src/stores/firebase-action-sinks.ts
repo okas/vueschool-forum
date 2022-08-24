@@ -1,77 +1,171 @@
 import {
   collection,
   doc,
+  DocumentChange,
   DocumentData,
   documentId,
+  DocumentReference,
+  DocumentSnapshot,
   FirestoreDataConverter,
-  getDoc,
-  getDocs,
+  onSnapshot,
   Query,
   query,
-  QueryDocumentSnapshot,
   QuerySnapshot,
+  SnapshotListenOptions,
+  Unsubscribe,
   where,
 } from "firebase/firestore";
 import { HasId } from "../types/HasId";
-import { toBuckets, upsert } from "../utils/array-helpers";
-import { _isFulFilled } from "../utils/promise-helpers";
+import { remove, toBuckets, upsert } from "../utils/array-helpers";
+import { isFulFilled } from "../utils/promise-helpers";
 import { firestoreDb } from "./../firebase/index";
 
-const { warn } = console;
+const { warn, error } = console;
+
+const snapshotListenOptions: SnapshotListenOptions = {
+  includeMetadataChanges: true,
+};
 
 export function makeFirebaseFetchSingleDocFn<TViewModel extends HasId>(
   array: Array<TViewModel>,
   collectionName: string,
+  unsubscribesSink: Array<Unsubscribe>,
   converter?: FirestoreDataConverter<TViewModel>
 ): (id: string) => Promise<TViewModel | undefined> {
   return async (id: string) => {
-    const docRef = doc(firestoreDb, collectionName, id);
+    const docRef = getSingleDocQuery<TViewModel>(id, collectionName, converter);
 
-    const docSnap = await getDoc(
-      converter ? docRef.withConverter(converter) : docRef
-    );
+    return new Promise((resolve: (vm: TViewModel | undefined) => void) => {
+      const unsubscribe = onSnapshot(
+        docRef,
+        snapshotListenOptions,
+        (docSnap: DocumentSnapshot<DocumentData>): void => {
+          if (!docSnap.exists()) {
+            _warn(collectionName, id);
 
-    if (!docSnap.exists()) {
-      _warn(collectionName, id);
-      return;
-    }
+            remove(array, ({ id: vmId }) => vmId === docSnap.id);
 
-    const viewModel = vmMapper<TViewModel>(docSnap);
+            return resolve(undefined);
+          }
 
-    upsert(array, viewModel);
+          resolve(handleSingleDocumentUpsert(docSnap, array));
+        },
+        error
+      );
 
-    return viewModel;
+      unsubscribesSink.push(unsubscribe);
+    });
   };
 }
 
 export function makeFirebaseFetchMultiDocsFn<TViewModel extends HasId>(
   array: Array<TViewModel>,
   collectionName: string,
+  unsubscribesSink: Array<Unsubscribe>,
   converter?: FirestoreDataConverter<TViewModel>
 ): (ids?: Array<string>) => Promise<Array<TViewModel>> {
-  return async (ids?: Array<string>) => {
-    const queries = ids
-      ? createBucketedQueries(ids, collectionName, converter)
-      : [getAllQuery(collectionName, converter)];
-
-    const settledPromises = await Promise.allSettled(queries.map(getDocs));
-
-    const querySnaps: QuerySnapshot<DocumentData>[] = [];
-
-    settledPromises.forEach((x) => _isFulFilled(x) && querySnaps.push(x.value));
-
-    const viewModels = querySnaps.flatMap((qs) =>
-      qs.docs.map((doc) => vmMapper<TViewModel>(doc))
+  return async (ids: Array<string> = []) => {
+    const queries = getMultiDocQueries<TViewModel>(
+      collectionName,
+      ids,
+      converter
     );
 
-    if (!viewModels.length) {
-      _warn(collectionName, ...(ids ?? []));
-    } else {
-      upsert(array, ...viewModels);
-    }
+    const settledPromises = await Promise.allSettled(
+      queries.map((q) =>
+        getMultiDocSnapHandlerAsync(q, array, unsubscribesSink)
+      )
+    );
 
-    return viewModels;
+    return extractFetchResult<TViewModel>(settledPromises);
   };
+}
+
+function getSingleDocQuery<TViewModel extends HasId>(
+  id: string,
+  collectionName: string,
+  converter: FirestoreDataConverter<TViewModel> | undefined
+): DocumentReference<DocumentData> {
+  const docRef = doc(firestoreDb, collectionName, id);
+
+  if (converter) {
+    return docRef.withConverter(converter);
+  }
+  return docRef;
+}
+
+function getMultiDocSnapHandlerAsync<TViewModel extends HasId>(
+  qryRef: Query<DocumentData>,
+  array: Array<TViewModel>,
+  unsubscribesSink: Array<Unsubscribe>
+): Promise<Array<TViewModel>> {
+  return new Promise((resolve: (vm: Array<TViewModel>) => void) => {
+    let fetchResultSink: TViewModel[] | undefined = [];
+
+    const unsubscribeFn = onSnapshot(
+      qryRef,
+      snapshotListenOptions,
+      (qrySnap: QuerySnapshot<DocumentData>): void => {
+        qrySnap
+          .docChanges()
+          .forEach((docChange: DocumentChange<DocumentData>) => {
+            if (docChange.type === "removed") {
+              remove(array, ({ id }) => id === docChange.doc.id);
+              return;
+            }
+
+            const vm = handleSingleDocumentUpsert(docChange.doc, array);
+
+            fetchResultSink?.push(vm);
+          });
+
+        if (fetchResultSink && !qrySnap.metadata.fromCache) {
+          // TODO: For future, if app is offline, then resolve immediately,
+          // TODO: do not wait for event from server response.
+          resolve(fetchResultSink);
+
+          fetchResultSink = undefined;
+        }
+      }
+    );
+
+    unsubscribesSink.push(unsubscribeFn);
+  });
+}
+
+function extractFetchResult<TViewModel extends HasId>(
+  settledPromises: PromiseSettledResult<TViewModel[]>[]
+) {
+  const viewModels: TViewModel[] = [];
+
+  settledPromises.forEach((settledResult) => {
+    isFulFilled(settledResult) &&
+      viewModels.push(...settledResult.value.map((vm) => vm));
+  });
+  return viewModels;
+}
+
+function handleSingleDocumentUpsert<TViewModel extends HasId>(
+  docSnap: DocumentSnapshot<DocumentData>,
+  array: Array<TViewModel>
+): TViewModel {
+  const viewModel = vmMapper<TViewModel>(docSnap);
+
+  upsert(array, viewModel);
+
+  return viewModel;
+}
+
+function getMultiDocQueries<TViewModel extends HasId>(
+  collectionName: string,
+  ids?: Array<string>,
+  converter?: FirestoreDataConverter<TViewModel>
+): Array<Query<DocumentData>> {
+  const uniqueIds = ids?.length ? [...new Set(ids)] : ids ?? [];
+
+  return uniqueIds.length
+    ? createBucketedQueries(uniqueIds, collectionName, converter)
+    : [getAllQuery(collectionName, converter)];
 }
 
 function getAllQuery<TViewModel extends HasId>(
@@ -103,7 +197,7 @@ function createBucketedQueries<TViewModel extends HasId>(
 }
 
 function vmMapper<TViewModel extends HasId>(
-  snap: QueryDocumentSnapshot<DocumentData>
+  snap: DocumentSnapshot<DocumentData>
 ): TViewModel {
   return { ...snap.data(), id: snap.id } as TViewModel;
 }

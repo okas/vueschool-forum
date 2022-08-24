@@ -1,3 +1,4 @@
+import { Unsubscribe } from "firebase/firestore";
 import { ComputedRef, Ref } from "vue";
 import { CategoryVM } from "../models/CategoryVM";
 import { ForumVM } from "../models/ForumVM";
@@ -17,6 +18,7 @@ export interface MainStoreState {
   threads: Array<ThreadVM>;
   users: Array<UserVM>;
   stats: StatsVM;
+  _dbUnsubscribes: Array<Unsubscribe>;
 }
 
 export interface MainStoreGetters {
@@ -47,4 +49,5 @@ export interface MainStoreActions {
   fetchForums(ids?: Array<string>): Promise<Array<ForumVM>>;
   fetchAllCategories(): Promise<Array<CategoryVM>>;
   fetchAuthUser(): Promise<UserVM | undefined>;
+  clearDbSubscriptions(): void;
 }

@@ -73,3 +73,10 @@ export function upsert<TId, TItem extends { id: TId }>(
 
   return array.length;
 }
+
+export function remove<TId, TItem extends { id: TId }>(
+  array: Array<TItem>,
+  predicate: (item: TItem) => boolean
+) {
+  return array.splice(array.findIndex(predicate), 1);
+}

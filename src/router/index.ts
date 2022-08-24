@@ -5,6 +5,7 @@ import {
   RouteLocationNormalized,
   RouteLocationRaw,
   RouteRecordRaw,
+  START_LOCATION,
 } from "vue-router";
 import { useMainStore } from "../stores/main-store";
 
@@ -104,6 +105,8 @@ const router = createRouter({
 
 router.beforeEach(async (_, from) => {
   const store = useMainStore();
+
+  from !== START_LOCATION && store.clearDbSubscriptions();
   // < FETCH
   await store.fetchAuthUser();
   // > FETCH
