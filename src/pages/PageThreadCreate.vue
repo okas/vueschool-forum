@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useAsyncState } from "@vueuse/core";
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import ThreadEditor from "../components/ThreadEditor.vue";
@@ -11,9 +12,9 @@ const props = defineProps<{
 }>();
 
 const store = useMainStore();
-// < FETCH
-await store.fetchForum(props.forumId);
-// > FETCH
+
+const { isReady } = useAsyncState(store.fetchForum(props.forumId), undefined);
+
 const router = useRouter();
 
 const forum = computed(() => findById(store.forums, props.forumId));
@@ -34,7 +35,7 @@ function cancel() {
 </script>
 
 <template>
-  <div v-if="forum.name" class="col-full push-top">
+  <div v-if="isReady" class="col-full push-top">
     <h1>
       Create new thread in
       <i v-text="forum.name" />

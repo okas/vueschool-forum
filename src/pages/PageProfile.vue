@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useAsyncState } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import PostList from "../components/PostList.vue";
 import ProfileCard from "../components/ProfileCard.vue";
@@ -12,15 +13,14 @@ defineProps<{
 }>();
 
 const store = useMainStore();
-// < FETCH
-store.fetchAuthUser();
-// > FETCH
+
+const { isReady } = useAsyncState(store.fetchAuthUser, undefined);
 
 const { getAuthUser } = storeToRefs(store);
 </script>
 
 <template>
-  <div class="flex-grid">
+  <div v-if="isReady" class="flex-grid">
     <div class="col-3 push-top">
       <profile-card v-if="!edit" :auth-user="getAuthUser" />
       <profile-card-editor v-else :user="getAuthUser" />

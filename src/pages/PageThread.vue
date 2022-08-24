@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useAsyncState } from "@vueuse/core";
 import { computed } from "vue";
 import PostEditor from "../components/PostEditor.vue";
 import PostList from "../components/PostList.vue";
@@ -11,18 +12,14 @@ const props = defineProps<{
 }>();
 
 const store = useMainStore();
-// < FETCH
-const { userId: threadUserId, posts: threadPostIds } = await store.fetchThread(
-  props.threadId
-);
 
-await Promise.allSettled([
-  store.fetchUsers([
-    threadUserId,
-    ...(await store.fetchPosts(threadPostIds)).map(({ userId }) => userId),
-  ]),
-]);
-// > FETCH
+const { isReady } = useAsyncState(async () => {
+  const { userId, posts } = await store.fetchThread(props.threadId);
+  const threadPosts = await store.fetchPosts(posts);
+  const postUserIds = threadPosts.map(({ userId }) => userId);
+  await Promise.allSettled([store.fetchUsers([userId, ...postUserIds])]);
+}, undefined);
+
 const thread = computed(() => store.getThreadMetaInfoFn(props.threadId));
 
 const posts = computed(() =>
@@ -50,7 +47,7 @@ function addPost(dto: PostVMFormInput) {
 </script>
 
 <template>
-  <div class="col-large push-top">
+  <div v-if="isReady" class="col-large push-top">
     <!-- <ul class="breadcrumbs"></ul>
       <li>
         <a href="#"><i class="fa fa-home fa-btn"></i>Home</a>

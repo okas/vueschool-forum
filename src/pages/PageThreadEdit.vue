@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useAsyncState } from "@vueuse/core";
 import { computed } from "vue";
 import { useRouter } from "vue-router";
 import ThreadEditor from "../components/ThreadEditor.vue";
@@ -11,15 +12,18 @@ const props = defineProps<{
 }>();
 
 const store = useMainStore();
-// < FETCH
-await store.fetchPost((await store.fetchThread(props.threadId)).posts[0]);
-// > FETCH
+
+const { isReady } = useAsyncState(async () => {
+  const { firstPostId } = await store.fetchThread(props.threadId);
+  await store.fetchPost(firstPostId);
+}, undefined);
+
 const router = useRouter();
 
 const thread = computed(() => findById(store.threads, props.threadId));
 
 const firstPostText = computed(
-  () => findById(store.posts, thread.value.posts[0])?.text
+  () => findById(store.posts, thread.value.firstPostId)?.text
 );
 
 async function save({ title, text }: ThreadVMFormInput) {
@@ -42,7 +46,7 @@ function functionGoToThread() {
 </script>
 
 <template>
-  <div v-if="thread && firstPostText" class="col-full push-top">
+  <div v-if="isReady" class="col-full push-top">
     <h1>Editing <i v-text="thread.title" /></h1>
 
     <thread-editor
