@@ -1,10 +1,15 @@
 <script setup lang="ts">
+import { storeToRefs } from "pinia";
 import TheNavBar from "./components/TheNavBar.vue";
+import { useMainStore } from "./stores/main-store";
+
+const { _isReady } = storeToRefs(useMainStore());
 </script>
 
 <template>
   <the-nav-bar />
   <div class="container">
+    <div v-show="!_isReady">... --- loading --- ...</div>
     <router-view />
   </div>
 </template>

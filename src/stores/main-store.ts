@@ -64,6 +64,7 @@ export const useMainStore = defineStore(
       usersOnline: 0,
     });
     const _dbUnsubscribes = reactive<Array<Unsubscribe>>([]);
+    const _isReady = ref(false);
 
     // --------------------------
     //        GETTERS
@@ -379,6 +380,7 @@ export const useMainStore = defineStore(
       users,
       stats,
       _dbUnsubscribes,
+      _isReady,
 
       // GETTERS
 

@@ -14,7 +14,10 @@ defineProps<{
 
 const store = useMainStore();
 
-const { isReady } = useAsyncState(store.fetchAuthUser, undefined);
+const { isReady } = useAsyncState(async () => {
+  await store.fetchAuthUser();
+  store._isReady = true;
+}, undefined);
 
 const { getAuthUser } = storeToRefs(store);
 </script>

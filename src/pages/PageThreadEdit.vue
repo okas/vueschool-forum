@@ -16,6 +16,7 @@ const store = useMainStore();
 const { isReady } = useAsyncState(async () => {
   const { firstPostId } = await store.fetchThread(props.threadId);
   await store.fetchPost(firstPostId);
+  store._isReady = true;
 }, undefined);
 
 const router = useRouter();

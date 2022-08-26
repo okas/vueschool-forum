@@ -13,6 +13,7 @@ const store = useMainStore();
 const { isReady } = useAsyncState(async () => {
   const category = await store.fetchCategory(props.categoryId);
   await store.fetchForums(category.forums);
+  store._isReady = true;
 }, undefined);
 
 const name = computed(() => store.getCategoryNamedFn(props.categoryId));

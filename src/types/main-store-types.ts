@@ -19,6 +19,7 @@ export interface MainStoreState {
   users: Array<UserVM>;
   stats: StatsVM;
   _dbUnsubscribes: Array<Unsubscribe>;
+  _isReady: Ref<boolean>;
 }
 
 export interface MainStoreGetters {

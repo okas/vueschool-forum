@@ -18,6 +18,7 @@ const { isReady } = useAsyncState(async () => {
   const threadPosts = await store.fetchPosts(posts);
   const postUserIds = threadPosts.map(({ userId }) => userId);
   await Promise.allSettled([store.fetchUsers([userId, ...postUserIds])]);
+  store._isReady = true;
 }, undefined);
 
 const thread = computed(() => store.getThreadMetaInfoFn(props.threadId));

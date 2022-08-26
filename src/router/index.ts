@@ -112,4 +112,8 @@ router.beforeEach(async (_, from) => {
   // > FETCH
 });
 
+router.afterEach(() => {
+  useMainStore()._isReady = false;
+});
+
 export default router;

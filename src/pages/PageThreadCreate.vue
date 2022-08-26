@@ -13,7 +13,10 @@ const props = defineProps<{
 
 const store = useMainStore();
 
-const { isReady } = useAsyncState(store.fetchForum(props.forumId), undefined);
+const { isReady } = useAsyncState(async () => {
+  await store.fetchForum(props.forumId);
+  store._isReady = true;
+}, undefined);
 
 const router = useRouter();
 

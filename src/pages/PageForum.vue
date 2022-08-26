@@ -15,6 +15,7 @@ const { isReady } = useAsyncState(async () => {
   const forum = await store.fetchForum(props.forumId);
   const forumThreads = await store.fetchThreads(forum.threads);
   await store.fetchUsers(forumThreads.map(({ userId }) => userId));
+  store._isReady = true;
 }, undefined);
 
 const forum = computed(() => findById(store.forums, props.forumId));

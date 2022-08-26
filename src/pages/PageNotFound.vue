@@ -1,4 +1,8 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useMainStore } from "../stores/main-store";
+
+useMainStore()._isReady = true;
+</script>
 
 <template>
   <div class="col-full text-center">

@@ -11,6 +11,7 @@ const { isReady } = useAsyncState(async () => {
   const categories = await store.fetchAllCategories();
   const forumIds = categories.flatMap(({ forums }) => forums);
   await store.fetchForums(forumIds);
+  store._isReady = true;
 }, undefined);
 
 const groupedForums = computed(() =>
