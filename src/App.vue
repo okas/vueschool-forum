@@ -1,9 +1,36 @@
 <script setup lang="ts">
+import { useNProgress } from "@vueuse/integrations/useNProgress";
 import { storeToRefs } from "pinia";
+import { watch } from "vue";
+import { START_LOCATION, useRouter } from "vue-router";
 import TheNavBar from "./components/TheNavBar.vue";
 import { useMainStore } from "./stores/main-store";
 
-const { _isReady } = storeToRefs(useMainStore());
+const store = useMainStore();
+const { _isReady } = storeToRefs(store);
+
+const { beforeEach, afterEach } = useRouter();
+
+const { start, done } = useNProgress(undefined, {
+  speed: 200,
+  showSpinner: false,
+});
+
+watch(_isReady, (newVal) => newVal && done());
+
+beforeEach(async (_, from) => {
+  from !== START_LOCATION && store.clearDbSubscriptions();
+  // < FETCH
+  await store.fetchAuthUser();
+  // > FETCH
+});
+
+afterEach((to, from) => {
+  if (to.name !== from.name) {
+    _isReady.value = false;
+    start();
+  }
+});
 </script>
 
 <template>
@@ -15,14 +42,19 @@ const { _isReady } = storeToRefs(useMainStore());
 </template>
 
 <style>
+@import "~nprogress/nprogress.css";
 @import "assets/style.css";
-/* @import "~bootstrap/css/bootstrap.css"; */
 
+/* @import "~bootstrap/css/bootstrap.css"; */
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
+}
+
+#nprogress .bar {
+  background-color: rgb(0, 247, 255) !important ;
 }
 </style>
