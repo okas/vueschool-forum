@@ -15,6 +15,7 @@ async function getIconDefinitions(): Promise<IconDefinition[]> {
   const freeSolidIcons = await import("@fortawesome/free-solid-svg-icons").then(
     (module) => {
       // Expand this array with required icons from module.
+      return [module.faPencilAlt, module.faSpinner];
     }
   );
   // If there are icons form other FA module, then add dynamic import statement

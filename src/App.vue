@@ -9,7 +9,7 @@ const { _isReady } = storeToRefs(useMainStore());
 <template>
   <the-nav-bar />
   <div class="container">
-    <div v-show="!_isReady">... --- loading --- ...</div>
+    <fa v-if="!_isReady" icon="spinner" spin transform="grow-16 down-16" />
     <router-view />
   </div>
 </template>
