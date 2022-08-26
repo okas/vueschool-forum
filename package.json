@@ -16,7 +16,7 @@
     "@fortawesome/vue-fontawesome": "^3.0.1",
     "@vueuse/core": "^9.1.1",
     "assert": "^2.0.0",
-    "core-js": "^3.24.1",
+    "core-js": "^3.25.0",
     "dayjs": "^1.11.5",
     "firebase": "^9.9.3",
     "pinia": "^2.0.20",
