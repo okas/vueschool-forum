@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useAsyncState } from "@vueuse/core";
 import { storeToRefs } from "pinia";
+import { onUpdated } from "vue";
 import PostList from "../components/PostList.vue";
 import ProfileCard from "../components/ProfileCard.vue";
 import ProfileCardEditor from "../components/ProfileCardEditor.vue";
@@ -18,6 +19,10 @@ const { isReady } = useAsyncState(async () => {
   await store.fetchAuthUser();
   store._isReady = true;
 }, undefined);
+
+onUpdated(() => {
+  store._isReady = true;
+});
 
 const { getAuthUser } = storeToRefs(store);
 </script>
