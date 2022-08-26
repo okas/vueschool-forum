@@ -1,7 +1,7 @@
 import { createPinia } from "pinia";
 import { createApp } from "vue";
 import AppRoot from "./App.vue";
-import fontAwesomePlugin from "./plugins/FontAwesome";
+import fontAwesomePlugin from "./plugins/font-awesome";
 import router from "./router";
 import registerGlobalComponents from "./utils/useAutoComponentRegistrator";
 
