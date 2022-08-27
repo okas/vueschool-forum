@@ -12,3 +12,8 @@ export type UserVMFireBase = Omit<UserVM, "lastVisitAt" | "registeredAt"> & {
   lastVisitAt: Timestamp;
   registeredAt: Timestamp;
 };
+
+export type UserVMNewFormInput = Pick<
+  UserVM,
+  "name" | "username" | "email" | "avatar"
+>;

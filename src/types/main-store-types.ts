@@ -8,7 +8,7 @@ import { ThreadVM } from "../models/ThreadVM";
 import { UserVM } from "../models/UserVM";
 import { PostVMEdit, PostVMNew } from "./postVm-types";
 import { ThreadVMEdit, ThreadVMNew, ThreadVMWithMeta } from "./threadVm-types";
-import { UserVMWithActivity } from "./userVm-types";
+import { UserVMNew, UserVMWithActivity } from "./userVm-types";
 
 export interface MainStoreState {
   authUserId: Ref<string>;
@@ -34,6 +34,7 @@ export interface MainStoreGetters {
 }
 
 export interface MainStoreActions {
+  createUser(dto: UserVMNew, password: string): Promise<string>;
   editUser(dto: UserVM): Promise<void>;
   createPost(dto: PostVMNew): Promise<string>;
   editPost(dto: PostVMEdit): Promise<void>;

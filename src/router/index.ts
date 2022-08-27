@@ -16,6 +16,11 @@ const routes: Readonly<RouteRecordRaw[]> = [
     component: () => import("../pages/PageHome.vue"),
   },
   {
+    path: "/register",
+    name: "Register",
+    component: () => import("../pages/PageRegister.vue"),
+  },
+  {
     path: "/me",
     name: "Profile",
     component: () => import("../pages/PageProfile.vue"),

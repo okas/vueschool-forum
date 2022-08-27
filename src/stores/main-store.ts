@@ -33,7 +33,7 @@ import {
   ThreadVMNew,
   ThreadVMWithMeta,
 } from "../types/threadVm-types";
-import { UserVMWithActivity } from "../types/userVm-types";
+import { UserVMNew, UserVMWithActivity } from "../types/userVm-types";
 import { countBy, findById } from "../utils/array-helpers";
 import { hasIdVmConverter } from "./../firebase/firebase-converters";
 import { firestoreDb as db } from "./../firebase/index";
@@ -133,6 +133,29 @@ export const useMainStore = defineStore(
     // --------------------------
     //        ACTIONS
     // --------------------------
+
+    async function createUser({
+      email,
+      ...rest
+    }: UserVMNewFormInput): Promise<string> {
+      const userDto: UserVMNewFormInput & {
+        registeredAt: FieldValue;
+      } & Pick<UserVM, "usernameLower" | "postsCount" | "threadsCount"> = {
+        ...rest,
+        email: email.toLowerCase(),
+        usernameLower: rest.username.toLowerCase(),
+        registeredAt: serverTimestamp(),
+        postsCount: 0,
+        threadsCount: 0,
+      };
+
+      const userRef = doc(collection(db, "users"));
+
+      await writeBatch(db).set(userRef, userDto).commit();
+      // TODO: only if, everything is fine, then proceed...
+
+      return userRef.id;
+    }
 
     async function editUser(dto: UserVM) {
       Object.assign(users[users.findIndex(({ id }) => id === dto.id)], dto);
@@ -393,6 +416,7 @@ export const useMainStore = defineStore(
 
       // ACTIONS
 
+      createUser,
       editUser,
       createPost,
       editPost,
