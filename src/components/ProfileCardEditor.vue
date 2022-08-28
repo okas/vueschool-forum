@@ -58,6 +58,8 @@ function cancel() {
           type="text"
           placeholder="Username"
           class="form-input text-lead text-bold"
+          required
+          minlength="3"
         />
       </div>
 
@@ -67,6 +69,8 @@ function cancel() {
           type="text"
           placeholder="Full Name"
           class="form-input text-lead"
+          required
+          minlength="3"
         />
       </div>
 
@@ -99,6 +103,8 @@ function cancel() {
           v-model="userEditorObj.email"
           autocomplete="off"
           class="form-input"
+          required
+          type="email"
         />
       </div>
 

@@ -20,3 +20,7 @@ export type UserVMNewFormInput = Pick<
 
 export type UserVmEditForInput = UserVMNewFormInput &
   Pick<UserVM, "id" | "bio" | "website" | "location" | "avatar" | "twitter">;
+
+export type UserVMRegWithEmailAndPassword = UserVMNewFormInput & {
+  password: string;
+};

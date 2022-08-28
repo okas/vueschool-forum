@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { reactive, ref } from "vue";
+import { reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useMainStore } from "../stores/main-store";
-import { UserVMNewFormInput } from "../types/userVm-types";
+import { UserVMRegWithEmailAndPassword } from "../types/userVm-types";
 
 const store = useMainStore();
 
 const router = useRouter();
 
-const editorObj = reactive<UserVMNewFormInput>({} as UserVMNewFormInput);
-
-const password = ref("");
+const editorObj = reactive<UserVMRegWithEmailAndPassword>(
+  {} as UserVMRegWithEmailAndPassword
+);
 
 async function register() {
-  const newUserId = await store.createUser(editorObj, password.value);
+  const newUserId = await store.registerUserWithEmailAndPassword(editorObj);
 
   store.authUserId = newUserId;
 
@@ -38,6 +38,8 @@ store._isReady = true;
             v-model="editorObj.name"
             type="text"
             class="form-input"
+            required
+            minlength="3"
           />
         </div>
 
@@ -48,6 +50,8 @@ store._isReady = true;
             v-model="editorObj.username"
             type="text"
             class="form-input"
+            required
+            minlength="3"
           />
         </div>
 
@@ -58,6 +62,7 @@ store._isReady = true;
             v-model="editorObj.email"
             type="email"
             class="form-input"
+            required
           />
         </div>
 
@@ -65,9 +70,11 @@ store._isReady = true;
           <label for="password">Password</label>
           <input
             id="password"
-            v-model="password"
+            v-model="editorObj.password"
             type="password"
             class="form-input"
+            required
+            minlength="6"
           />
         </div>
 

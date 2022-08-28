@@ -5,10 +5,12 @@ import {
   FieldValue,
   increment,
   serverTimestamp,
+  setDoc,
   Unsubscribe,
   writeBatch,
 } from "@firebase/firestore";
 import { ok } from "assert";
+import { createUserWithEmailAndPassword } from "firebase/auth";
 import { defineStore } from "pinia";
 import { computed, reactive, ref } from "vue";
 import {
@@ -36,11 +38,12 @@ import {
 import {
   UserVmEditForInput,
   UserVMNewFormInput,
+  UserVMRegWithEmailAndPassword,
   UserVMWithActivity,
 } from "../types/userVm-types";
 import { countBy, findById } from "../utils/array-helpers";
 import { hasIdVmConverter } from "./../firebase/firebase-converters";
-import { firestoreDb as db } from "./../firebase/index";
+import { firebaseAuth, firestoreDb as db } from "./../firebase/index";
 import {
   makeFirebaseFetchMultiDocsFn,
   makeFirebaseFetchSingleDocFn,
@@ -138,25 +141,42 @@ export const useMainStore = defineStore(
     //        ACTIONS
     // --------------------------
 
-    async function createUser({
+    async function registerUserWithEmailAndPassword({
       email,
+      password,
       ...rest
-    }: UserVMNewFormInput): Promise<string> {
+    }: UserVMRegWithEmailAndPassword) {
+      const {
+        user: { uid: id },
+      } = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+
+      return await createUser(id, { email, ...rest }, true);
+    }
+
+    async function createUser(
+      id: string,
+      { email, avatar = null, ...rest }: UserVMNewFormInput,
+      fetchAfter = false
+    ): Promise<string> {
       const userDto: UserVMNewFormInput & {
         registeredAt: FieldValue;
       } & Pick<UserVM, "usernameLower" | "postsCount" | "threadsCount"> = {
         ...rest,
         email: email.toLowerCase(),
+        avatar,
         usernameLower: rest.username.toLowerCase(),
         registeredAt: serverTimestamp(),
         postsCount: 0,
         threadsCount: 0,
       };
 
-      const userRef = doc(collection(db, "users"));
+      const userRef = doc(db, "users", id);
 
-      await writeBatch(db).set(userRef, userDto).commit();
-      // TODO: only if, everything is fine, then proceed...
+      await setDoc(userRef, userDto);
+
+      fetchAfter && (await fetchUser(id));
+
+      authUserId.value = id;
 
       return userRef.id;
     }
@@ -431,6 +451,7 @@ export const useMainStore = defineStore(
 
       // ACTIONS
 
+      registerUserWithEmailAndPassword,
       createUser,
       editUser,
       createPost,
