@@ -2,13 +2,16 @@ import { IconDefinition, library } from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
 import { App } from "vue";
 
-export default async function fontAwesomePlugin(
-  app: App<Element>,
-  componentName?: string
-) {
-  library.add(...(await getIconDefinitions()));
+export async function useFontAwesomePlugin() {
+  const appIconDefinitions = await getIconDefinitions();
 
-  app.component(componentName ?? "Fa", FontAwesomeIcon);
+  return {
+    install(app: App<Element>, componentName?: string) {
+      library.add(...appIconDefinitions);
+
+      app.component(componentName ?? "Fa", FontAwesomeIcon);
+    },
+  };
 }
 
 async function getIconDefinitions(): Promise<IconDefinition[]> {
