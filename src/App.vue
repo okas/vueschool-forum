@@ -35,8 +35,8 @@ afterEach((to, from) => {
 
 <template>
   <the-nav-bar />
+  <fa v-if="!_isReady" icon="spinner" spin transform="grow-16 down-16" />
   <div class="container">
-    <fa v-if="!_isReady" icon="spinner" spin transform="grow-16 down-16" />
     <router-view />
   </div>
 </template>
