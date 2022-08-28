@@ -33,7 +33,11 @@ import {
   ThreadVMNew,
   ThreadVMWithMeta,
 } from "../types/threadVm-types";
-import { UserVMNew, UserVMWithActivity } from "../types/userVm-types";
+import {
+  UserVmEditForInput,
+  UserVMNewFormInput,
+  UserVMWithActivity,
+} from "../types/userVm-types";
 import { countBy, findById } from "../utils/array-helpers";
 import { hasIdVmConverter } from "./../firebase/firebase-converters";
 import { firestoreDb as db } from "./../firebase/index";
@@ -157,8 +161,19 @@ export const useMainStore = defineStore(
       return userRef.id;
     }
 
-    async function editUser(dto: UserVM) {
-      Object.assign(users[users.findIndex(({ id }) => id === dto.id)], dto);
+    async function editUser(
+      { id, ...rest }: UserVmEditForInput,
+      fetchAfter = false
+    ) {
+      const editDto = Object.fromEntries(
+        Object.entries(rest).map(([k, v]) => [k, v === undefined ? null : v])
+      );
+
+      const userRef = doc(db, "users", id);
+
+      await writeBatch(db).update(userRef, editDto).commit();
+
+      fetchAfter && (await fetchUser(id));
     }
 
     async function createPost(

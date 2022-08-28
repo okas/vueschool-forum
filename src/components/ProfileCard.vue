@@ -24,7 +24,7 @@ const lasVisited = computed(() => diffFromUnix(props.authUser.lastVisitAt));
       <img
         :src="authUser.avatar"
         class="avatar-xlarge"
-        :alt="`${authUser.name} profile picture`"
+        :title="`${authUser.name}'s profile picture`"
       />
     </p>
 
@@ -40,8 +40,8 @@ const lasVisited = computed(() => diffFromUnix(props.authUser.lastVisitAt));
     <span class="online" v-text="`${authUser.username} is online`" />
 
     <div class="stats">
-      <span v-text="getCountPhrase(authUser.postsCount, 'post')" />
-      <span v-text="getCountPhrase(authUser.threadsCount, 'thread')" />
+      <span v-text="getCountPhrase(authUser.postsCount ?? 0, 'post')" />
+      <span v-text="getCountPhrase(authUser.threadsCount ?? 0, 'thread')" />
     </div>
 
     <hr />

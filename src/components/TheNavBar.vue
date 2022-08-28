@@ -24,6 +24,7 @@ const { getAuthUser } = storeToRefs(useMainStore());
         <li v-if="getAuthUser" class="navbar-user">
           <router-link :to="{ name: 'Profile' }">
             <img
+              v-if="getAuthUser.avatar"
               class="avatar-small"
               :src="getAuthUser.avatar"
               :alt="`${getAuthUser.name} profile picture`"

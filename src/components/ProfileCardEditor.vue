@@ -3,6 +3,7 @@ import { reactive, toRaw } from "vue";
 import { useRouter } from "vue-router";
 import { UserVM } from "../models/UserVM";
 import { useMainStore } from "../stores/main-store";
+import { UserVmEditForInput } from "../types/userVm-types";
 
 const props = defineProps<{
   user: UserVM;
@@ -15,7 +16,7 @@ const router = useRouter();
 const { id, name, username, bio, email, website, location, avatar, twitter } =
   toRaw(props.user);
 
-const userEditorObj = reactive({
+const userEditorObj = reactive<UserVmEditForInput>({
   id,
   name,
   username,
@@ -30,7 +31,8 @@ const userEditorObj = reactive({
 const routeToReturn = { name: "Profile" };
 
 async function save() {
-  await editUser(userEditorObj as UserVM);
+  await editUser(userEditorObj);
+
   router.push(routeToReturn);
 }
 
@@ -46,7 +48,7 @@ function cancel() {
         <img
           :src="userEditorObj.avatar"
           class="avatar-xlarge"
-          :alt="`${userEditorObj.name} profile picture`"
+          :title="`${userEditorObj.name}'s profile picture`"
         />
       </p>
 

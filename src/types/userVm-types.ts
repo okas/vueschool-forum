@@ -17,3 +17,6 @@ export type UserVMNewFormInput = Pick<
   UserVM,
   "name" | "username" | "email" | "avatar"
 >;
+
+export type UserVmEditForInput = UserVMNewFormInput &
+  Pick<UserVM, "id" | "bio" | "website" | "location" | "avatar" | "twitter">;
