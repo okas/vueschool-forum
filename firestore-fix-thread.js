@@ -21,7 +21,7 @@ log("- transaction start");
 const threadsQuerySnap = await getDocs(collection(db, "threads"));
 
 await runTransaction(db, async (tran) => {
-  const userTranUpdatePromises = threadsQuerySnap.docs.map(
+  const threadTranUpdatePromises = threadsQuerySnap.docs.map(
     (threadDocSnap) =>
       new Promise((resolve) => {
         const docData = threadDocSnap.data();
@@ -40,7 +40,7 @@ await runTransaction(db, async (tran) => {
       })
   );
 
-  await Promise.allSettled(userTranUpdatePromises);
+  await Promise.allSettled(threadTranUpdatePromises);
 
   log("- all updates done");
 });
