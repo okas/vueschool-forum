@@ -15,6 +15,15 @@ async function signIn() {
   } catch (err) {
     alert(err);
   }
+  goToHome();
+}
+
+async function signInWithGoogle() {
+  store.signInWithGoogle();
+  goToHome();
+}
+
+function goToHome() {
   router.push({ name: "Home" });
 }
 
@@ -60,7 +69,7 @@ store._isReady = true;
       </form>
 
       <div class="push-top text-center">
-        <button class="btn-red btn-xsmall">
+        <button class="btn-red btn-xsmall" @click="signInWithGoogle">
           <i class="fa fa-google fa-btn"></i>Sign in with Google
         </button>
       </div>

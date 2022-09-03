@@ -14,9 +14,17 @@ const editorObj = reactive<UserVMRegWithEmailAndPassword>(
 
 async function register() {
   await store.registerUserWithEmailAndPassword(editorObj);
-  router.push({ name: "ProfileEdit" });
+  goToProfileEdit();
 }
 
+async function registerWithGoogle() {
+  await store.signInWithGoogle();
+  goToProfileEdit();
+}
+
+function goToProfileEdit() {
+  router.push({ name: "ProfileEdit" });
+}
 store._isReady = true;
 </script>
 
@@ -88,7 +96,7 @@ store._isReady = true;
         </div>
       </form>
       <div class="text-center push-top">
-        <button class="btn-red btn-xsmall">
+        <button class="btn-red btn-xsmall" @click="registerWithGoogle">
           <i class="fa fa-google fa-btn"></i>Sign up with Google
         </button>
       </div>

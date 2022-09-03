@@ -3,6 +3,7 @@ import {
   collection,
   doc,
   FieldValue,
+  getDoc,
   increment,
   serverTimestamp,
   setDoc,
@@ -12,7 +13,9 @@ import {
 import { ok } from "assert";
 import {
   createUserWithEmailAndPassword,
+  GoogleAuthProvider,
   signInWithEmailAndPassword as faBSingInWithEmailAndPassword,
+  signInWithPopup,
   signOut as faBSignOut,
 } from "firebase/auth";
 import { defineStore } from "pinia";
@@ -147,15 +150,27 @@ export const useMainStore = defineStore(
     //        ACTIONS
     // --------------------------
 
-    async function signInWithEmailAndPassword(
-      email: string,
-      password: string
-    ): Promise<string> {
-      const {
-        user: { uid },
-      } = await faBSingInWithEmailAndPassword(fabAuth, email, password);
+    async function signInWithEmailAndPassword(email: string, password: string) {
+      await faBSingInWithEmailAndPassword(fabAuth, email, password);
+    }
 
-      return uid;
+    async function signInWithGoogle() {
+      const provider = new GoogleAuthProvider();
+
+      const {
+        user: { uid, ...rest },
+      } = await signInWithPopup(fabAuth, provider);
+
+      const userDoc = await getDoc(doc(fabDb, "users", uid));
+
+      if (!userDoc.exists()) {
+        await createUser(uid, {
+          email: rest.email ?? "",
+          name: rest.displayName ?? "",
+          username: rest.email ?? "",
+          avatar: rest.photoURL,
+        });
+      }
     }
 
     async function signOut() {
@@ -469,6 +484,7 @@ export const useMainStore = defineStore(
       // GETTERS
 
       signInWithEmailAndPassword,
+      signInWithGoogle,
       signOut,
       getAuthUser,
       getUserByIdFn,
