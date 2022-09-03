@@ -1,11 +1,8 @@
-import { useAuth } from "@vueuse/firebase/useAuth";
 import { createPinia } from "pinia";
-import { createApp, Plugin, watch } from "vue";
+import { createApp, Plugin } from "vue";
 import AppRoot from "./App.vue";
-import { fabAuth } from "./firebase";
 import { useFontAwesomePlugin } from "./plugins/font-awesome";
 import router from "./router";
-import { useMainStore } from "./stores/main-store";
 import registerGlobalComponents, {
   Options,
 } from "./utils/useAutoComponentRegistrator";
@@ -38,13 +35,5 @@ function bootstrapApp() {
 
   forumApp.mount("#app");
 }
-
-watch(useAuth(fabAuth).isAuthenticated, async (is) => {
-  if (is) {
-    await useMainStore().fetchAuthUser();
-  } else {
-    useMainStore().authUserId = null;
-  }
-});
 
 loadAsyncDependencies().then(bootstrapApp);
