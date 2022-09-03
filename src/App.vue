@@ -2,7 +2,7 @@
 import { useNProgress } from "@vueuse/integrations/useNProgress";
 import { storeToRefs } from "pinia";
 import { watch } from "vue";
-import { START_LOCATION, useRouter } from "vue-router";
+import { useRouter } from "vue-router";
 import TheNavBar from "./components/TheNavBar.vue";
 import { useMainStore } from "./stores/main-store";
 
@@ -18,11 +18,8 @@ const { start, done } = useNProgress(undefined, {
 
 watch(_isReady, (newVal) => newVal && done());
 
-beforeEach(async (_, from) => {
-  from !== START_LOCATION && store.clearDbSubscriptions();
-  // < FETCH
+beforeEach(async () => {
   await store.fetchAuthUser();
-  // > FETCH
 });
 
 afterEach((to, from) => {

@@ -3,7 +3,9 @@ import {
   createWebHistory,
   RouteLocationNormalized,
   RouteRecordRaw,
+  START_LOCATION,
 } from "vue-router";
+import { useMainStore } from "./../stores/main-store";
 import { rawRoutes } from "./raw-routes";
 
 function getRouteRecords(
@@ -26,8 +28,14 @@ function scrollBehavior(to: RouteLocationNormalized): Promise<ScrollToOptions> {
   );
 }
 
-export default createRouter({
+const router = createRouter({
   routes: getRouteRecords(rawRoutes),
   scrollBehavior,
   history: createWebHistory(),
 });
+
+router.beforeEach((_, from) => {
+  from !== START_LOCATION && useMainStore().clearDbSubscriptions();
+});
+
+export default router;
