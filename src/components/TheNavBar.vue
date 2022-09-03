@@ -1,10 +1,21 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
+import { ref } from "vue";
 import { useMainStore } from "../stores/main-store";
 
 const store = useMainStore();
 
 const { getAuthUser } = storeToRefs(store);
+
+const isUserDropDownOpen = ref(false);
+
+function toggleUserDropDown() {
+  isUserDropDownOpen.value = !isUserDropDownOpen.value;
+}
+
+function signOut() {
+  store.signOut();
+}
 </script>
 
 <template>
@@ -24,7 +35,7 @@ const { getAuthUser } = storeToRefs(store);
     <nav class="navbar">
       <ul>
         <li v-if="getAuthUser" class="navbar-user">
-          <router-link :to="{ name: 'Profile' }">
+          <a @click.prevent="toggleUserDropDown">
             <img
               v-if="getAuthUser.avatar"
               class="avatar-small"
@@ -39,11 +50,14 @@ const { getAuthUser } = storeToRefs(store);
                 alt=""
               />
             </span>
-          </router-link>
+          </a>
 
           <!-- dropdown menu -->
           <!-- add class "active-drop" to show the dropdown -->
-          <div id="user-dropdown">
+          <div
+            id="user-dropdown"
+            :class="{ 'active-drop': isUserDropDownOpen }"
+          >
             <div class="triangle-drop"></div>
             <ul class="dropdown-menu">
               <li class="dropdown-menu-item">
@@ -52,15 +66,12 @@ const { getAuthUser } = storeToRefs(store);
                 </router-link>
               </li>
               <li class="dropdown-menu-item">
-                <a @click.prevent="store.signOut()">Sign out</a>
+                <a @click.prevent="signOut">Sign out</a>
               </li>
             </ul>
           </div>
         </li>
 
-        <li v-if="getAuthUser" class="navbar-item">
-          <a @click.prevent="store.signOut()">Sign out</a>
-        </li>
         <li v-if="!getAuthUser" class="navbar-item">
           <router-link :to="{ name: 'SignIn' }">Sign in</router-link>
         </li>
