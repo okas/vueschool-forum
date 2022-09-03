@@ -140,7 +140,7 @@ runTransaction(
   },
   { maxAttempts: 1 }
 )
-  .then((x) => {
+  .then(() => {
     log("- ✅ all updates done");
 
     process.exit();
