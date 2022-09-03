@@ -226,12 +226,8 @@ export const useMainStore = defineStore(
           lastPostId: postRef.id,
           ...(threadCreation && { firstPostId: postRef.id }),
         })
-        .update(forumRef, {
-          lastPostId: postRef.id,
-        })
-        .update(userRef, {
-          postsCount: increment(1),
-        })
+        .update(forumRef, { lastPostId: postRef.id })
+        .update(userRef, { postsCount: increment(1) })
         .commit();
 
       await Promise.allSettled([
@@ -291,12 +287,8 @@ export const useMainStore = defineStore(
 
       await writeBatch(db)
         .set(threadRef, threadDto)
-        .update(forumRef, {
-          threads: arrayUnion(threadRef.id),
-        })
-        .update(userRef, {
-          threadsCount: increment(1),
-        })
+        .update(forumRef, { threads: arrayUnion(threadRef.id) })
+        .update(userRef, { threadsCount: increment(1) })
         .commit();
 
       // Guarantees, that next step, createPost has required data for it's job.
@@ -440,7 +432,6 @@ export const useMainStore = defineStore(
     }
 
     async function clearDbSubscriptions() {
-      console.debug("----- about to delete subscriptions");
       _dbUnsubscribes.forEach((unsubscribe) => unsubscribe());
       _dbUnsubscribes.splice(0);
     }
