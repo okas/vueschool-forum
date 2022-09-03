@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { reactive, toRaw } from "vue";
-import { useRouter } from "vue-router";
+import { RouteLocationRaw, useRouter } from "vue-router";
 import { UserVM } from "../models/UserVM";
 import { useMainStore } from "../stores/main-store";
 import { UserVmEditForInput } from "../types/userVm-types";
@@ -28,7 +28,7 @@ const userEditorObj = reactive<UserVmEditForInput>({
   twitter,
 });
 
-const routeToReturn = { name: "Profile" };
+const routeToReturn = { name: "Profile" } as RouteLocationRaw;
 
 async function save() {
   await editUser(userEditorObj);

@@ -19,7 +19,7 @@ async function register() {
 
   await store.fetchAuthUser();
 
-  router.push({ name: "Profile" });
+  router.push({ name: "ProfileEdit" });
 }
 
 store._isReady = true;

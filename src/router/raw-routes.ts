@@ -115,11 +115,12 @@ export const rawRoutes: Readonly<RouteRecordRaw[]> = [
 function testForNotFound<TViewModel extends HasId>(
   { params, path, query, hash }: RouteLocation,
   array: Array<TViewModel>,
-  paramKeyOrIdValue: string
+  paramKeyOrIdValue: string | null
 ): RouteLocationRaw | undefined {
-  return array.some(
-    ({ id }) => id === (params[paramKeyOrIdValue] ?? paramKeyOrIdValue)
-  )
+  return paramKeyOrIdValue &&
+    array.some(
+      ({ id }) => id === (params[paramKeyOrIdValue] ?? paramKeyOrIdValue)
+    )
     ? undefined
     : {
         name: "NotFound",

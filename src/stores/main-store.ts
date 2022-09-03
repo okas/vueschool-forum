@@ -57,7 +57,7 @@ export const useMainStore = defineStore(
     // --------------------------
     //        STATE
     // --------------------------
-    const authUserId = ref("Qc4Pz_28PEqITnCQ21T6Vw");
+    const authUserId = ref<string | null>(null);
 
     const categories = reactive<Array<CategoryVM>>([]);
     const forums = reactive<Array<ForumVM>>([]);
@@ -77,7 +77,9 @@ export const useMainStore = defineStore(
     //        GETTERS
     // --------------------------
 
-    const getAuthUser = computed(() => getUserByIdFn.value(authUserId.value));
+    const getAuthUser = computed(() =>
+      authUserId.value ? getUserByIdFn.value(authUserId.value) : undefined
+    );
 
     const getUserByIdFn = computed(() => (id: string) => {
       const user = findById(users, id);
@@ -150,13 +152,12 @@ export const useMainStore = defineStore(
         user: { uid: id },
       } = await createUserWithEmailAndPassword(firebaseAuth, email, password);
 
-      return await createUser(id, { email, ...rest }, true);
+      return await createUser(id, { email, ...rest });
     }
 
     async function createUser(
       id: string,
-      { email, avatar = null, ...rest }: UserVMNewFormInput,
-      fetchAfter = false
+      { email, avatar = null, ...rest }: UserVMNewFormInput
     ): Promise<string> {
       const userDto: UserVMNewFormInput & {
         registeredAt: FieldValue;
@@ -173,10 +174,6 @@ export const useMainStore = defineStore(
       const userRef = doc(db, "users", id);
 
       await setDoc(userRef, userDto);
-
-      fetchAfter && (await fetchUser(id));
-
-      authUserId.value = id;
 
       return userRef.id;
     }
@@ -200,6 +197,8 @@ export const useMainStore = defineStore(
       { threadId, ...rest }: PostVMNew,
       threadCreation = false
     ): Promise<string> {
+      ok(authUserId.value, CREATE_CONTENT_ERROR_MSG);
+
       const postDto: Omit<PostVm, "id" | "publishedAt"> & {
         publishedAt: FieldValue;
       } = {
@@ -267,6 +266,8 @@ export const useMainStore = defineStore(
       forumId,
       ...rest
     }: ThreadVMNew): Promise<string> {
+      ok(authUserId.value, CREATE_CONTENT_ERROR_MSG);
+
       const threadDto: Omit<
         ThreadVM,
         "id" | "publishedAt" | "lastPostAt" | "firstPostId" | "lastPostId"
@@ -412,13 +413,30 @@ export const useMainStore = defineStore(
       )();
     }
 
-    function fetchAuthUser() {
-      return makeFirebaseFetchSingleDocFn(
+    async function fetchAuthUser() {
+      const userId = firebaseAuth.currentUser?.uid;
+
+      if (!userId) {
+        return;
+      }
+
+      const signedInUser = makeFirebaseFetchSingleDocFn(
         users,
         "users",
         _dbUnsubscribes,
         userVmConverter
-      )(authUserId.value);
+      )(userId);
+
+      if (!signedInUser) {
+        warn(
+          `User '${userId}' authenticated by Firestore do not exist in app's database.`
+        );
+        return;
+      }
+
+      authUserId.value = userId;
+
+      return signedInUser;
     }
 
     async function clearDbSubscriptions() {
@@ -473,3 +491,6 @@ export const useMainStore = defineStore(
     };
   }
 );
+
+const CREATE_CONTENT_ERROR_MSG =
+  "Create post error: cannot proceed w/o authenticated user.";

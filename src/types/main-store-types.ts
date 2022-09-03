@@ -16,7 +16,7 @@ import {
 } from "./userVm-types";
 
 export interface MainStoreState {
-  authUserId: Ref<string>;
+  authUserId: Ref<string | null>;
   categories: Array<CategoryVM>;
   forums: Array<ForumVM>;
   posts: Array<PostVm>;
