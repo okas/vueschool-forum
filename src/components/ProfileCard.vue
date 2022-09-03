@@ -37,7 +37,10 @@ const lasVisited = computed(() => diffFromUnix(props.authUser.lastVisitAt));
       v-text="!authUser.bio ? 'No bio specified' : authUser.bio"
     />
 
-    <span class="online" v-text="`${authUser.username} is online`" />
+    <p>
+      <fa icon="circle-user" />&nbsp;
+      <span v-text="`${authUser.username} is online`" />
+    </p>
 
     <div class="stats">
       <span v-text="getCountPhrase(authUser.postsCount ?? 0, 'post')" />
@@ -47,8 +50,21 @@ const lasVisited = computed(() => diffFromUnix(props.authUser.lastVisitAt));
     <hr />
 
     <p v-if="authUser.website" class="text-large text-center">
-      <i class="fa fa-globe"></i>
+      <fa icon="globe" />&nbsp;
       <a :href="authUser.website" v-text="authUser.website" />
+    </p>
+
+    <p v-if="authUser.twitter" class="text-large text-center">
+      <fa :icon="['fab', 'twitter']" />&nbsp;
+      <a
+        :href="`https://twitter.com/${authUser.twitter}`"
+        v-text="authUser.twitter"
+      />
+    </p>
+
+    <p v-if="authUser.location" class="text-large text-center">
+      <fa icon="location-dot" />&nbsp;
+      <span v-text="authUser.location" />
     </p>
   </div>
 

@@ -15,14 +15,25 @@ export async function useFontAwesomePlugin() {
 }
 
 async function getIconDefinitions(): Promise<IconDefinition[]> {
-  const freeSolidIcons = await import("@fortawesome/free-solid-svg-icons").then(
-    (module) => {
-      // Expand this array with required icons from module.
-      return [module.faPencilAlt, module.faSpinner];
+  // If there are icons form other FA module, then add dynamic import statement
+  // with icon definitions array as a return
+  const freeSolid = await import("@fortawesome/free-solid-svg-icons").then(
+    (m) => {
+      return [
+        m.faPencilAlt,
+        m.faSpinner,
+        m.faLocationDot,
+        m.faGlobe,
+        m.faCircleUser,
+      ];
     }
   );
-  // If there are icons form other FA module, then add dynamic import statement
-  // with icon definitions array as a return; then just spread them
-  // to below return array.
-  return [...freeSolidIcons];
+
+  const freeBrand = await import("@fortawesome/free-brands-svg-icons").then(
+    (m) => {
+      return [m.faTwitter];
+    }
+  );
+
+  return [...freeSolid, ...freeBrand];
 }

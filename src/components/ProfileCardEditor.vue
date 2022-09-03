@@ -87,6 +87,18 @@ function cancel() {
       <hr />
 
       <div class="form-group">
+        <label class="form-label" for="user_email">Email</label>
+        <input
+          id="user_email"
+          v-model="userEditorObj.email"
+          autocomplete="off"
+          class="form-input"
+          required
+          type="email"
+        />
+      </div>
+
+      <div class="form-group">
         <label class="form-label" for="user_website">Website</label>
         <input
           id="user_website"
@@ -97,14 +109,13 @@ function cancel() {
       </div>
 
       <div class="form-group">
-        <label class="form-label" for="user_email">Email</label>
+        <label class="form-label" for="user_email">Twitter</label>
         <input
           id="user_email"
-          v-model="userEditorObj.email"
+          v-model="userEditorObj.twitter"
           autocomplete="off"
           class="form-input"
-          required
-          type="email"
+          type="text"
         />
       </div>
 
