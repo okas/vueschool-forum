@@ -1,3 +1,11 @@
+import { ok } from "assert";
+import {
+  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithEmailAndPassword as faBSingInWithEmailAndPassword,
+  signInWithPopup,
+  signOut as faBSignOut,
+} from "firebase/auth";
 import {
   arrayUnion,
   collection,
@@ -9,15 +17,8 @@ import {
   setDoc,
   Unsubscribe,
   writeBatch,
-} from "@firebase/firestore";
-import { ok } from "assert";
-import {
-  createUserWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithEmailAndPassword as faBSingInWithEmailAndPassword,
-  signInWithPopup,
-  signOut as faBSignOut,
-} from "firebase/auth";
+} from "firebase/firestore";
+
 import { defineStore } from "pinia";
 import { computed, reactive, ref } from "vue";
 import {
@@ -78,6 +79,7 @@ export const useMainStore = defineStore(
       usersOnline: 0,
     });
     const _dbUnsubscribes = reactive<Array<Unsubscribe>>([]);
+    const _dbUnsubscribeAuthUser = ref<Unsubscribe | null>(null);
     const _isReady = ref(false);
 
     // --------------------------
@@ -444,10 +446,12 @@ export const useMainStore = defineStore(
         return;
       }
 
+      const customSink: Array<Unsubscribe> = [];
+
       const signedInUser = makeFirebaseFetchSingleDocFn(
         users,
         "users",
-        _dbUnsubscribes,
+        customSink,
         userVmConverter
       )(userId);
 
@@ -458,14 +462,21 @@ export const useMainStore = defineStore(
         return;
       }
 
+      _dbUnsubscribeAuthUser.value = customSink[0];
+
       authUserId.value = userId;
 
       return signedInUser;
     }
 
-    async function clearDbSubscriptions() {
+    function clearDbSubscriptions() {
       _dbUnsubscribes.forEach((unsubscribe) => unsubscribe());
       _dbUnsubscribes.splice(0);
+    }
+
+    function clearDbSubscriptionAuthUser() {
+      _dbUnsubscribeAuthUser.value?.();
+      _dbUnsubscribeAuthUser.value = null;
     }
 
     return {
@@ -479,6 +490,7 @@ export const useMainStore = defineStore(
       users,
       stats,
       _dbUnsubscribes,
+      _dbUnsubscribeAuthUser,
       _isReady,
 
       // GETTERS
@@ -514,6 +526,7 @@ export const useMainStore = defineStore(
       fetchAllCategories,
       fetchAuthUser,
       clearDbSubscriptions,
+      clearDbSubscriptionAuthUser,
     };
   }
 );

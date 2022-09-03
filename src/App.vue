@@ -11,7 +11,7 @@ import { useMainStore } from "./stores/main-store";
 const store = useMainStore();
 const { _isReady } = storeToRefs(store);
 
-const { beforeEach, afterEach } = useRouter();
+const { afterEach } = useRouter();
 
 const { start, done } = useNProgress(undefined, {
   speed: 200,
@@ -24,12 +24,9 @@ watch(useAuth(fabAuth).isAuthenticated, async (is) => {
   if (is) {
     await store.fetchAuthUser();
   } else {
+    store.clearDbSubscriptionAuthUser();
     store.authUserId = null;
   }
-});
-
-beforeEach(async () => {
-  await store.fetchAuthUser();
 });
 
 afterEach((to, from) => {

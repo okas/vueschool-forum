@@ -24,6 +24,7 @@ export interface MainStoreState {
   users: Array<UserVM>;
   stats: StatsVM;
   _dbUnsubscribes: Array<Unsubscribe>;
+  _dbUnsubscribeAuthUser: Ref<Unsubscribe | null>;
   _isReady: Ref<boolean>;
 }
 
@@ -81,6 +82,11 @@ export interface MainStoreActions {
   fetchPosts(ids?: Array<string>): Promise<Array<PostVm>>;
   fetchForums(ids?: Array<string>): Promise<Array<ForumVM>>;
   fetchAllCategories(): Promise<Array<CategoryVM>>;
+  /**
+   * It is important to call `clearDbSubscriptionAuthUser` action exclusively,
+   * when this actions has been called. It uses distinct unsubscription logic.
+   */
   fetchAuthUser(): Promise<UserVM | undefined>;
   clearDbSubscriptions(): void;
+  clearDbSubscriptionAuthUser(): void;
 }

@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useAsyncState } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { onUpdated, watch } from "vue";
 import { useRouter } from "vue-router";
@@ -20,10 +19,6 @@ const router = useRouter();
 
 const { getAuthUser } = storeToRefs(store);
 
-const { isReady } = useAsyncState(async () => {
-  (await store.fetchAuthUser()) && (store._isReady = true);
-}, undefined);
-
 watch(getAuthUser, async (newVal) => !newVal && (await goToHome()));
 
 onUpdated(() => {
@@ -37,10 +32,12 @@ onUpdated(() => {
 async function goToHome() {
   await router.push({ name: "Home" });
 }
+
+store._isReady = true;
 </script>
 
 <template>
-  <div v-if="isReady && getAuthUser" class="flex-grid">
+  <div v-if="getAuthUser" class="flex-grid">
     <div class="col-3 push-top">
       <profile-card v-if="!edit" :auth-user="getAuthUser" />
       <profile-card-editor v-else :user="getAuthUser" />
