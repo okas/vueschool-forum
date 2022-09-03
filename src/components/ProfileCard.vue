@@ -49,6 +49,11 @@ const lasVisited = computed(() => diffFromUnix(props.authUser.lastVisitAt));
 
     <hr />
 
+    <p v-if="authUser.email" class="text-large text-center">
+      <fa icon="paper-plane" />&nbsp;
+      <a :href="`mailto:${authUser.email}`" v-text="authUser.email" />
+    </p>
+
     <p v-if="authUser.website" class="text-large text-center">
       <fa icon="globe" />&nbsp;
       <a :href="authUser.website" v-text="authUser.website" />
