@@ -18,7 +18,7 @@ import {
 import { HasId } from "../types/HasId";
 import { remove, toBuckets, upsert } from "../utils/array-helpers";
 import { isFulFilled } from "../utils/promise-helpers";
-import { firestoreDb } from "./../firebase/index";
+import { fabDb } from "./../firebase/index";
 
 const { warn, error } = console;
 
@@ -86,7 +86,7 @@ function getSingleDocQuery<TViewModel extends HasId>(
   collectionName: string,
   converter: FirestoreDataConverter<TViewModel> | undefined
 ): DocumentReference<DocumentData> {
-  const docRef = doc(firestoreDb, collectionName, id);
+  const docRef = doc(fabDb, collectionName, id);
 
   if (converter) {
     return docRef.withConverter(converter);
@@ -172,7 +172,7 @@ function getAllQuery<TViewModel extends HasId>(
   collectionName: string,
   converter?: FirestoreDataConverter<TViewModel>
 ): Query<DocumentData> {
-  const q = query(collection(firestoreDb, collectionName));
+  const q = query(collection(fabDb, collectionName));
 
   return converter ? q.withConverter(converter) : q;
 }
@@ -186,7 +186,7 @@ function createBucketedQueries<TViewModel extends HasId>(
 
   for (const bucket of toBuckets(ids, 10)) {
     const q = query(
-      collection(firestoreDb, collectionName),
+      collection(fabDb, collectionName),
       where(documentId(), "in", bucket)
     );
 

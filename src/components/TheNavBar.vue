@@ -2,7 +2,9 @@
 import { storeToRefs } from "pinia";
 import { useMainStore } from "../stores/main-store";
 
-const { getAuthUser } = storeToRefs(useMainStore());
+const store = useMainStore();
+
+const { getAuthUser } = storeToRefs(store);
 </script>
 
 <template>
@@ -45,11 +47,25 @@ const { getAuthUser } = storeToRefs(useMainStore());
             <div class="triangle-drop"></div>
             <ul class="dropdown-menu">
               <li class="dropdown-menu-item">
-                <a href="profile.html">View profile</a>
+                <router-link :to="{ name: 'Profile' }">
+                  View profile
+                </router-link>
               </li>
-              <li class="dropdown-menu-item"><a href="#">Log out</a></li>
+              <li class="dropdown-menu-item">
+                <a @click.prevent="store.signOut()">Sign out</a>
+              </li>
             </ul>
           </div>
+        </li>
+
+        <li v-if="getAuthUser" class="navbar-item">
+          <a @click.prevent="store.signOut()">Sign out</a>
+        </li>
+        <li v-if="!getAuthUser" class="navbar-item">
+          <router-link :to="{ name: 'SignIn' }">Sign in</router-link>
+        </li>
+        <li v-if="!getAuthUser" class="navbar-item">
+          <router-link :to="{ name: 'Register' }">Register</router-link>
         </li>
       </ul>
 

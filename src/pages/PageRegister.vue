@@ -13,12 +13,7 @@ const editorObj = reactive<UserVMRegWithEmailAndPassword>(
 );
 
 async function register() {
-  const newUserId = await store.registerUserWithEmailAndPassword(editorObj);
-
-  store.authUserId = newUserId;
-
-  await store.fetchAuthUser();
-
+  await store.registerUserWithEmailAndPassword(editorObj);
   router.push({ name: "ProfileEdit" });
 }
 

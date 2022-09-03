@@ -9,6 +9,11 @@ export const rawRoutes: Readonly<RouteRecordRaw[]> = [
     component: () => import("../pages/PageHome.vue"),
   },
   {
+    path: "/signin",
+    name: "SignIn",
+    component: () => import("../pages/PageSignIn.vue"),
+  },
+  {
     path: "/register",
     name: "Register",
     component: () => import("../pages/PageRegister.vue"),

@@ -10,7 +10,11 @@ import {
   writeBatch,
 } from "@firebase/firestore";
 import { ok } from "assert";
-import { createUserWithEmailAndPassword } from "firebase/auth";
+import {
+  createUserWithEmailAndPassword,
+  signInWithEmailAndPassword as faBSingInWithEmailAndPassword,
+  signOut as faBSignOut,
+} from "firebase/auth";
 import { defineStore } from "pinia";
 import { computed, reactive, ref } from "vue";
 import {
@@ -43,7 +47,7 @@ import {
 } from "../types/userVm-types";
 import { countBy, findById } from "../utils/array-helpers";
 import { hasIdVmConverter } from "./../firebase/firebase-converters";
-import { firebaseAuth, firestoreDb as db } from "./../firebase/index";
+import { fabAuth, fabDb } from "./../firebase/index";
 import {
   makeFirebaseFetchMultiDocsFn,
   makeFirebaseFetchSingleDocFn,
@@ -143,16 +147,31 @@ export const useMainStore = defineStore(
     //        ACTIONS
     // --------------------------
 
+    async function signInWithEmailAndPassword(
+      email: string,
+      password: string
+    ): Promise<string> {
+      const {
+        user: { uid },
+      } = await faBSingInWithEmailAndPassword(fabAuth, email, password);
+
+      return uid;
+    }
+
+    async function signOut() {
+      await faBSignOut(fabAuth);
+    }
+
     async function registerUserWithEmailAndPassword({
       email,
       password,
       ...rest
     }: UserVMRegWithEmailAndPassword) {
       const {
-        user: { uid: id },
-      } = await createUserWithEmailAndPassword(firebaseAuth, email, password);
+        user: { uid },
+      } = await createUserWithEmailAndPassword(fabAuth, email, password);
 
-      return await createUser(id, { email, ...rest });
+      return await createUser(uid, { email, ...rest });
     }
 
     async function createUser(
@@ -171,11 +190,9 @@ export const useMainStore = defineStore(
         threadsCount: 0,
       };
 
-      const userRef = doc(db, "users", id);
+      await setDoc(doc(fabDb, "users", id), userDto);
 
-      await setDoc(userRef, userDto);
-
-      return userRef.id;
+      return id;
     }
 
     async function editUser(
@@ -186,9 +203,9 @@ export const useMainStore = defineStore(
         Object.entries(rest).map(([k, v]) => [k, v === undefined ? null : v])
       );
 
-      const userRef = doc(db, "users", id);
+      const userRef = doc(fabDb, "users", id);
 
-      await writeBatch(db).update(userRef, editDto).commit();
+      await writeBatch(fabDb).update(userRef, editDto).commit();
 
       fetchAfter && (await fetchUser(id));
     }
@@ -212,12 +229,12 @@ export const useMainStore = defineStore(
 
       ok(thread, `Cannot get thread by id "${threadId}".`);
 
-      const postRef = doc(collection(db, "posts"));
-      const threadRef = doc(db, "threads", threadId);
-      const forumRef = doc(db, "forums", thread.forumId);
-      const userRef = doc(db, "users", authUserId.value);
+      const postRef = doc(collection(fabDb, "posts"));
+      const threadRef = doc(fabDb, "threads", threadId);
+      const forumRef = doc(fabDb, "forums", thread.forumId);
+      const userRef = doc(fabDb, "users", authUserId.value);
 
-      await writeBatch(db)
+      await writeBatch(fabDb)
         .set(postRef, postDto)
         .update(threadRef, {
           posts: arrayUnion(postRef.id),
@@ -241,9 +258,9 @@ export const useMainStore = defineStore(
     }
 
     async function editPost({ id, text }: PostVMEdit) {
-      const postRef = doc(db, "posts", id);
+      const postRef = doc(fabDb, "posts", id);
 
-      await writeBatch(db)
+      await writeBatch(fabDb)
         .update(postRef, {
           text,
           edited: {
@@ -281,11 +298,11 @@ export const useMainStore = defineStore(
         slug: "",
       };
 
-      const threadRef = doc(collection(db, "threads"));
-      const forumRef = doc(db, "forums", forumId);
-      const userRef = doc(db, "users", authUserId.value);
+      const threadRef = doc(collection(fabDb, "threads"));
+      const forumRef = doc(fabDb, "forums", forumId);
+      const userRef = doc(fabDb, "users", authUserId.value);
 
-      await writeBatch(db)
+      await writeBatch(fabDb)
         .set(threadRef, threadDto)
         .update(forumRef, { threads: arrayUnion(threadRef.id) })
         .update(userRef, { threadsCount: increment(1) })
@@ -312,10 +329,10 @@ export const useMainStore = defineStore(
       const post = findById(posts, thread.firstPostId);
       ok(post, `Edit thread error: no post with id: ${thread.firstPostId}.`);
 
-      const postRef = doc(db, "posts", thread.firstPostId);
-      const threadRef = doc(db, "threads", threadId);
+      const postRef = doc(fabDb, "posts", thread.firstPostId);
+      const threadRef = doc(fabDb, "threads", threadId);
 
-      await writeBatch(db)
+      await writeBatch(fabDb)
         .update(threadRef, { title })
         .update(postRef, {
           text,
@@ -406,7 +423,7 @@ export const useMainStore = defineStore(
     }
 
     async function fetchAuthUser() {
-      const userId = firebaseAuth.currentUser?.uid;
+      const userId = fabAuth.currentUser?.uid;
 
       if (!userId) {
         return;
@@ -451,6 +468,8 @@ export const useMainStore = defineStore(
 
       // GETTERS
 
+      signInWithEmailAndPassword,
+      signOut,
       getAuthUser,
       getUserByIdFn,
       getUserPostsCountFn,

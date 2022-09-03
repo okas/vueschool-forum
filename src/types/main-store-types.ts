@@ -40,6 +40,12 @@ export interface MainStoreGetters {
 
 export interface MainStoreActions {
   /**
+   * Sings in user using Firebase Auth `password` method.
+   * @returns Id of signed in user.
+   */
+  signInWithEmailAndPassword(email: string, password: string): Promise<string>;
+  signOut(): Promise<void>;
+  /**
    * Registers user using Firebase Auth `password` method.
    * @param dto
    * @returns Id of registered user.
