@@ -55,6 +55,7 @@ import {
   makeFirebaseFetchMultiDocsFn,
   makeFirebaseFetchSingleDocFn,
 } from "./firebase-action-sinks";
+import useAcceptHmr from "./helpers";
 
 const { warn } = console;
 
@@ -529,6 +530,8 @@ export const useMainStore = defineStore(
     };
   }
 );
+
+useAcceptHmr(useMainStore);
 
 const CREATE_CONTENT_ERROR_MSG =
   "Create post error: cannot proceed w/o authenticated user.";
