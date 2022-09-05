@@ -1,8 +1,8 @@
 export default {
-  apiKey: process.env.VUE_APP_FIREBASE_apiKey,
-  authDomain: process.env.VUE_APP_FIREBASE_authDomain,
-  projectId: process.env.VUE_APP_FIREBASE_projectId,
-  storageBucket: process.env.VUE_APP_FIREBASE_storageBucket,
-  messagingSenderId: process.env.VUE_APP_FIREBASE_messagingSenderId,
-  appId: process.env.VUE_APP_FIREBASE_appId,
+  apiKey: import.meta.VITE_FIREBASE_apiKey,
+  authDomain: import.meta.VITE_FIREBASE_authDomain,
+  projectId: import.meta.VITE_FIREBASE_projectId,
+  storageBucket: import.meta.VITE_FIREBASE_storageBucket,
+  messagingSenderId: import.meta.VITE_FIREBASE_messagingSenderId,
+  appId: import.meta.VITE_FIREBASE_appId,
 };
