@@ -21,9 +21,8 @@
     "jsx": "preserve",
     "forceConsistentCasingInFileNames": true,
     "pretty": true,
-    "typeRoots": [
-      "node_modules/@types"
-    ] /* List of folders to include type definitions from. */
+    "typeRoots": ["node_modules/@types"],
+    "types": ["vite/client"]
   },
   "enableAutoDiscovery": true,
   "typeAcquisition": {
