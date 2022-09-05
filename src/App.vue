@@ -46,7 +46,7 @@ afterEach((to, from) => {
 </template>
 
 <style>
-@import "~nprogress/nprogress.css";
+@import "nprogress/nprogress.css";
 @import "assets/style.css";
 
 /* @import "~bootstrap/css/bootstrap.css"; */
