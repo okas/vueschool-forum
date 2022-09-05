@@ -1,4 +1,3 @@
-import { ok } from "assert";
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
@@ -18,7 +17,6 @@ import {
   Unsubscribe,
   writeBatch,
 } from "firebase/firestore";
-
 import { defineStore } from "pinia";
 import { computed, reactive, ref } from "vue";
 import {
@@ -50,6 +48,7 @@ import {
   UserVMWithActivity,
 } from "../types/userVm-types";
 import { countBy, findById } from "../utils/array-helpers";
+import { ok } from "../utils/assert-helpers";
 import { hasIdVmConverter } from "./../firebase/firebase-converters";
 import { fabAuth, fabDb } from "./../firebase/index";
 import {
