@@ -1,0 +1,19 @@
+{
+  "extends": [
+    "stylelint-config-standard",
+    "stylelint-config-standard-scss",
+    "stylelint-config-recommended-vue",
+    "stylelint-config-recommended-vue/scss",
+    "stylelint-config-prettier",
+    "stylelint-config-prettier-scss"
+  ],
+  "ignoreFiles": ["**/*.js"],
+  "overrides": [
+    {
+      "files": ["**/*.scss", "**/*.vue"],
+      "rules": {
+        "function-no-unknown": [true, { "ignoreFunctions": ["color.scale"] }]
+      }
+    }
+  ]
+}
