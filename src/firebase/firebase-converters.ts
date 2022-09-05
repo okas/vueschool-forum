@@ -72,6 +72,7 @@ export const userVmConverter: FirestoreDataConverter<UserVM> = {
   },
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const hasIdVmConverter: FirestoreDataConverter<HasId & any> = {
   toFirestore: (dto) => dto,
   fromFirestore: (snapShot) => {
