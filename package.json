@@ -53,7 +53,7 @@
     "vite": "^3.1.0",
     "vite-plugin-eslint": "^1.8.1",
     "vue-eslint-parser": "^9.0.3",
-    "vue-tsc": "^0.40.7"
+    "vue-tsc": "^0.40.9"
   },
   "browserslist": [
     "> 1%",
