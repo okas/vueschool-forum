@@ -42,7 +42,10 @@ function cancel() {
 }
 
 function functionGoToThread() {
-  router.push({ name: "ThreadShow", params: { threadId: props.threadId } });
+  router.push({
+    name: "ThreadShow",
+    params: { threadId: props.threadId },
+  });
 }
 </script>
 
@@ -58,5 +61,3 @@ function functionGoToThread() {
     />
   </div>
 </template>
-
-<style scoped></style>

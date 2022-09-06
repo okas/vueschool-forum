@@ -10,5 +10,3 @@ useMainStore()._isReady = true;
     <router-link :to="{ name: `Home` }">Read some cool threads</router-link>
   </div>
 </template>
-
-<style scoped></style>

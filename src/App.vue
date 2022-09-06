@@ -46,7 +46,7 @@ afterEach((to, from) => {
 </template>
 
 <style>
-@import "~nprogress/nprogress.css";
+@import "nprogress/nprogress.css";
 @import "assets/style.css";
 
 /* @import "~bootstrap/css/bootstrap.css"; */
@@ -59,6 +59,6 @@ afterEach((to, from) => {
 }
 
 #nprogress .bar {
-  background-color: rgb(0, 247, 255) !important ;
+  background-color: rgb(0 247 255) !important ;
 }
 </style>

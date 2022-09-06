@@ -23,7 +23,12 @@ export const postVmConverter: FirestoreDataConverter<PostVm> = {
       ...rest,
       id: snapShot.id,
       publishedAt,
-      edited: edited ? { ...edited, at: tryGetSeconds(edited.at) } : undefined,
+      edited: edited
+        ? {
+            ...edited,
+            at: tryGetSeconds(edited.at),
+          }
+        : undefined,
     };
 
     return vm;
@@ -72,6 +77,7 @@ export const userVmConverter: FirestoreDataConverter<UserVM> = {
   },
 };
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 export const hasIdVmConverter: FirestoreDataConverter<HasId & any> = {
   toFirestore: (dto) => dto,
   fromFirestore: (snapShot) => {

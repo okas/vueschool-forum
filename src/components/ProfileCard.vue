@@ -85,5 +85,3 @@ const lasVisited = computed(() => diffFromUnix(props.authUser.lastVisitAt));
     </router-link>
   </div>
 </template>
-
-<style scoped></style>

@@ -34,7 +34,10 @@ const forumThreads = computed(() =>
           <p class="text-lead" v-text="forum.description" />
         </div>
         <router-link
-          :to="{ name: 'ThreadCreate', params: { forumId } }"
+          :to="{
+            name: 'ThreadCreate',
+            params: { forumId },
+          }"
           class="btn-green btn-small"
         >
           Start a thread
@@ -48,5 +51,3 @@ const forumThreads = computed(() =>
     </div>
   </template>
 </template>
-
-<style scoped></style>

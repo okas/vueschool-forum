@@ -1,4 +1,3 @@
-import { ok } from "assert";
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
@@ -18,7 +17,6 @@ import {
   Unsubscribe,
   writeBatch,
 } from "firebase/firestore";
-
 import { defineStore } from "pinia";
 import { computed, reactive, ref } from "vue";
 import {
@@ -50,12 +48,14 @@ import {
   UserVMWithActivity,
 } from "../types/userVm-types";
 import { countBy, findById } from "../utils/array-helpers";
+import { ok } from "../utils/assert-helpers";
 import { hasIdVmConverter } from "./../firebase/firebase-converters";
 import { fabAuth, fabDb } from "./../firebase/index";
 import {
   makeFirebaseFetchMultiDocsFn,
   makeFirebaseFetchSingleDocFn,
 } from "./firebase-action-sinks";
+import useAcceptHmr from "./helpers";
 
 const { warn } = console;
 
@@ -188,7 +188,10 @@ export const useMainStore = defineStore(
         user: { uid },
       } = await createUserWithEmailAndPassword(fabAuth, email, password);
 
-      return await createUser(uid, { email, ...rest });
+      return await createUser(uid, {
+        email,
+        ...rest,
+      });
     }
 
     async function createUser(
@@ -258,10 +261,16 @@ export const useMainStore = defineStore(
           lastPostAt: serverTimestamp(),
           contributors: arrayUnion(authUserId.value),
           lastPostId: postRef.id,
-          ...(threadCreation && { firstPostId: postRef.id }),
+          ...(threadCreation && {
+            firstPostId: postRef.id,
+          }),
         })
-        .update(forumRef, { lastPostId: postRef.id })
-        .update(userRef, { postsCount: increment(1) })
+        .update(forumRef, {
+          lastPostId: postRef.id,
+        })
+        .update(userRef, {
+          postsCount: increment(1),
+        })
         .commit();
 
       await Promise.allSettled([
@@ -321,8 +330,12 @@ export const useMainStore = defineStore(
 
       await writeBatch(fabDb)
         .set(threadRef, threadDto)
-        .update(forumRef, { threads: arrayUnion(threadRef.id) })
-        .update(userRef, { threadsCount: increment(1) })
+        .update(forumRef, {
+          threads: arrayUnion(threadRef.id),
+        })
+        .update(userRef, {
+          threadsCount: increment(1),
+        })
         .commit();
 
       // Guarantees, that next step, createPost has required data for it's job.
@@ -530,6 +543,8 @@ export const useMainStore = defineStore(
     };
   }
 );
+
+useAcceptHmr(useMainStore);
 
 const CREATE_CONTENT_ERROR_MSG =
   "Create post error: cannot proceed w/o authenticated user.";

@@ -1,11 +1,8 @@
 import { createPinia } from "pinia";
-import { createApp, Plugin } from "vue";
+import { Component, createApp, Plugin } from "vue";
 import AppRoot from "./App.vue";
 import { useFontAwesomePlugin } from "./plugins/font-awesome";
 import router from "./router";
-import registerGlobalComponents, {
-  Options,
-} from "./utils/useAutoComponentRegistrator";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -17,23 +14,23 @@ async function loadAsyncDependencies() {
   faPlugin = await useFontAwesomePlugin();
 }
 
-const registerComponentsOptions: Options = {
-  loader: () =>
-    // Webpack specific!
-    // In case of Vite/Rollup there is builtin glob importer.
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    require.context("@/components/", true, /App[A-Z]\w+\.(vue|js)$/),
-};
-
-function bootstrapApp() {
-  forumApp
-    .use(createPinia())
-    .use(router)
-    .use(registerGlobalComponents, registerComponentsOptions)
-    .use(faPlugin);
-
-  forumApp.mount("#app");
+function loadPlugins() {
+  forumApp.use(createPinia()).use(router).use(faPlugin);
 }
 
-loadAsyncDependencies().then(bootstrapApp);
+function loadGlobalComponents() {
+  const modules: Record<string, Component & { __name: string }> =
+    import.meta.glob("@/components/App*.vue", {
+      import: "default",
+      eager: true,
+    });
+
+  for (const path in modules) {
+    forumApp.component(modules[path].__name, modules[path]);
+  }
+}
+
+loadAsyncDependencies()
+  .then(loadPlugins)
+  .then(loadGlobalComponents)
+  .then(() => forumApp.mount("#app"));

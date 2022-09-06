@@ -61,7 +61,10 @@ function addPost(dto: PostVMFormInput) {
       <h1 style="margin-right: 1rem" v-text="thread?.title" />
       <router-link
         v-slot="{ navigate }"
-        :to="{ name: 'ThreadEdit', params: { threadId } }"
+        :to="{
+          name: 'ThreadEdit',
+          params: { threadId },
+        }"
         custom
       >
         <button class="btn-green btn-small" @click="navigate">
@@ -90,5 +93,3 @@ function addPost(dto: PostVMFormInput) {
     </post-editor>
   </div>
 </template>
-
-<style scoped></style>

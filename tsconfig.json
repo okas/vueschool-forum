@@ -1,15 +1,17 @@
 {
   "compilerOptions": {
     "strict": true,
+    "useDefineForClassFields": true,
     "outDir": "./dist/",
     "incremental": true,
     "noImplicitAny": true,
-    "module": "es2022",
-    "target": "es2021",
+    "module": "ES2022",
+    "target": "ES2022",
     "allowJs": true,
     "checkJs": true,
     "declaration": true,
-    "moduleResolution": "node",
+    "moduleResolution": "Node",
+    "skipLibCheck": true,
     "importHelpers": true,
     "sourceMap": true,
     "downlevelIteration": true,
@@ -21,9 +23,8 @@
     "jsx": "preserve",
     "forceConsistentCasingInFileNames": true,
     "pretty": true,
-    "typeRoots": [
-      "node_modules/@types"
-    ] /* List of folders to include type definitions from. */
+    "typeRoots": ["node_modules/@types"],
+    "types": ["vite/client"]
   },
   "enableAutoDiscovery": true,
   "typeAcquisition": {
@@ -34,5 +35,6 @@
     "@/*": ["src/*"]
   },
   "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.jsx"],
-  "exclude": ["node_modules"]
+  "exclude": ["node_modules"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

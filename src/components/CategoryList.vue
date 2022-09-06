@@ -16,9 +16,11 @@ const { getCategoryNamedFn } = storeToRefs(useMainStore());
     <category-list-item
       v-for="[categoryId, forums] of groupedForums"
       :key="categoryId"
-      v-bind="{ categoryId, name: getCategoryNamedFn(categoryId), forums }"
+      v-bind="{
+        categoryId,
+        name: getCategoryNamedFn(categoryId),
+        forums,
+      }"
     />
   </div>
 </template>
-
-<style scoped></style>

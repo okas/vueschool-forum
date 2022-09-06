@@ -12,7 +12,10 @@ function getRouteRecords(
   input: Readonly<RouteRecordRaw[]>
 ): Readonly<RouteRecordRaw[]> {
   return input.map((rawRoute) => {
-    rawRoute.meta = { toTop: true, smoothScroll: true };
+    rawRoute.meta = {
+      toTop: true,
+      smoothScroll: true,
+    };
     return rawRoute;
   });
 }

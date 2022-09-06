@@ -25,5 +25,3 @@ const groupedForums = computed(() =>
     <category-list :grouped-forums="groupedForums" />
   </template>
 </template>
-
-<style scoped></style>

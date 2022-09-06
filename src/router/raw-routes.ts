@@ -129,7 +129,9 @@ function testForNotFound<TViewModel extends HasId>(
     ? undefined
     : {
         name: "NotFound",
-        params: { pathMatch: path.substring(1).split("/") },
+        params: {
+          pathMatch: path.substring(1).split("/"),
+        },
         query,
         hash,
       };

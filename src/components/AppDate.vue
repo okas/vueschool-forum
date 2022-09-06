@@ -9,5 +9,3 @@ defineProps<{
 <template>
   <span :title="formatFromUnix(timestamp)" v-text="diffFromUnix(timestamp)" />
 </template>
-
-<style scoped></style>

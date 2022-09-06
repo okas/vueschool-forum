@@ -116,10 +116,13 @@ function savePost(dto: PostVMFormInput) {
 
       <div class="post-date text-faded">
         <span v-if="edited?.at">
-          edited <em><app-date :timestamp="edited?.at" /></em> |
+          edited
+          <em><app-date :timestamp="edited?.at" /></em>
+          |
         </span>
         <span>
-          created <em><app-date :timestamp="publishedAt" /></em>
+          created
+          <em><app-date :timestamp="publishedAt" /></em>
         </span>
       </div>
 
@@ -156,7 +159,7 @@ function savePost(dto: PostVMFormInput) {
   background-color: white;
   padding: 20px 10px;
   padding-bottom: 7px;
-  box-shadow: 2px 2px 1px rgba(136, 136, 136, 0.09);
+  box-shadow: 2px 2px 1px rgb(136 136 136 / 9%);
   margin-bottom: 20px;
 }
 
@@ -185,7 +188,7 @@ function savePost(dto: PostVMFormInput) {
     order: -2;
     flex-direction: row;
     justify-content: flex-start;
-    background: rgba(73, 89, 96, 0.06);
+    background: rgb(73 89 96 / 6%);
     margin-right: 0;
     padding: 5px;
     padding-left: 10px;
@@ -220,16 +223,16 @@ function savePost(dto: PostVMFormInput) {
   .post .post-date {
     order: -1;
     flex-basis: 40%;
-    background: rgba(73, 89, 96, 0.06);
+    background: rgb(73 89 96 / 6%);
     padding-right: 10px;
     padding-top: 16px;
-    margin-bottom: 0px;
+    margin-bottom: 0;
   }
 }
 
 @media (max-width: 720px) {
   .post {
-    padding: 0px;
+    padding: 0;
   }
 }
 
@@ -263,7 +266,7 @@ function savePost(dto: PostVMFormInput) {
 }
 
 .post-content blockquote {
-  margin: 25px 0px;
+  margin: 25px 0;
 }
 
 .post-content blockquote.big {
@@ -276,7 +279,8 @@ function savePost(dto: PostVMFormInput) {
   top: -25px;
   left: -25px;
   font-size: 42px;
-  font-family: FontAwesome;
+
+  /* font-family: FontAwesome; */
   content: "\f10e";
   color: #263959;
 }
@@ -318,7 +322,7 @@ function savePost(dto: PostVMFormInput) {
   /* display: flex; */
   position: relative;
   flex-direction: column;
-  border: 2px solid rgba(152, 152, 152, 0.15);
+  border: 2px solid rgb(152 152 152 / 15%);
   border-bottom-left-radius: 5px;
   border-bottom-right-radius: 5px;
 }
@@ -328,7 +332,8 @@ function savePost(dto: PostVMFormInput) {
   top: -20px;
   left: -20px;
   font-size: 42px;
-  font-family: FontAwesome;
+
+  /* font-family: FontAwesome; */
   content: "\f10e";
   color: #263959;
 }
@@ -345,7 +350,7 @@ function savePost(dto: PostVMFormInput) {
   display: flex;
   flex-basis: 100%;
   padding: 3px 10px 3px 28px;
-  background-color: rgba(152, 152, 152, 0.15);
+  background-color: rgb(152 152 152 / 15%);
   justify-content: center;
   align-items: center;
 }
@@ -375,7 +380,7 @@ function savePost(dto: PostVMFormInput) {
 
 .post-content blockquote.simple {
   position: relative;
-  padding: 0px 10px 0px 20px;
+  padding: 0 10px 0 20px;
   font-weight: 100;
   font-style: italic;
   font-size: 17px;
@@ -387,7 +392,8 @@ function savePost(dto: PostVMFormInput) {
   top: -25px;
   left: -25px;
   font-size: 42px;
-  font-family: FontAwesome;
+
+  /* font-family: FontAwesome; */
   content: "\f10e";
   color: #263959;
 }

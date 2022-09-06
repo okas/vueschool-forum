@@ -199,7 +199,10 @@ function createBucketedQueries<TViewModel extends HasId>(
 function vmMapper<TViewModel extends HasId>(
   snap: DocumentSnapshot<DocumentData>
 ): TViewModel {
-  return { ...snap.data(), id: snap.id } as TViewModel;
+  return {
+    ...snap.data(),
+    id: snap.id,
+  } as TViewModel;
 }
 
 function _warn(collectionName: string, ...ids: string[]) {
