@@ -103,5 +103,3 @@ store._isReady = true;
     </div>
   </div>
 </template>
-
-<style scoped></style>

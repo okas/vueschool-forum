@@ -56,7 +56,9 @@ function signOut() {
           <!-- add class "active-drop" to show the dropdown -->
           <div
             id="user-dropdown"
-            :class="{ 'active-drop': isUserDropDownOpen }"
+            :class="{
+              'active-drop': isUserDropDownOpen,
+            }"
           >
             <div class="triangle-drop"></div>
             <ul class="dropdown-menu">

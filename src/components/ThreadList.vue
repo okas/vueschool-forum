@@ -44,7 +44,12 @@ const renderData = computed(() =>
     >
       <div>
         <p>
-          <router-link :to="{ name: `ThreadShow`, params: { threadId } }">
+          <router-link
+            :to="{
+              name: `ThreadShow`,
+              params: { threadId },
+            }"
+          >
             {{ title }}
           </router-link>
         </p>
@@ -82,5 +87,3 @@ const renderData = computed(() =>
     <button class="btn-circle"><i class="fa fa-angle-right"></i></button>
   </div> -->
 </template>
-
-<style scoped></style>

@@ -73,5 +73,3 @@ function clearForm() {
     </div>
   </form>
 </template>
-
-<style scoped></style>

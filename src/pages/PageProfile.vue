@@ -45,9 +45,9 @@ store._isReady = true;
 
     <div class="col-7 push-top">
       <div class="profile-header">
-        <span class="text-lead">
-          {{ getAuthUser.username }}'s recent activity
-        </span>
+        <span class="text-lead"
+          >{{ getAuthUser.username }}'s recent activity</span
+        >
         <a href="#">See only started threads?</a>
       </div>
 
@@ -86,5 +86,3 @@ store._isReady = true;
     </div>
   </div>
 </template>
-
-<style scoped></style>

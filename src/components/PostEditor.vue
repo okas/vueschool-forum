@@ -33,7 +33,8 @@ function cancel() {
 <template>
   <div class="col-full">
     <h1 v-if="!text">
-      Create new post in <i><slot>current thread</slot></i>
+      Create new post in
+      <i><slot>current thread</slot></i>
     </h1>
     <form @submit.prevent="save">
       <div class="form-group">
@@ -66,5 +67,3 @@ function cancel() {
     </form>
   </div>
 </template>
-
-<style scoped></style>

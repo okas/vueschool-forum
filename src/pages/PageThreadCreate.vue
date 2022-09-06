@@ -29,11 +29,17 @@ async function save({ title, text }: ThreadVMFormInput) {
     text,
   });
 
-  router.push({ name: "ThreadShow", params: { threadId } });
+  router.push({
+    name: "ThreadShow",
+    params: { threadId },
+  });
 }
 
 function cancel() {
-  router.push({ name: "Forum", params: { forumId: props.forumId } });
+  router.push({
+    name: "Forum",
+    params: { forumId: props.forumId },
+  });
 }
 </script>
 
@@ -47,5 +53,3 @@ function cancel() {
     <thread-editor @save="save" @cancel="cancel" />
   </div>
 </template>
-
-<style scoped></style>

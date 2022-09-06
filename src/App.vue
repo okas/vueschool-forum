@@ -59,6 +59,6 @@ afterEach((to, from) => {
 }
 
 #nprogress .bar {
-  background-color: rgb(0, 247, 255) !important ;
+  background-color: rgb(0 247 255) !important ;
 }
 </style>

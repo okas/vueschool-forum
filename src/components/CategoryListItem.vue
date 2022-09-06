@@ -20,7 +20,10 @@ const showCategoryLink = computed(() => params.categoryId !== props.categoryId);
     <h2 class="list-title">
       <router-link
         v-if="showCategoryLink"
-        :to="{ name: 'Category', params: { categoryId } }"
+        :to="{
+          name: 'Category',
+          params: { categoryId },
+        }"
       >
         {{ name }}
       </router-link>
@@ -29,5 +32,3 @@ const showCategoryLink = computed(() => params.categoryId !== props.categoryId);
     <forum-list :forums="forums" />
   </div>
 </template>
-
-<style scoped></style>

@@ -24,7 +24,10 @@ function countPhrase(length: number) {
     <div class="forum-details">
       <router-link
         class="text-xlarge"
-        :to="{ name: 'Forum', params: { forumId } }"
+        :to="{
+          name: 'Forum',
+          params: { forumId },
+        }"
       >
         {{ name }}
       </router-link>
@@ -53,5 +56,3 @@ function countPhrase(length: number) {
     </div>
   </div>
 </template>
-
-<style scoped></style>

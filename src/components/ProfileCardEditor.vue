@@ -28,7 +28,9 @@ const userEditorObj = reactive<UserVmEditForInput>({
   twitter,
 });
 
-const routeToReturn = { name: "Profile" } as RouteLocationRaw;
+const routeToReturn = {
+  name: "Profile",
+} as RouteLocationRaw;
 
 async function save() {
   await editUser(userEditorObj);
@@ -136,5 +138,3 @@ function cancel() {
     </form>
   </div>
 </template>
-
-<style scoped></style>

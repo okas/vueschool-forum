@@ -30,10 +30,12 @@ const categoryForums = computed(() =>
     </div>
     <div class="col-full">
       <category-list-item
-        v-bind="{ categoryId, name, forums: categoryForums }"
+        v-bind="{
+          categoryId,
+          name,
+          forums: categoryForums,
+        }"
       />
     </div>
   </template>
 </template>
-
-<style scoped></style>

@@ -188,7 +188,10 @@ export const useMainStore = defineStore(
         user: { uid },
       } = await createUserWithEmailAndPassword(fabAuth, email, password);
 
-      return await createUser(uid, { email, ...rest });
+      return await createUser(uid, {
+        email,
+        ...rest,
+      });
     }
 
     async function createUser(
@@ -258,10 +261,16 @@ export const useMainStore = defineStore(
           lastPostAt: serverTimestamp(),
           contributors: arrayUnion(authUserId.value),
           lastPostId: postRef.id,
-          ...(threadCreation && { firstPostId: postRef.id }),
+          ...(threadCreation && {
+            firstPostId: postRef.id,
+          }),
         })
-        .update(forumRef, { lastPostId: postRef.id })
-        .update(userRef, { postsCount: increment(1) })
+        .update(forumRef, {
+          lastPostId: postRef.id,
+        })
+        .update(userRef, {
+          postsCount: increment(1),
+        })
         .commit();
 
       await Promise.allSettled([
@@ -321,8 +330,12 @@ export const useMainStore = defineStore(
 
       await writeBatch(fabDb)
         .set(threadRef, threadDto)
-        .update(forumRef, { threads: arrayUnion(threadRef.id) })
-        .update(userRef, { threadsCount: increment(1) })
+        .update(forumRef, {
+          threads: arrayUnion(threadRef.id),
+        })
+        .update(userRef, {
+          threadsCount: increment(1),
+        })
         .commit();
 
       // Guarantees, that next step, createPost has required data for it's job.

@@ -23,7 +23,12 @@ export const postVmConverter: FirestoreDataConverter<PostVm> = {
       ...rest,
       id: snapShot.id,
       publishedAt,
-      edited: edited ? { ...edited, at: tryGetSeconds(edited.at) } : undefined,
+      edited: edited
+        ? {
+            ...edited,
+            at: tryGetSeconds(edited.at),
+          }
+        : undefined,
     };
 
     return vm;
