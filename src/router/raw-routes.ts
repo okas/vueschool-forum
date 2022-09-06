@@ -22,36 +22,16 @@ export const rawRoutes: Readonly<RouteRecordRaw[]> = [
     path: "/me",
     name: "Profile",
     component: () => import("../pages/PageProfile.vue"),
-    beforeEnter: (
-      routeObj,
-      _: unknown,
-      next: (route: RouteLocationRaw | undefined) => void
-    ) =>
-      next(
-        testForNotFound(
-          routeObj,
-          useMainStore().users,
-          useMainStore().authUserId
-        )
-      ),
+    beforeEnter: (_, __, next: (route: RouteLocationRaw | undefined) => void) =>
+      next(testForAuthenticatedUser()),
   },
   {
     path: "/me/edit",
     name: "ProfileEdit",
     component: () => import("../pages/PageProfile.vue"),
     props: { edit: true },
-    beforeEnter: (
-      routeObj,
-      _: unknown,
-      next: (route: RouteLocationRaw | undefined) => void
-    ) =>
-      next(
-        testForNotFound(
-          routeObj,
-          useMainStore().users,
-          useMainStore().authUserId
-        )
-      ),
+    beforeEnter: (_, __, next: (route: RouteLocationRaw | undefined) => void) =>
+      next(testForAuthenticatedUser()),
   },
   {
     path: "/category/:categoryId",
@@ -116,6 +96,10 @@ export const rawRoutes: Readonly<RouteRecordRaw[]> = [
     component: () => import("../pages/PageNotFound.vue"),
   },
 ];
+
+function testForAuthenticatedUser(): RouteLocationRaw | undefined {
+  return useMainStore().authUserId ? undefined : { name: "Home" };
+}
 
 function testForNotFound<TViewModel extends HasId>(
   { params, path, query, hash }: RouteLocation,
