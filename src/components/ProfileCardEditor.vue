@@ -1,17 +1,16 @@
 <script setup lang="ts">
 import { reactive, toRaw } from "vue";
-import { RouteLocationRaw, useRouter } from "vue-router";
 import { UserVM } from "../models/UserVM";
-import { useMainStore } from "../stores/main-store";
 import { UserVmEditForInput } from "../types/userVm-types";
 
 const props = defineProps<{
   user: UserVM;
 }>();
 
-const { editUser } = useMainStore();
-
-const router = useRouter();
+const emits = defineEmits<{
+  (e: "save", dto: UserVmEditForInput): void;
+  (e: "cancel"): void;
+}>();
 
 const { id, name, username, bio, email, website, location, avatar, twitter } =
   toRaw(props.user);
@@ -28,18 +27,12 @@ const userEditorObj = reactive<UserVmEditForInput>({
   twitter,
 });
 
-const routeToReturn = {
-  name: "Profile",
-} as RouteLocationRaw;
-
-async function save() {
-  await editUser(userEditorObj);
-
-  router.push(routeToReturn);
+function save() {
+  emits("save", userEditorObj);
 }
 
 function cancel() {
-  router.push(routeToReturn);
+  emits("cancel");
 }
 </script>
 

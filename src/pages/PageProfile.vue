@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
 import { onUpdated, watch } from "vue";
-import { useRouter } from "vue-router";
+import { RouteLocationRaw, useRouter } from "vue-router";
 import PostList from "../components/PostList.vue";
 import ProfileCard from "../components/ProfileCard.vue";
 import ProfileCardEditor from "../components/ProfileCardEditor.vue";
 import { useMainStore } from "../stores/main-store";
+import { UserVmEditForInput } from "../types/userVm-types";
 
 // TODO: refactor activity to component and migrate page to separate page
 
@@ -18,6 +19,8 @@ const store = useMainStore();
 const router = useRouter();
 
 const { getAuthUser } = storeToRefs(store);
+
+const routeToReturn = { name: "Profile" } as RouteLocationRaw;
 
 watch(getAuthUser, async (newVal) => !newVal && (await goToHome()));
 
@@ -33,6 +36,16 @@ async function goToHome() {
   await router.push({ name: "Home" });
 }
 
+async function save(dto: UserVmEditForInput) {
+  await store.editUser(dto);
+
+  router.push(routeToReturn);
+}
+
+function cancel() {
+  router.push(routeToReturn);
+}
+
 store._isReady = true;
 </script>
 
@@ -40,7 +53,12 @@ store._isReady = true;
   <div v-if="getAuthUser" class="flex-grid">
     <div class="col-3 push-top">
       <profile-card v-if="!edit" :auth-user="getAuthUser" />
-      <profile-card-editor v-else :user="getAuthUser" />
+      <profile-card-editor
+        v-else
+        :user="getAuthUser"
+        @save="save"
+        @cancel="cancel"
+      />
     </div>
 
     <div class="col-7 push-top">
