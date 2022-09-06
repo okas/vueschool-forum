@@ -12,15 +12,16 @@ module.exports = {
   // https://github.com/vuejs/vue-eslint-parser#parseroptionsparser
   parserOptions: {
     parser: "@typescript-eslint/parser",
+    ecmaVersion: 2022,
+    sourceType: "module",
   },
 
-  plugins: [
-    '@typescript-eslint',
-  ],
+  plugins: ["@typescript-eslint"],
 
   extends: [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    'prettier',
+    "eslint:recommended",
+    "plugin:@typescript-eslint/recommended",
+    "plugin:vue/vue3-recommended",
+    "prettier",
   ],
 };
