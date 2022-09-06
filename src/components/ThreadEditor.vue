@@ -20,16 +20,17 @@ const form = reactive({
 
 const submitButtonWord = computed(() => (props.title ? "Update" : "Publish"));
 
-watch(form, ({ title: newTitle, text: newText }) => {
+watch(form, ({ title, text }) => {
   const result =
-    (newTitle?.trim() ?? "") !== (props.title?.trim() ?? "") ||
-    (newText?.trim() ?? "") !== (props.text?.trim() ?? "");
+    (title?.trim() ?? "") !== (props.title?.trim() ?? "") ||
+    (text?.trim() ?? "") !== (props.text?.trim() ?? "");
 
   emits("update:isDirty", result);
 });
 
 function save() {
   emits("update:isDirty", false);
+
   emits("save", { ...form });
 }
 

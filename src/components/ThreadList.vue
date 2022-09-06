@@ -44,12 +44,7 @@ const renderData = computed(() =>
     >
       <div>
         <p>
-          <router-link
-            :to="{
-              name: `ThreadShow`,
-              params: { threadId },
-            }"
-          >
+          <router-link :to="{ name: `ThreadShow`, params: { threadId } }">
             {{ title }}
           </router-link>
         </p>
