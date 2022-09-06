@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive } from "vue";
+import { computed, reactive, watch } from "vue";
 import { ThreadVMFormInput } from "../types/threadVm-types";
 
 const props = defineProps<{
@@ -10,6 +10,7 @@ const props = defineProps<{
 const emits = defineEmits<{
   (e: "save", dto: ThreadVMFormInput): void;
   (e: "cancel"): void;
+  (e: "update:isDirty", state: boolean): void;
 }>();
 
 const form = reactive({
@@ -19,19 +20,21 @@ const form = reactive({
 
 const submitButtonWord = computed(() => (props.title ? "Update" : "Publish"));
 
+watch(form, ({ title: newTitle, text: newText }) => {
+  const result =
+    (newTitle?.trim() ?? "") !== (props.title?.trim() ?? "") ||
+    (newText?.trim() ?? "") !== (props.text?.trim() ?? "");
+
+  emits("update:isDirty", result);
+});
+
 function save() {
+  emits("update:isDirty", false);
   emits("save", { ...form });
-  clearForm();
 }
 
 function cancel() {
   emits("cancel");
-  clearForm();
-}
-
-function clearForm() {
-  form.title = null;
-  form.text = null;
 }
 </script>
 
