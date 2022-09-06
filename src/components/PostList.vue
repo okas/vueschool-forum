@@ -37,11 +37,19 @@ const renderData = computed(() =>
 
 const editingPostId = ref<PostVm | null>(null);
 
-function toggleEditMode(postId: string) {
+function toggleEditModeForPost(postId: string) {
   editingPostId.value =
     editingPostId.value?.id === postId
       ? null
       : props.posts.find(({ id }) => id === postId);
+}
+
+function revealForEditingPost(id: string): boolean {
+  return editingPostId.value?.id === id;
+}
+
+function isUserOwnPost(userId: string): boolean {
+  return userId === store.authUserId;
 }
 
 function savePost(dto: PostVMFormInput) {
@@ -50,7 +58,7 @@ function savePost(dto: PostVMFormInput) {
     ...dto,
   };
 
-  toggleEditMode(editingPostId.value.id);
+  toggleEditModeForPost(editingPostId.value.id);
 
   store.editPost(post);
 }
@@ -95,20 +103,21 @@ function savePost(dto: PostVMFormInput) {
       <div class="post-content">
         <div>
           <post-editor
-            v-if="editingPostId?.id === id"
+            v-if="revealForEditingPost(id)"
             :text="text"
             @save="savePost"
-            @cancel="toggleEditMode(id)"
+            @cancel="toggleEditModeForPost(id)"
           />
           <p v-else v-text="text" />
         </div>
+
         <a
-          v-if="userId === store.authUserId"
+          v-if="isUserOwnPost(userId)"
           href="#"
           style="margin-left: auto; padding-left: 0.625rem"
           class="link-unstyled"
           title="Make a change"
-          @click.prevent="toggleEditMode(id)"
+          @click.prevent="toggleEditModeForPost(id)"
         >
           <fa icon="pencil-alt" />
         </a>
