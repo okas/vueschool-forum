@@ -24,4 +24,13 @@ module.exports = {
     "plugin:vue/vue3-recommended",
     "prettier",
   ],
+
+  overrides: [
+    {
+      files: ["*.html"],
+      rules: {
+        "vue/comment-directive": "off",
+      },
+    },
+  ],
 };
