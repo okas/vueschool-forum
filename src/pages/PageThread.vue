@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { useAsyncState } from "@vueuse/core";
-import { computed } from "vue";
+import { useAsyncState, useConfirmDialog } from "@vueuse/core";
+import { computed, ref } from "vue";
+import { onBeforeRouteLeave } from "vue-router";
+import ModalDialog from "../components/ModalDialog.vue";
 import PostEditor from "../components/PostEditor.vue";
 import PostList from "../components/PostList.vue";
 import { useMainStore } from "../stores/main-store";
@@ -21,6 +23,10 @@ const { isReady } = useAsyncState(async () => {
   store._isReady = true;
 }, undefined);
 
+const { isRevealed, reveal, confirm } = useConfirmDialog();
+
+const isGoodToGo = ref<boolean>(false);
+
 const thread = computed(() => store.getThreadMetaInfoFn(props.threadId));
 
 const posts = computed(() =>
@@ -36,6 +42,12 @@ const statsPhrase = computed(
       "contributor"
     )}`
 );
+
+onBeforeRouteLeave(async () => {
+  if (isGoodToGo.value) {
+    return (await reveal()).data;
+  }
+});
 
 function addPost(dto: PostVMFormInput) {
   const post: PostVMNew = {
@@ -88,8 +100,10 @@ function addPost(dto: PostVMFormInput) {
 
     <post-list :posts="posts" />
 
-    <post-editor @save="addPost">
+    <post-editor v-model:is-dirty="isGoodToGo" @save="addPost">
       {{ thread?.title }}
     </post-editor>
   </div>
+
+  <modal-dialog v-if="isRevealed" :confirm="confirm" />
 </template>

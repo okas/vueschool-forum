@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { PostVMFormInput } from "../types/postVm-types";
 
 const props = defineProps<{
@@ -9,6 +9,7 @@ const props = defineProps<{
 const emits = defineEmits<{
   (e: "save", dto: PostVMFormInput): void;
   (e: "cancel"): void;
+  (e: "update:isDirty", state: boolean): void;
 }>();
 
 const submitBtnPhrase = computed(
@@ -17,15 +18,23 @@ const submitBtnPhrase = computed(
 
 const editorText = ref<string>(props.text);
 
+watch(editorText, (newVal) => {
+  const result = (newVal?.trim() ?? "") !== (props.text?.trim() ?? "");
+
+  emits("update:isDirty", result);
+});
+
 function save() {
-  emits("save", {
-    text: editorText.value,
-  });
+  emits("update:isDirty", false);
+
+  emits("save", { text: editorText.value });
+
   editorText.value = null;
 }
 
 function cancel() {
   emits("cancel");
+
   editorText.value = null;
 }
 </script>
