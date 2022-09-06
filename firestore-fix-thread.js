@@ -27,7 +27,9 @@ await runTransaction(db, async (tran) => {
         const docData = threadDocSnap.data();
 
         if (!docData.firstPostId) {
-          const dto = { firstPostId: docData?.posts[0] ?? "" };
+          const dto = {
+            firstPostId: docData?.posts[0] ?? "",
+          };
 
           tran.update(threadDocSnap.ref, dto);
 
