@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, toRaw } from "vue";
+import { reactive, toRaw, watch } from "vue";
 import { UserVM } from "../models/UserVM";
 import { UserVmEditForInput } from "../types/userVm-types";
 
@@ -10,6 +10,7 @@ const props = defineProps<{
 const emits = defineEmits<{
   (e: "save", dto: UserVmEditForInput): void;
   (e: "cancel"): void;
+  (e: "update:isDirty", state: boolean): void;
 }>();
 
 const { id, name, username, bio, email, website, location, avatar, twitter } =
@@ -27,7 +28,26 @@ const userEditorObj = reactive<UserVmEditForInput>({
   twitter,
 });
 
+watch(
+  userEditorObj,
+  ({ id, name, username, bio, email, website, location, avatar, twitter }) => {
+    const result =
+      (id?.trim() ?? "") !== (props.user?.id.trim() ?? "") ||
+      (name?.trim() ?? "") !== (props.user?.name.trim() ?? "") ||
+      (username?.trim() ?? "") !== (props.user?.username.trim() ?? "") ||
+      (bio?.trim() ?? "") !== (props.user?.bio.trim() ?? "") ||
+      (email?.trim() ?? "") !== (props.user?.email.trim() ?? "") ||
+      (website?.trim() ?? "") !== (props.user?.website.trim() ?? "") ||
+      (location?.trim() ?? "") !== (props.user?.location.trim() ?? "") ||
+      (avatar?.trim() ?? "") !== (props.user?.avatar.trim() ?? "") ||
+      (twitter?.trim() ?? "") !== (props.user?.twitter.trim() ?? "");
+
+    emits("update:isDirty", result);
+  }
+);
+
 function save() {
+  emits("update:isDirty", false);
   emits("save", userEditorObj);
 }
 

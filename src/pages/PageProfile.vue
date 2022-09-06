@@ -1,7 +1,9 @@
 <script setup lang="ts">
+import { useConfirmDialog } from "@vueuse/core";
 import { storeToRefs } from "pinia";
-import { onUpdated, watch } from "vue";
-import { RouteLocationRaw, useRouter } from "vue-router";
+import { onUpdated, ref, watch } from "vue";
+import { onBeforeRouteLeave, RouteLocationRaw, useRouter } from "vue-router";
+import ModalDialog from "../components/ModalDialog.vue";
 import PostList from "../components/PostList.vue";
 import ProfileCard from "../components/ProfileCard.vue";
 import ProfileCardEditor from "../components/ProfileCardEditor.vue";
@@ -10,7 +12,7 @@ import { UserVmEditForInput } from "../types/userVm-types";
 
 // TODO: refactor activity to component and migrate page to separate page
 
-defineProps<{
+const props = defineProps<{
   edit?: boolean;
 }>();
 
@@ -18,7 +20,11 @@ const store = useMainStore();
 
 const router = useRouter();
 
+const { isRevealed, reveal, confirm } = useConfirmDialog();
+
 const { getAuthUser } = storeToRefs(store);
+
+const isGoodToGo = ref<boolean>(false);
 
 const routeToReturn = { name: "Profile" } as RouteLocationRaw;
 
@@ -29,6 +35,12 @@ onUpdated(() => {
     store._isReady = true;
   } else {
     goToHome();
+  }
+});
+
+onBeforeRouteLeave(async () => {
+  if (props.edit && isGoodToGo.value) {
+    return (await reveal()).data;
   }
 });
 
@@ -55,6 +67,7 @@ store._isReady = true;
       <profile-card v-if="!edit" :auth-user="getAuthUser" />
       <profile-card-editor
         v-else
+        v-model:is-dirty="isGoodToGo"
         :user="getAuthUser"
         @save="save"
         @cancel="cancel"
@@ -103,4 +116,6 @@ store._isReady = true;
       </div> -->
     </div>
   </div>
+
+  <modal-dialog v-if="isRevealed" :confirm="confirm" />
 </template>
