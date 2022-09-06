@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useAsyncState, useConfirmDialog } from "@vueuse/core";
-import { computed, ref } from "vue";
+import { computed, provide, ref } from "vue";
 import { onBeforeRouteLeave, useRouter } from "vue-router";
-import ModalDialog from "../components/ModalDialog.vue";
+import ModalDialog, { confirmInjectKey } from "../components/ModalDialog.vue";
 import ThreadEditor from "../components/ThreadEditor.vue";
 import { useMainStore } from "../stores/main-store";
 import { ThreadVMFormInput } from "../types/threadVm-types";
@@ -26,6 +26,8 @@ const { isRevealed, reveal, confirm } = useConfirmDialog();
 const isGoodToGo = ref<boolean>(false);
 
 const forum = computed(() => findById(store.forums, props.forumId));
+
+provide(confirmInjectKey, confirm);
 
 onBeforeRouteLeave(async () => {
   if (isGoodToGo.value) {
@@ -68,5 +70,5 @@ function cancel() {
     />
   </div>
 
-  <modal-dialog v-if="isRevealed" :confirm="confirm" />
+  <modal-dialog v-if="isRevealed" />
 </template>

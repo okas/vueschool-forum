@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { useConfirmDialog } from "@vueuse/core";
 import { storeToRefs } from "pinia";
-import { onUpdated, ref, watch } from "vue";
+import { onUpdated, provide, ref, watch } from "vue";
 import { onBeforeRouteLeave, RouteLocationRaw, useRouter } from "vue-router";
-import ModalDialog from "../components/ModalDialog.vue";
+import ModalDialog, { confirmInjectKey } from "../components/ModalDialog.vue";
 import PostList from "../components/PostList.vue";
 import ProfileCard from "../components/ProfileCard.vue";
 import ProfileCardEditor from "../components/ProfileCardEditor.vue";
@@ -27,6 +27,8 @@ const { getAuthUser } = storeToRefs(store);
 const isGoodToGo = ref<boolean>(false);
 
 const routeToReturn = { name: "Profile" } as RouteLocationRaw;
+
+provide(confirmInjectKey, confirm);
 
 watch(getAuthUser, async (newVal) => !newVal && (await goToHome()));
 
@@ -117,5 +119,5 @@ store._isReady = true;
     </div>
   </div>
 
-  <modal-dialog v-if="isRevealed" :confirm="confirm" />
+  <modal-dialog v-if="isRevealed" />
 </template>

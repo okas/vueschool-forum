@@ -1,7 +1,11 @@
 <script setup lang="ts">
-defineProps<{
-  confirm: (data: boolean) => void;
-}>();
+import { inject } from "vue";
+
+const injectedConfirmCb: (data: boolean) => void = inject(confirmInjectKey);
+</script>
+
+<script lang="ts">
+export const confirmInjectKey = Symbol("model confirm cb");
 </script>
 
 <template>
@@ -12,10 +16,16 @@ defineProps<{
           Are you sure you want to leave?<br />Unsaved changes will be lost!
         </h2>
         <div class="btn-group">
-          <button class="btn btn-red" @click.prevent="confirm?.(true)">
+          <button
+            class="btn btn-red"
+            @click.prevent="injectedConfirmCb?.(true)"
+          >
             Yes
           </button>
-          <button class="btn btn-blue" @click.prevent="confirm?.(false)">
+          <button
+            class="btn btn-blue"
+            @click.prevent="injectedConfirmCb?.(false)"
+          >
             No
           </button>
         </div>

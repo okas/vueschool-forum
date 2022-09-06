@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useAsyncState, useConfirmDialog } from "@vueuse/core";
-import { computed, ref } from "vue";
+import { computed, provide, ref } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
-import ModalDialog from "../components/ModalDialog.vue";
+import ModalDialog, { confirmInjectKey } from "../components/ModalDialog.vue";
 import PostEditor from "../components/PostEditor.vue";
 import PostList from "../components/PostList.vue";
 import { useMainStore } from "../stores/main-store";
@@ -42,6 +42,8 @@ const statsPhrase = computed(
       "contributor"
     )}`
 );
+
+provide(confirmInjectKey, confirm);
 
 onBeforeRouteLeave(async () => {
   if (isGoodToGo.value) {
@@ -105,5 +107,5 @@ function addPost(dto: PostVMFormInput) {
     </post-editor>
   </div>
 
-  <modal-dialog v-if="isRevealed" :confirm="confirm" />
+  <modal-dialog v-if="isRevealed" />
 </template>
