@@ -7,7 +7,12 @@ module.exports = {
     browser: true,
   },
 
-  parser: '@typescript-eslint/parser',
+  parser: "vue-eslint-parser",
+
+  // https://github.com/vuejs/vue-eslint-parser#parseroptionsparser
+  parserOptions: {
+    parser: "@typescript-eslint/parser",
+  },
 
   plugins: [
     '@typescript-eslint',
