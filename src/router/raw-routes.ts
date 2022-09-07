@@ -14,6 +14,15 @@ export const rawRoutes: Readonly<RouteRecordRaw[]> = [
     component: () => import("../pages/PageSignIn.vue"),
   },
   {
+    path: "/signout",
+    name: "SignOut",
+    component: () => undefined, // To fullfil `RouteRecordRaw` API.
+    async beforeEnter() {
+      await useMainStore().signOut();
+      return { name: "Home" };
+    },
+  },
+  {
     path: "/register",
     name: "Register",
     component: () => import("../pages/PageRegister.vue"),

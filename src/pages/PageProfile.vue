@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useConfirmDialog } from "@vueuse/core";
 import { storeToRefs } from "pinia";
-import { onUpdated, provide, ref, watch } from "vue";
+import { onUpdated, provide, ref } from "vue";
 import { onBeforeRouteLeave, RouteLocationRaw, useRouter } from "vue-router";
 import ModalDialog, { confirmInjectKey } from "../components/ModalDialog.vue";
 import PostList from "../components/PostList.vue";
@@ -29,8 +29,6 @@ const hasDirtyForm = ref<boolean>(false);
 const routeToReturn = { name: "Profile" } as RouteLocationRaw;
 
 provide(confirmInjectKey, confirm);
-
-watch(getAuthUser, async (newVal) => !newVal && (await goToHome()));
 
 onUpdated(() => {
   if (getAuthUser.value) {

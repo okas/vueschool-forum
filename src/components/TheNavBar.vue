@@ -13,8 +13,8 @@ function toggleUserDropDown() {
   isUserDropDownOpen.value = !isUserDropDownOpen.value;
 }
 
-function signOut() {
-  store.signOut();
+async function signOut() {
+  await store.signOut();
 }
 </script>
 
