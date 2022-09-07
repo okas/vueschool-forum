@@ -10,6 +10,11 @@ const props = defineProps<{
   posts: Array<PostVm>;
 }>();
 
+const emits = defineEmits<{
+  (e: "edit", dto: PostVMEdit): void;
+  (e: "update:isDirty", state: boolean): void;
+}>();
+
 const store = useMainStore();
 
 const renderData = computed(() =>
@@ -52,6 +57,10 @@ function isUserOwnPost(userId: string): boolean {
   return userId === store.authUserId;
 }
 
+function passDirtyEvent(data: boolean) {
+  emits("update:isDirty", data);
+}
+
 function savePost(dto: PostVMFormInput) {
   const post: PostVMEdit = {
     id: editingPostId.value.id,
@@ -59,8 +68,7 @@ function savePost(dto: PostVMFormInput) {
   };
 
   toggleEditModeForPost(editingPostId.value.id);
-
-  store.editPost(post);
+  emits("edit", post);
 }
 </script>
 
@@ -105,6 +113,7 @@ function savePost(dto: PostVMFormInput) {
           <post-editor
             v-if="revealForEditingPost(id)"
             :text="text"
+            @update:is-dirty="passDirtyEvent"
             @save="savePost"
             @cancel="toggleEditModeForPost(id)"
           />

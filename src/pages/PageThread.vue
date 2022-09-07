@@ -6,7 +6,7 @@ import ModalDialog, { confirmInjectKey } from "../components/ModalDialog.vue";
 import PostEditor from "../components/PostEditor.vue";
 import PostList from "../components/PostList.vue";
 import { useMainStore } from "../stores/main-store";
-import { PostVMFormInput, PostVMNew } from "../types/postVm-types";
+import { PostVMEdit, PostVMFormInput, PostVMNew } from "../types/postVm-types";
 import { getCountPhrase } from "../utils/misc";
 
 const props = defineProps<{
@@ -25,7 +25,8 @@ const { isReady } = useAsyncState(async () => {
 
 const { isRevealed, reveal, confirm } = useConfirmDialog();
 
-const isGoodToGo = ref<boolean>(false);
+const hasDirtyForm = ref<boolean>(false);
+const hasDirtyFormInPostList = ref<boolean>(false);
 
 const thread = computed(() => store.getThreadMetaInfoFn(props.threadId));
 
@@ -46,18 +47,22 @@ const statsPhrase = computed(
 provide(confirmInjectKey, confirm);
 
 onBeforeRouteLeave(async () => {
-  if (isGoodToGo.value) {
+  if (hasDirtyForm.value || hasDirtyFormInPostList.value) {
     return (await reveal()).data;
   }
 });
 
-function addPost(dto: PostVMFormInput) {
+async function addPost(dto: PostVMFormInput) {
   const post: PostVMNew = {
     threadId: props.threadId,
     ...dto,
   };
 
-  store.createPost(post);
+  await store.createPost(post);
+}
+
+async function editPost(dto: PostVMEdit) {
+  await store.editPost(dto);
 }
 </script>
 
@@ -100,9 +105,13 @@ function addPost(dto: PostVMFormInput) {
       />
     </p>
 
-    <post-list :posts="posts" />
+    <post-list
+      v-model:is-dirty="hasDirtyFormInPostList"
+      :posts="posts"
+      @edit="editPost"
+    />
 
-    <post-editor v-model:is-dirty="isGoodToGo" @save="addPost">
+    <post-editor v-model:is-dirty="hasDirtyForm" @save="addPost">
       {{ thread?.title }}
     </post-editor>
   </div>
