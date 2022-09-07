@@ -1,3 +1,5 @@
+import { useAuth } from "@vueuse/firebase/useAuth";
+import { watch } from "vue";
 import {
   createRouter,
   createWebHistory,
@@ -6,6 +8,7 @@ import {
   RouteRecordRaw,
   START_LOCATION,
 } from "vue-router";
+import { fabAuth } from "../firebase";
 import { useMainStore } from "./../stores/main-store";
 import { rawRoutes } from "./raw-routes";
 
@@ -33,16 +36,33 @@ function scrollBehavior(to: RouteLocationNormalized): Promise<ScrollToOptions> {
   );
 }
 
+watch(useAuth(fabAuth).isAuthenticated, async (is) => {
+  const store = useMainStore();
+
+  if (is) {
+    await store.fetchAuthUser();
+  } else {
+    store.clearDbSubscriptionAuthUser();
+    store.authUserId = null;
+  }
+});
+
 const router = createRouter({
   routes: getRouteRecords(rawRoutes),
   scrollBehavior,
   history: createWebHistory(),
 });
 
-router.beforeEach((to, from): RouteLocationRaw | undefined => {
+router.beforeEach(async (to, from): Promise<RouteLocationRaw | undefined> => {
   const store = useMainStore();
 
   from !== START_LOCATION && store.clearDbSubscriptions();
+
+  store.clearDbSubscriptionAuthUser();
+
+  if (useAuth(fabAuth).isAuthenticated) {
+    await store.fetchAuthUser();
+  }
 
   return to.meta?.requiresAuth && !store.authUserId
     ? { name: "Home" }
