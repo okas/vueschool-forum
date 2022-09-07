@@ -23,14 +23,14 @@ const router = useRouter();
 
 const { isRevealed, reveal, confirm } = useConfirmDialog();
 
-const isGoodToGo = ref<boolean>(false);
+const hasDirtyForm = ref<boolean>(false);
 
 const forum = computed(() => findById(store.forums, props.forumId));
 
 provide(confirmInjectKey, confirm);
 
 onBeforeRouteLeave(async () => {
-  if (isGoodToGo.value) {
+  if (hasDirtyForm.value) {
     return (await reveal()).data;
   }
 });
@@ -64,7 +64,7 @@ function cancel() {
     </h1>
 
     <thread-editor
-      v-model:is-dirty="isGoodToGo"
+      v-model:is-dirty="hasDirtyForm"
       @save="save"
       @cancel="cancel"
     />

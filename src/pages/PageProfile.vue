@@ -24,7 +24,7 @@ const { isRevealed, reveal, confirm } = useConfirmDialog();
 
 const { getAuthUser } = storeToRefs(store);
 
-const isGoodToGo = ref<boolean>(false);
+const hasDirtyForm = ref<boolean>(false);
 
 const routeToReturn = { name: "Profile" } as RouteLocationRaw;
 
@@ -41,7 +41,7 @@ onUpdated(() => {
 });
 
 onBeforeRouteLeave(async () => {
-  if (props.edit && isGoodToGo.value) {
+  if (props.edit && hasDirtyForm.value) {
     return (await reveal()).data;
   }
 });
@@ -69,7 +69,7 @@ store._isReady = true;
       <profile-card v-if="!edit" :auth-user="getAuthUser" />
       <profile-card-editor
         v-else
-        v-model:is-dirty="isGoodToGo"
+        v-model:is-dirty="hasDirtyForm"
         :user="getAuthUser"
         @save="save"
         @cancel="cancel"
