@@ -1,5 +1,3 @@
-import { useAuth } from "@vueuse/firebase/useAuth";
-import { watch } from "vue";
 import {
   createRouter,
   createWebHistory,
@@ -8,8 +6,8 @@ import {
   RouteRecordRaw,
   START_LOCATION,
 } from "vue-router";
-import { fabAuth } from "../firebase";
 import { useMainStore } from "./../stores/main-store";
+import { MainStoreActions } from "./../types/main-store-types";
 import { rawRoutes } from "./raw-routes";
 
 function getRouteRecords(
@@ -36,17 +34,6 @@ function scrollBehavior(to: RouteLocationNormalized): Promise<ScrollToOptions> {
   );
 }
 
-watch(useAuth(fabAuth).isAuthenticated, async (is) => {
-  const store = useMainStore();
-
-  if (is) {
-    await store.fetchAuthUser();
-  } else {
-    store.clearDbSubscriptionAuthUser();
-    store.authUserId = null;
-  }
-});
-
 const router = createRouter({
   routes: getRouteRecords(rawRoutes),
   scrollBehavior,
@@ -58,15 +45,20 @@ router.beforeEach(async (to, from): Promise<RouteLocationRaw | undefined> => {
 
   from !== START_LOCATION && store.clearDbSubscriptions();
 
-  store.clearDbSubscriptionAuthUser();
+  return await verifyGuardedRoute(store, to);
+});
 
-  if (useAuth(fabAuth).isAuthenticated) {
-    await store.fetchAuthUser();
-  }
+async function verifyGuardedRoute(
+  store: MainStoreActions,
+  to: RouteLocationNormalized
+) {
+  const isAuthenticated = await store.forceInitFireBaseAuthState();
 
-  return to.meta?.requiresAuth && !store.authUserId
+  return to.meta?.requiresAuth && !isAuthenticated
+    ? { name: "SignIn" }
+    : to.meta?.requiresGuest && isAuthenticated
     ? { name: "Home" }
     : undefined;
-});
+}
 
 export default router;

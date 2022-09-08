@@ -1,4 +1,3 @@
-import { Unsubscribe } from "firebase/firestore";
 import { ComputedRef, Ref } from "vue";
 import { CategoryVM } from "../models/CategoryVM";
 import { ForumVM } from "../models/ForumVM";
@@ -23,8 +22,6 @@ export interface MainStoreState {
   threads: Array<ThreadVM>;
   users: Array<UserVM>;
   stats: StatsVM;
-  _dbUnsubscribes: Array<Unsubscribe>;
-  _dbUnsubscribeAuthUser: Ref<Unsubscribe | null>;
   _isReady: Ref<boolean>;
 }
 
@@ -40,6 +37,11 @@ export interface MainStoreGetters {
 }
 
 export interface MainStoreActions {
+  /**
+   * Forces and awaits for Firestore Auth to find out authenticated user state.
+   * @returns A promise that resolves to boolean: is authenticated or not.
+   */
+  forceInitFireBaseAuthState(): Promise<boolean>;
   /**
    * Sings in user using Firebase Auth `password` method.
    * @returns Id of signed in user.

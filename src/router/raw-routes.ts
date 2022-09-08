@@ -11,6 +11,7 @@ export const rawRoutes: Readonly<RouteRecordRaw[]> = [
   {
     path: "/signin",
     name: "SignIn",
+    meta: { requiresGuest: true },
     component: () => import("../pages/PageSignIn.vue"),
   },
   {
@@ -25,6 +26,7 @@ export const rawRoutes: Readonly<RouteRecordRaw[]> = [
   {
     path: "/register",
     name: "Register",
+    meta: { requiresGuest: true },
     component: () => import("../pages/PageRegister.vue"),
   },
   {

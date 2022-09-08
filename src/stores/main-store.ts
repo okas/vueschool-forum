@@ -63,6 +63,14 @@ export const useMainStore = defineStore(
   "main",
   (): MainStoreState & MainStoreGetters & MainStoreActions => {
     // --------------------------
+    //        INTERNAL
+    // --------------------------
+
+    const _dbUnsubscribes: Unsubscribe[] = [];
+    let _authObserverUnsubscribeFn: Unsubscribe | null = null;
+    let _dbUnsubscribeAuthUser: Unsubscribe | null = null;
+
+    // --------------------------
     //        STATE
     // --------------------------
     const authUserId = ref<string | null>(null);
@@ -78,8 +86,6 @@ export const useMainStore = defineStore(
       usersCount: 0,
       usersOnline: 0,
     });
-    const _dbUnsubscribes = reactive<Array<Unsubscribe>>([]);
-    const _dbUnsubscribeAuthUser = ref<Unsubscribe | null>(null);
     const _isReady = ref(false);
 
     // --------------------------
@@ -151,6 +157,27 @@ export const useMainStore = defineStore(
     // --------------------------
     //        ACTIONS
     // --------------------------
+
+    async function forceInitFireBaseAuthStateObserver(): Promise<boolean> {
+      _authObserverUnsubscribeFn?.();
+      let isInForceEvent = true;
+
+      return new Promise((resolve) => {
+        _authObserverUnsubscribeFn = fabAuth.onIdTokenChanged((authUser) => {
+          if (authUser) {
+            fetchAuthUser().then((result) => {
+              isInForceEvent && resolve(!!result);
+              isInForceEvent = false;
+            });
+          } else {
+            clearDbSubscriptionAuthUser();
+            authUserId.value = null;
+            isInForceEvent && resolve(false);
+            isInForceEvent = false;
+          }
+        });
+      });
+    }
 
     async function signInWithEmailAndPassword(email: string, password: string) {
       await faBSingInWithEmailAndPassword(fabAuth, email, password);
@@ -475,7 +502,7 @@ export const useMainStore = defineStore(
         return;
       }
 
-      _dbUnsubscribeAuthUser.value = customSink[0];
+      _dbUnsubscribeAuthUser = customSink[0];
 
       authUserId.value = userId;
 
@@ -488,8 +515,8 @@ export const useMainStore = defineStore(
     }
 
     function clearDbSubscriptionAuthUser() {
-      _dbUnsubscribeAuthUser.value?.();
-      _dbUnsubscribeAuthUser.value = null;
+      _dbUnsubscribeAuthUser?.();
+      _dbUnsubscribeAuthUser = null;
     }
 
     return {
@@ -502,8 +529,6 @@ export const useMainStore = defineStore(
       threads,
       users,
       stats,
-      _dbUnsubscribes,
-      _dbUnsubscribeAuthUser,
       _isReady,
 
       // GETTERS
@@ -520,6 +545,7 @@ export const useMainStore = defineStore(
 
       // ACTIONS
 
+      forceInitFireBaseAuthState: forceInitFireBaseAuthStateObserver,
       registerUserWithEmailAndPassword,
       createUser,
       editUser,
