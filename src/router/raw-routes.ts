@@ -66,6 +66,7 @@ export const rawRoutes: Readonly<RouteRecordRaw[]> = [
   {
     path: "/forum/:forumId/thread/create",
     name: "ThreadCreate",
+    meta: { requiresAuth: true },
     component: () => import("../pages/PageThreadCreate.vue"),
     props: true,
     beforeEnter: (
@@ -77,6 +78,7 @@ export const rawRoutes: Readonly<RouteRecordRaw[]> = [
   {
     path: "/thread/:threadId/edit",
     name: "ThreadEdit",
+    meta: { requiresAuth: true },
     component: () => import("../pages/PageThreadEdit.vue"),
     props: true,
     beforeEnter: (
