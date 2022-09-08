@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter } from "vue-router";
 import { useMainStore } from "../stores/main-store";
 
 const store = useMainStore();
 const router = useRouter();
+const route = useRoute();
 
 const email = ref<string>(null);
 const password = ref<string>(null);
@@ -15,16 +16,21 @@ async function signIn() {
   } catch (err) {
     alert(err);
   }
-  goToHome();
+
+  navigate();
 }
 
 async function signInWithGoogle() {
   store.signInWithGoogle();
-  goToHome();
+  navigate();
 }
 
-function goToHome() {
-  router.push({ name: "Home" });
+function navigate() {
+  const { redirectTo } = route.query;
+
+  router.push(
+    Array.isArray(redirectTo) ? redirectTo[0] : redirectTo ?? { name: "Home" }
+  );
 }
 
 store._isReady = true;

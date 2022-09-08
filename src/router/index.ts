@@ -51,11 +51,16 @@ router.beforeEach(async (to, from): Promise<RouteLocationRaw | undefined> => {
 async function verifyGuardedRoute(
   store: MainStoreActions,
   to: RouteLocationNormalized
-) {
+): Promise<RouteLocationRaw | undefined> {
   const isAuthenticated = await store.forceInitFireBaseAuthState();
 
   return to.meta?.requiresAuth && !isAuthenticated
-    ? { name: "SignIn" }
+    ? {
+        name: "SignIn",
+        query: {
+          redirectTo: to.path,
+        },
+      }
     : to.meta?.requiresGuest && isAuthenticated
     ? { name: "Home" }
     : undefined;

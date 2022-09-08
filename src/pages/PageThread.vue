@@ -79,7 +79,6 @@ async function editPost(dto: PostVMEdit) {
     <header style="display: flex">
       <h1 style="margin-right: 1rem" v-text="thread?.title" />
       <router-link
-        v-if="!!store.authUserId"
         v-slot="{ navigate }"
         :to="{
           name: 'ThreadEdit',

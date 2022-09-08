@@ -34,7 +34,6 @@ const forumThreads = computed(() =>
           <p class="text-lead" v-text="forum.description" />
         </div>
         <router-link
-          v-if="!!store.authUserId"
           :to="{
             name: 'ThreadCreate',
             params: { forumId },
