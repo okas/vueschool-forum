@@ -1,9 +1,53 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    function userIsLoggedIn() {
+      return request.auth != null
+    }
+
+    function resxBelongsToUser() {
+      return request.auth.uid == resource.data.userId
+    }
+
+    function isNewResx() {
+      return resource == null
+    }
+
+    function canWriteResx() {
+      return userIsLoggedIn() && (isNewResx() || resxBelongsToUser())
+    }
+
     match /{document=**} {
-      allow read, write: if
-          request.time < timestamp.date(2022, 10, 30);
+      allow read: if true
+    }
+
+    match /threads/{thread} {
+      function isOnlyAppendingPostAndContributor() {
+        // TODO: No user restriction in place, can affect other users docs as well.
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(["posts", "contributors"])
+      }
+
+      allow write: if canWriteResx()
+
+      allow update: if isOnlyAppendingPostAndContributor()
+    }
+
+    match /posts/{post} {
+      function isOnlyAppendingThread() {
+        // TODO: No user restriction in place, can affect other users docs as well.
+        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(["threads"])
+      }
+
+      allow write: if canWriteResx()
+
+      allow update: if isOnlyAppendingThread()
+    }
+
+    match /users/{user} {
+      allow create: if true
+
+      allow update: if request.auth.uid == resource.id
     }
   }
 }
