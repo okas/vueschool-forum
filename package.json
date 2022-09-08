@@ -27,7 +27,7 @@
     "firebase": "^9.9.4",
     "nprogress": "^0.2.0",
     "pinia": "^2.0.22",
-    "vue": "^3.2.38",
+    "vue": "^3.2.39",
     "vue-router": "^4.1.5"
   },
   "devDependencies": {
