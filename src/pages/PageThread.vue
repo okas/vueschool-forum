@@ -79,6 +79,7 @@ async function editPost(dto: PostVMEdit) {
     <header style="display: flex">
       <h1 style="margin-right: 1rem" v-text="thread?.title" />
       <router-link
+        v-if="!!store.authUserId"
         v-slot="{ navigate }"
         :to="{
           name: 'ThreadEdit',
@@ -111,9 +112,17 @@ async function editPost(dto: PostVMEdit) {
       @edit="editPost"
     />
 
-    <post-editor v-model:is-dirty="hasDirtyForm" @save="addPost">
+    <post-editor
+      v-if="!!store.authUserId"
+      v-model:is-dirty="hasDirtyForm"
+      @save="addPost"
+    >
       {{ thread?.title }}
     </post-editor>
+
+    <section v-else>
+      <h3>Sign in to add new post</h3>
+    </section>
   </div>
 
   <modal-dialog v-if="isRevealed" />

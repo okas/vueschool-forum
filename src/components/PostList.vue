@@ -50,7 +50,7 @@ function toggleEditModeForPost(postId: string) {
 }
 
 function revealForEditingPost(id: string): boolean {
-  return editingPostId.value?.id === id;
+  return !!store.authUserId && editingPostId.value?.id === id;
 }
 
 function isUserOwnPost(userId: string): boolean {
