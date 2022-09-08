@@ -18,27 +18,29 @@ service cloud.firestore {
       return userIsLoggedIn() && (isNewResx() || resxBelongsToUser())
     }
 
+    function isOnlyAppendingPostAndContributor() {
+      return userIsLoggedIn()
+        && resxBelongsToUser()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["posts", "contributors"])
+    }
+
+    function isOnlyAppendingThread() {
+      return resxBelongsToUser()
+        && resxBelongsToUser()
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["threads"])
+    }
+
     match /{document=**} {
       allow read: if true
     }
 
     match /threads/{thread} {
-      function isOnlyAppendingPostAndContributor() {
-        // TODO: No user restriction in place, can affect other users docs as well.
-        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(["posts", "contributors"])
-      }
-
       allow write: if canWriteResx()
 
       allow update: if isOnlyAppendingPostAndContributor()
     }
 
     match /posts/{post} {
-      function isOnlyAppendingThread() {
-        // TODO: No user restriction in place, can affect other users docs as well.
-        return request.resource.data.diff(resource.data).affectedKeys().hasOnly(["threads"])
-      }
-
       allow write: if canWriteResx()
 
       allow update: if isOnlyAppendingThread()
