@@ -26,16 +26,11 @@ watch(editorText, (newVal) => {
 
 function save() {
   emits("update:isDirty", false);
-
   emits("save", { text: editorText.value });
-
-  editorText.value = null;
 }
 
 function cancel() {
   emits("cancel");
-
-  editorText.value = null;
 }
 </script>
 
