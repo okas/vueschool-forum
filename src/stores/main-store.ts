@@ -11,10 +11,13 @@ import {
   doc,
   FieldValue,
   getDoc,
+  getDocs,
   increment,
+  query,
   serverTimestamp,
   setDoc,
   Unsubscribe,
+  where,
   writeBatch,
 } from "firebase/firestore";
 import { defineStore } from "pinia";
@@ -479,6 +482,19 @@ export const useMainStore = defineStore(
       )();
     }
 
+    async function fetchAllUserPosts() {
+      (
+        await getDocs(
+          query(
+            collection(fabDb, "posts"),
+            where("userId", "==", authUserId.value)
+          ).withConverter(postVmConverter)
+        )
+      ).forEach((qryDocSnap) => {
+        posts.push(qryDocSnap.data());
+      });
+    }
+
     async function fetchAuthUser() {
       const userId = fabAuth.currentUser?.uid;
 
@@ -563,6 +579,7 @@ export const useMainStore = defineStore(
       fetchPosts,
       fetchForums,
       fetchAllCategories,
+      fetchAllUserPosts,
       fetchAuthUser,
       clearDbSubscriptions,
       clearDbSubscriptionAuthUser,

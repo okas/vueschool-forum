@@ -84,6 +84,7 @@ export interface MainStoreActions {
   fetchPosts(ids?: Array<string>): Promise<Array<PostVm>>;
   fetchForums(ids?: Array<string>): Promise<Array<ForumVM>>;
   fetchAllCategories(): Promise<Array<CategoryVM>>;
+  fetchAllUserPosts(): Promise<void>;
   /**
    * It is important to call `clearDbSubscriptionAuthUser` action exclusively,
    * when this actions has been called. It uses distinct unsubscription logic.

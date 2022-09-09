@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useConfirmDialog } from "@vueuse/core";
+import { useAsyncState, useConfirmDialog } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { onUpdated, provide, ref } from "vue";
 import { onBeforeRouteLeave, RouteLocationRaw, useRouter } from "vue-router";
@@ -17,12 +17,16 @@ const props = defineProps<{
 }>();
 
 const store = useMainStore();
-
 const router = useRouter();
 
 const { isRevealed, reveal, confirm } = useConfirmDialog();
 
 const { getAuthUser } = storeToRefs(store);
+
+const { isReady } = useAsyncState(async () => {
+  await store.fetchAllUserPosts();
+  store._isReady = true;
+}, undefined);
 
 const hasDirtyForm = ref<boolean>(false);
 
@@ -57,12 +61,10 @@ async function save(dto: UserVmEditForInput) {
 function cancel() {
   router.push(routeToReturn);
 }
-
-store._isReady = true;
 </script>
 
 <template>
-  <div v-if="getAuthUser" class="flex-grid">
+  <div v-if="isReady" class="flex-grid">
     <div class="col-3 push-top">
       <profile-card v-if="!edit" :auth-user="getAuthUser" />
       <profile-card-editor
