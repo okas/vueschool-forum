@@ -15,35 +15,52 @@ service cloud.firestore {
     }
 
     function canWriteResx() {
-      return userIsLoggedIn() && (isNewResx() || resxBelongsToUser())
+      return userIsLoggedIn() && isNewResx()
     }
 
-    function isOnlyAppendingPostAndContributor() {
+    function hasUserOwnDocPreReqMet() {
+      return userIsLoggedIn() && resxBelongsToUser()
+    }
+
+    function canUpdateForum() {
       return userIsLoggedIn()
-        && resxBelongsToUser()
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["posts", "contributors"])
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasAny(["lastPostId", "threads"])
     }
 
-    function isOnlyAppendingThread() {
-      return resxBelongsToUser()
-        && resxBelongsToUser()
-        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["threads"])
+    function canUpdateThread() {
+      return hasUserOwnDocPreReqMet()
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(["lastPostAt", "lastPostId", "title", "contributors", "posts"])
+    }
+
+    function canUpdatePost() {
+      return hasUserOwnDocPreReqMet()
+        && request.resource.data.diff(resource.data).affectedKeys()
+          .hasOnly(["text", "edited"])
     }
 
     match /{document=**} {
       allow read: if true
     }
 
-    match /threads/{thread} {
-      allow write: if canWriteResx()
+    match /forums/{forum} {
+      // TODO: Functionality not yet implemented.
+      // allow create: if canWriteResx()
 
-      allow update: if isOnlyAppendingPostAndContributor()
+      allow update: if canUpdateForum()
+    }
+
+    match /threads/{thread} {
+      allow create: if canWriteResx()
+
+      allow update: if canUpdateThread()
     }
 
     match /posts/{post} {
-      allow write: if canWriteResx()
+      allow create: if canWriteResx()
 
-      allow update: if isOnlyAppendingThread()
+      allow update: if canUpdatePost()
     }
 
     match /users/{user} {

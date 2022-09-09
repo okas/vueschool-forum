@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAsyncState, useConfirmDialog } from "@vueuse/core";
 import { computed, provide, ref } from "vue";
-import { onBeforeRouteLeave } from "vue-router";
+import { onBeforeRouteLeave, useRoute } from "vue-router";
 import ModalDialog, { confirmInjectKey } from "../components/ModalDialog.vue";
 import PostEditor from "../components/PostEditor.vue";
 import PostList from "../components/PostList.vue";
@@ -14,6 +14,7 @@ const props = defineProps<{
 }>();
 
 const store = useMainStore();
+const route = useRoute();
 
 const { isReady } = useAsyncState(async () => {
   const { userId, posts } = await store.fetchThread(props.threadId);
@@ -22,6 +23,10 @@ const { isReady } = useAsyncState(async () => {
   await Promise.allSettled([store.fetchUsers([userId, ...postUserIds])]);
   store._isReady = true;
 }, undefined);
+
+const query = { redirectTo: route.path };
+const signInRoute = { name: "SignIn", query };
+const registerRoute = { name: "Register", query };
 
 const { isRevealed, reveal, confirm } = useConfirmDialog();
 
@@ -119,9 +124,12 @@ async function editPost(dto: PostVMEdit) {
       {{ thread?.title }}
     </post-editor>
 
-    <section v-else>
-      <h3>Sign in to add new post</h3>
-    </section>
+    <div v-else class="text-center" style="margin: 3rem 0">
+      <router-link :to="signInRoute">Sign In</router-link>
+      or
+      <router-link :to="registerRoute">Register</router-link>
+      to reply.
+    </div>
   </div>
 
   <modal-dialog v-if="isRevealed" />
