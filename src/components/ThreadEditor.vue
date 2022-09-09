@@ -30,7 +30,6 @@ watch(form, ({ title, text }) => {
 
 function save() {
   emits("update:isDirty", false);
-
   emits("save", { ...form });
 }
 
