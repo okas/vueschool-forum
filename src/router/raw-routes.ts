@@ -1,6 +1,9 @@
 import { RouteLocation, RouteLocationRaw, RouteRecordRaw } from "vue-router";
-import { useMainStore } from "../stores/main-store";
+import { useCategoryStore } from "../stores/category-store";
+import { useForumStore } from "../stores/forum-store";
 import { HasId } from "../types/HasId";
+import { useThreadStore } from "./../stores/threads-store";
+import { useUserStore } from "./../stores/user-store";
 
 export const rawRoutes: Readonly<RouteRecordRaw[]> = [
   {
@@ -19,7 +22,7 @@ export const rawRoutes: Readonly<RouteRecordRaw[]> = [
     name: "SignOut",
     component: () => undefined, // To fullfil `RouteRecordRaw` API.
     async beforeEnter() {
-      await useMainStore().signOut();
+      await useUserStore().signOut();
       return { name: "Home" };
     },
   },
@@ -52,7 +55,9 @@ export const rawRoutes: Readonly<RouteRecordRaw[]> = [
       _: unknown,
       next: (route: RouteLocationRaw | undefined) => void
     ) =>
-      next(testForNotFound(routeObj, useMainStore().categories, "categoryId")),
+      next(
+        testForNotFound(routeObj, useCategoryStore().categories, "categoryId")
+      ),
   },
   {
     path: "/forum/:forumId",
@@ -63,7 +68,7 @@ export const rawRoutes: Readonly<RouteRecordRaw[]> = [
       routeObj,
       _: unknown,
       next: (route: RouteLocationRaw | undefined) => void
-    ) => next(testForNotFound(routeObj, useMainStore().forums, "forumId")),
+    ) => next(testForNotFound(routeObj, useForumStore().forums, "forumId")),
   },
   {
     path: "/forum/:forumId/thread/create",
@@ -75,7 +80,7 @@ export const rawRoutes: Readonly<RouteRecordRaw[]> = [
       routeObj,
       _: unknown,
       next: (route: RouteLocationRaw | undefined) => void
-    ) => next(testForNotFound(routeObj, useMainStore().forums, "forumId")),
+    ) => next(testForNotFound(routeObj, useForumStore().forums, "forumId")),
   },
   {
     path: "/thread/:threadId/edit",
@@ -87,7 +92,7 @@ export const rawRoutes: Readonly<RouteRecordRaw[]> = [
       routeObj,
       _: unknown,
       next: (route: RouteLocationRaw | undefined) => void
-    ) => next(testForNotFound(routeObj, useMainStore().threads, "threadId")),
+    ) => next(testForNotFound(routeObj, useThreadStore().threads, "threadId")),
   },
   {
     path: "/thread/:threadId",
@@ -98,7 +103,7 @@ export const rawRoutes: Readonly<RouteRecordRaw[]> = [
       routeObj,
       _: unknown,
       next: (route: RouteLocationRaw | undefined) => void
-    ) => next(testForNotFound(routeObj, useMainStore().threads, "threadId")),
+    ) => next(testForNotFound(routeObj, useThreadStore().threads, "threadId")),
   },
   {
     // will match everything and put it under `$route.params.pathMatch`

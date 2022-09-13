@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
 import { PostVm } from "../models/PostVm";
-import { useMainStore } from "../stores/main-store";
+import { useUserStore } from "../stores/user-store";
 import { PostVMEdit, PostVMFormInput } from "../types/postVm-types";
 import { getCountPhrase } from "../utils/misc";
 import PostEditor from "./PostEditor.vue";
@@ -15,7 +15,7 @@ const emits = defineEmits<{
   (e: "update:isDirty", state: boolean): void;
 }>();
 
-const store = useMainStore();
+const userStore = useUserStore();
 
 const renderData = computed(() =>
   props.posts.map(({ id, userId, text, publishedAt, edited }) => {
@@ -24,7 +24,7 @@ const renderData = computed(() =>
       avatar: userAvatar,
       postsCount,
       threadsCount,
-    } = store.getUserByIdFn(userId);
+    } = userStore.getUserByIdFn(userId);
 
     return {
       id,
@@ -50,11 +50,11 @@ function toggleEditModeForPost(postId: string) {
 }
 
 function revealForEditingPost(id: string): boolean {
-  return !!store.authUserId && editingPostId.value?.id === id;
+  return !!userStore.authUserId && editingPostId.value?.id === id;
 }
 
 function isUserOwnPost(userId: string): boolean {
-  return userId === store.authUserId;
+  return userId === userStore.authUserId;
 }
 
 function passDirtyEvent(data: boolean) {

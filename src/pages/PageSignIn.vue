@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import { useMainStore } from "../stores/main-store";
+import { useCommonStore } from "../stores/common-store";
+import { useUserStore } from "../stores/user-store";
 
-const store = useMainStore();
+const commonStore = useCommonStore();
+const userStore = useUserStore();
 const router = useRouter();
 const route = useRoute();
 
@@ -12,7 +14,7 @@ const password = ref<string>(null);
 
 async function signIn() {
   try {
-    await store.signInWithEmailAndPassword(email.value, password.value);
+    await userStore.signInWithEmailAndPassword(email.value, password.value);
   } catch (err) {
     alert(err);
   }
@@ -21,7 +23,7 @@ async function signIn() {
 }
 
 async function signInWithGoogle() {
-  store.signInWithGoogle();
+  userStore.signInWithGoogle();
   navigate();
 }
 
@@ -33,7 +35,7 @@ function navigate() {
   );
 }
 
-store._isReady = true;
+commonStore.isReady = true;
 </script>
 
 <template>

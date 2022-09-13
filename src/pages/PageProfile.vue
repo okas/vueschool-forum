@@ -7,7 +7,9 @@ import ModalDialog, { confirmInjectKey } from "../components/ModalDialog.vue";
 import PostList from "../components/PostList.vue";
 import ProfileCard from "../components/ProfileCard.vue";
 import ProfileCardEditor from "../components/ProfileCardEditor.vue";
-import { useMainStore } from "../stores/main-store";
+import { useCommonStore } from "../stores/common-store";
+import { usePostStore } from "../stores/post-store";
+import { useUserStore } from "../stores/user-store";
 import { UserVmEditForInput } from "../types/userVm-types";
 
 // TODO: refactor activity to component and migrate page to separate page
@@ -16,16 +18,18 @@ const props = defineProps<{
   edit?: boolean;
 }>();
 
-const store = useMainStore();
+const commonStore = useCommonStore();
+const userStore = useUserStore();
+const postStore = usePostStore();
 const router = useRouter();
 
 const { isRevealed, reveal, confirm } = useConfirmDialog();
 
-const { getAuthUser } = storeToRefs(store);
+const { getAuthUser } = storeToRefs(userStore);
 
 const { isReady } = useAsyncState(async () => {
-  await store.fetchAllUserPosts();
-  store._isReady = true;
+  await postStore.fetchAllUserPosts();
+  commonStore.isReady = true;
 }, undefined);
 
 const hasDirtyForm = ref<boolean>(false);
@@ -36,7 +40,7 @@ provide(confirmInjectKey, confirm);
 
 onUpdated(() => {
   if (getAuthUser.value) {
-    store._isReady = true;
+    commonStore.isReady = true;
   } else {
     goToHome();
   }
@@ -53,7 +57,7 @@ async function goToHome() {
 }
 
 async function save(dto: UserVmEditForInput) {
-  await store.editUser(dto);
+  await userStore.editUser(dto);
 
   router.push(routeToReturn);
 }

@@ -4,10 +4,10 @@ import { storeToRefs } from "pinia";
 import { watch } from "vue";
 import { useRouter } from "vue-router";
 import TheNavBar from "./components/TheNavBar.vue";
-import { useMainStore } from "./stores/main-store";
+import { useCommonStore } from "./stores/common-store";
 
-const store = useMainStore();
-const { _isReady } = storeToRefs(store);
+const commonStore = useCommonStore();
+const { isReady } = storeToRefs(commonStore);
 
 const { afterEach } = useRouter();
 
@@ -16,11 +16,11 @@ const { start, done } = useNProgress(undefined, {
   showSpinner: false,
 });
 
-watch(_isReady, (newVal) => newVal && done());
+watch(isReady, (newVal) => newVal && done());
 
 afterEach((to, from) => {
   if (to.name !== from.name) {
-    _isReady.value = false;
+    isReady.value = false;
     start();
   }
 });
@@ -28,7 +28,7 @@ afterEach((to, from) => {
 
 <template>
   <the-nav-bar />
-  <fa v-if="!_isReady" icon="spinner" spin transform="grow-16 down-16" />
+  <fa v-if="!isReady" icon="spinner" spin transform="grow-16 down-16" />
   <div class="container">
     <router-view />
   </div>

@@ -4,7 +4,9 @@ import { computed, provide, ref } from "vue";
 import { onBeforeRouteLeave, useRouter } from "vue-router";
 import ModalDialog, { confirmInjectKey } from "../components/ModalDialog.vue";
 import ThreadEditor from "../components/ThreadEditor.vue";
-import { useMainStore } from "../stores/main-store";
+import { useCommonStore } from "../stores/common-store";
+import { useForumStore } from "../stores/forum-store";
+import { useThreadStore } from "../stores/threads-store";
 import { ThreadVMFormInput } from "../types/threadVm-types";
 import { findById } from "../utils/array-helpers";
 
@@ -12,11 +14,13 @@ const props = defineProps<{
   forumId: string;
 }>();
 
-const store = useMainStore();
+const commonStore = useCommonStore();
+const forumStore = useForumStore();
+const threadStore = useThreadStore();
 
 const { isReady } = useAsyncState(async () => {
-  await store.fetchForum(props.forumId);
-  store._isReady = true;
+  await forumStore.fetchForum(props.forumId);
+  commonStore.isReady = true;
 }, undefined);
 
 const router = useRouter();
@@ -25,7 +29,7 @@ const { isRevealed, reveal, confirm } = useConfirmDialog();
 
 const hasDirtyForm = ref<boolean>(false);
 
-const forum = computed(() => findById(store.forums, props.forumId));
+const forum = computed(() => findById(forumStore.forums, props.forumId));
 
 provide(confirmInjectKey, confirm);
 
@@ -36,7 +40,7 @@ onBeforeRouteLeave(async () => {
 });
 
 async function save({ title, text }: ThreadVMFormInput) {
-  const threadId = await store.createThread({
+  const threadId = await threadStore.createThread({
     forumId: props.forumId,
     title,
     text,

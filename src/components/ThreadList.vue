@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import { useMainStore } from "../stores/main-store";
+import { useUserStore } from "../stores/user-store";
 import { ThreadVMWithMeta } from "../types/threadVm-types";
 import { getCountPhrase } from "../utils/misc";
 
@@ -8,7 +8,7 @@ const props = defineProps<{
   threads: Array<ThreadVMWithMeta>;
 }>();
 
-const { getUserByIdFn } = useMainStore();
+const { getUserByIdFn } = useUserStore();
 
 const renderData = computed(() =>
   props.threads.map(({ id, title, userId, publishedAt, repliesCount }) => {

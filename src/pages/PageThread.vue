@@ -2,10 +2,14 @@
 import { useAsyncState, useConfirmDialog } from "@vueuse/core";
 import { computed, provide, ref } from "vue";
 import { onBeforeRouteLeave, useRoute } from "vue-router";
+import { threadId } from "worker_threads";
 import ModalDialog, { confirmInjectKey } from "../components/ModalDialog.vue";
 import PostEditor from "../components/PostEditor.vue";
 import PostList from "../components/PostList.vue";
-import { useMainStore } from "../stores/main-store";
+import { useCommonStore } from "../stores/common-store";
+import { usePostStore } from "../stores/post-store";
+import { useThreadStore } from "../stores/threads-store";
+import { useUserStore } from "../stores/user-store";
 import { PostVMEdit, PostVMFormInput, PostVMNew } from "../types/postVm-types";
 import { getCountPhrase } from "../utils/misc";
 
@@ -13,15 +17,18 @@ const props = defineProps<{
   threadId: string;
 }>();
 
-const store = useMainStore();
+const commonStore = useCommonStore();
+const postStore = usePostStore();
+const userStore = useUserStore();
+const threadStore = useThreadStore();
 const route = useRoute();
 
 const { isReady } = useAsyncState(async () => {
-  const { userId, posts } = await store.fetchThread(props.threadId);
-  const threadPosts = await store.fetchPosts(posts);
+  const { userId, posts } = await threadStore.fetchThread(props.threadId);
+  const threadPosts = await postStore.fetchPosts(posts);
   const postUserIds = threadPosts.map(({ userId }) => userId);
-  await Promise.allSettled([store.fetchUsers([userId, ...postUserIds])]);
-  store._isReady = true;
+  await Promise.allSettled([userStore.fetchUsers([userId, ...postUserIds])]);
+  commonStore.isReady = true;
 }, undefined);
 
 const query = { redirectTo: route.path };
@@ -33,10 +40,10 @@ const { isRevealed, reveal, confirm } = useConfirmDialog();
 const hasDirtyForm = ref<boolean>(false);
 const hasDirtyFormInPostList = ref<boolean>(false);
 
-const thread = computed(() => store.getThreadMetaInfoFn(props.threadId));
+const thread = computed(() => threadStore.getThreadMetaInfoFn(props.threadId));
 
 const posts = computed(() =>
-  store.posts
+  postStore.posts
     .filter(({ threadId }) => threadId === thread.value.id)
     .sort(({ publishedAt: a }, { publishedAt: b }) => a - b)
 );
@@ -63,11 +70,11 @@ async function addPost(dto: PostVMFormInput) {
     ...dto,
   };
 
-  await store.createPost(post);
+  await postStore.createPost(post);
 }
 
 async function editPost(dto: PostVMEdit) {
-  await store.editPost(dto);
+  await postStore.editPost(dto);
 }
 </script>
 
@@ -117,7 +124,7 @@ async function editPost(dto: PostVMEdit) {
     />
 
     <post-editor
-      v-if="!!store.authUserId"
+      v-if="!!userStore.authUserId"
       v-model:is-dirty="hasDirtyForm"
       @save="addPost"
     >

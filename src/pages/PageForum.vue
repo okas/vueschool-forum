@@ -2,26 +2,32 @@
 import { useAsyncState } from "@vueuse/core";
 import { computed } from "vue";
 import ThreadList from "../components/ThreadList.vue";
-import { useMainStore } from "../stores/main-store";
+import { useCommonStore } from "../stores/common-store";
+import { useForumStore } from "../stores/forum-store";
+import { useThreadStore } from "../stores/threads-store";
+import { useUserStore } from "../stores/user-store";
 import { findById } from "../utils/array-helpers";
 
 const props = defineProps<{
   forumId: string;
 }>();
 
-const store = useMainStore();
+const commonStore = useCommonStore();
+const forumStore = useForumStore();
+const userStore = useUserStore();
+const threadStore = useThreadStore();
 
 const { isReady } = useAsyncState(async () => {
-  const forum = await store.fetchForum(props.forumId);
-  const forumThreads = await store.fetchThreads(forum.threads);
-  await store.fetchUsers(forumThreads.map(({ userId }) => userId));
-  store._isReady = true;
+  const forum = await forumStore.fetchForum(props.forumId);
+  const forumThreads = await threadStore.fetchThreads(forum.threads);
+  await userStore.fetchUsers(forumThreads.map(({ userId }) => userId));
+  commonStore.isReady = true;
 }, undefined);
 
-const forum = computed(() => findById(store.forums, props.forumId));
+const forum = computed(() => findById(forumStore.forums, props.forumId));
 
 const forumThreads = computed(() =>
-  forum.value.threads?.map((id) => store.getThreadMetaInfoFn(id))
+  forum.value.threads?.map((id) => threadStore.getThreadMetaInfoFn(id))
 );
 </script>
 

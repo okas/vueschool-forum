@@ -1,12 +1,6 @@
 import { ComputedRef, Ref } from "vue";
-import { CategoryVM } from "../models/CategoryVM";
-import { ForumVM } from "../models/ForumVM";
-import { PostVm } from "../models/PostVm";
-import { StatsVM } from "../models/StatsVM";
-import { ThreadVM } from "../models/ThreadVM";
-import { UserVM } from "../models/UserVM";
-import { PostVMEdit, PostVMNew } from "./postVm-types";
-import { ThreadVMEdit, ThreadVMNew, ThreadVMWithMeta } from "./threadVm-types";
+import { UserVM } from "./../models/UserVM";
+import { StoreBaseActions } from "./store-base-types";
 import {
   UserVmEditForInput,
   UserVMNewFormInput,
@@ -14,29 +8,17 @@ import {
   UserVMWithActivity,
 } from "./userVm-types";
 
-export interface MainStoreState {
+export interface UserStoreState {
   authUserId: Ref<string | null>;
-  categories: Array<CategoryVM>;
-  forums: Array<ForumVM>;
-  posts: Array<PostVm>;
-  threads: Array<ThreadVM>;
   users: Array<UserVM>;
-  stats: StatsVM;
-  _isReady: Ref<boolean>;
 }
 
-export interface MainStoreGetters {
+export interface UserStoreGetters {
   getAuthUser: ComputedRef<UserVMWithActivity | undefined>;
   getUserByIdFn: ComputedRef<(id: string) => UserVMWithActivity | undefined>;
-  getUserPostsCountFn: ComputedRef<(userId: string) => number>;
-  getUserThreadsCountFn: ComputedRef<(userId: string) => number>;
-  getThreadMetaInfoFn: ComputedRef<
-    (threadId: string) => ThreadVMWithMeta | undefined
-  >;
-  getCategoryNamedFn: ComputedRef<(categoryId: string) => string | undefined>;
 }
 
-export interface MainStoreActions {
+export interface UserStoreActions extends StoreBaseActions {
   /**
    * Forces and awaits for Firestore Auth to find out authenticated user state.
    * @returns A promise that resolves to boolean: is authenticated or not.
@@ -70,26 +52,12 @@ export interface MainStoreActions {
     fetchAfter?: boolean
   ): Promise<string>;
   editUser(dto: UserVmEditForInput, fetchAfter?: boolean): Promise<void>;
-  createPost(dto: PostVMNew): Promise<string>;
-  editPost(dto: PostVMEdit, fetchAfter?: boolean): Promise<void>;
-  createThread(dto: ThreadVMNew): Promise<string>;
-  editThread(dto: ThreadVMEdit): Promise<void>;
-  fetchThread(id: string): Promise<ThreadVM | undefined>;
   fetchUser(id: string): Promise<UserVM | undefined>;
-  fetchPost(id: string): Promise<PostVm | undefined>;
-  fetchForum(id: string): Promise<ForumVM | undefined>;
-  fetchCategory(id: string): Promise<CategoryVM | undefined>;
-  fetchThreads(ids?: Array<string>): Promise<Array<ThreadVM>>;
   fetchUsers(ids?: Array<string>): Promise<Array<UserVM>>;
-  fetchPosts(ids?: Array<string>): Promise<Array<PostVm>>;
-  fetchForums(ids?: Array<string>): Promise<Array<ForumVM>>;
-  fetchAllCategories(): Promise<Array<CategoryVM>>;
-  fetchAllUserPosts(): Promise<void>;
   /**
    * It is important to call `clearDbSubscriptionAuthUser` action exclusively,
    * when this actions has been called. It uses distinct unsubscription logic.
    */
   fetchAuthUser(): Promise<UserVM | undefined>;
-  clearDbSubscriptions(): void;
   clearDbSubscriptionAuthUser(): void;
 }

@@ -4,7 +4,9 @@ import { computed, provide, ref } from "vue";
 import { onBeforeRouteLeave, useRouter } from "vue-router";
 import ModalDialog, { confirmInjectKey } from "../components/ModalDialog.vue";
 import ThreadEditor from "../components/ThreadEditor.vue";
-import { useMainStore } from "../stores/main-store";
+import { useCommonStore } from "../stores/common-store";
+import { usePostStore } from "../stores/post-store";
+import { useThreadStore } from "../stores/threads-store";
 import { ThreadVMFormInput } from "../types/threadVm-types";
 import { findById } from "../utils/array-helpers";
 
@@ -12,12 +14,14 @@ const props = defineProps<{
   threadId: string;
 }>();
 
-const store = useMainStore();
+const commonStore = useCommonStore();
+const postStore = usePostStore();
+const threadStore = useThreadStore();
 
 const { isReady } = useAsyncState(async () => {
-  const { firstPostId } = await store.fetchThread(props.threadId);
-  await store.fetchPost(firstPostId);
-  store._isReady = true;
+  const { firstPostId } = await threadStore.fetchThread(props.threadId);
+  await postStore.fetchPost(firstPostId);
+  commonStore.isReady = true;
 }, undefined);
 
 const router = useRouter();
@@ -26,10 +30,10 @@ const { isRevealed, reveal, confirm } = useConfirmDialog();
 
 const hasDirtyForm = ref<boolean>(false);
 
-const thread = computed(() => findById(store.threads, props.threadId));
+const thread = computed(() => findById(threadStore.threads, props.threadId));
 
 const firstPostText = computed(
-  () => findById(store.posts, thread.value.firstPostId)?.text
+  () => findById(postStore.posts, thread.value.firstPostId)?.text
 );
 
 provide(confirmInjectKey, confirm);
@@ -41,7 +45,7 @@ onBeforeRouteLeave(async () => {
 });
 
 async function save({ title, text }: ThreadVMFormInput) {
-  await store.editThread({
+  await threadStore.editThread({
     id: props.threadId,
     title,
     text,

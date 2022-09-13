@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
 import { ref } from "vue";
-import { useMainStore } from "../stores/main-store";
+import { useUserStore } from "../stores/user-store";
 
-const store = useMainStore();
+const userStore = useUserStore();
 
-const { getAuthUser } = storeToRefs(store);
+const { getAuthUser } = storeToRefs(userStore);
 
 const isUserDropDownOpen = ref(false);
 
@@ -14,7 +14,7 @@ function toggleUserDropDown() {
 }
 
 async function signOut() {
-  await store.signOut();
+  await userStore.signOut();
 }
 </script>
 

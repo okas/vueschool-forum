@@ -6,8 +6,12 @@ import {
   RouteRecordRaw,
   START_LOCATION,
 } from "vue-router";
-import { useMainStore } from "./../stores/main-store";
-import { MainStoreActions } from "./../types/main-store-types";
+import { useCategoryStore } from "./../stores/category-store";
+import { useForumStore } from "./../stores/forum-store";
+import { usePostStore } from "./../stores/post-store";
+import { useThreadStore } from "./../stores/threads-store";
+import { useUserStore } from "./../stores/user-store";
+import { UserStoreActions } from "./../types/user-store-types";
 import { rawRoutes } from "./raw-routes";
 
 function getRouteRecords(
@@ -41,15 +45,21 @@ const router = createRouter({
 });
 
 router.beforeEach(async (to, from): Promise<RouteLocationRaw | undefined> => {
-  const store = useMainStore();
+  const userStore = useUserStore();
 
-  from !== START_LOCATION && store.clearDbSubscriptions();
+  if (from !== START_LOCATION) {
+    userStore.clearDbSubscriptions();
+    usePostStore().clearDbSubscriptions();
+    useForumStore().clearDbSubscriptions();
+    useThreadStore().clearDbSubscriptions();
+    useCategoryStore().clearDbSubscriptions();
+  }
 
-  return await verifyGuardedRoute(store, to);
+  return await verifyGuardedRoute(userStore, to);
 });
 
 async function verifyGuardedRoute(
-  store: MainStoreActions,
+  store: UserStoreActions,
   to: RouteLocationNormalized
 ): Promise<RouteLocationRaw | undefined> {
   const isAuthenticated = await store.forceInitFireBaseAuthState();

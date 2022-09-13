@@ -2,24 +2,28 @@
 import { useAsyncState } from "@vueuse/core";
 import { computed } from "vue";
 import CategoryListItem from "../components/CategoryListItem.vue";
-import { useMainStore } from "../stores/main-store";
+import { useCategoryStore } from "../stores/category-store";
+import { useCommonStore } from "../stores/common-store";
+import { useForumStore } from "../stores/forum-store";
 
 const props = defineProps<{
   categoryId: string;
 }>();
 
-const store = useMainStore();
+const commonStore = useCommonStore();
+const categoryStore = useCategoryStore();
+const forumStore = useForumStore();
 
 const { isReady } = useAsyncState(async () => {
-  const category = await store.fetchCategory(props.categoryId);
-  await store.fetchForums(category.forums);
-  store._isReady = true;
+  const category = await categoryStore.fetchCategory(props.categoryId);
+  await forumStore.fetchForums(category.forums);
+  commonStore.isReady = true;
 }, undefined);
 
-const name = computed(() => store.getCategoryNamedFn(props.categoryId));
+const name = computed(() => categoryStore.getCategoryNamedFn(props.categoryId));
 
 const categoryForums = computed(() =>
-  store.forums.filter(({ categoryId }) => categoryId === props.categoryId)
+  forumStore.forums.filter(({ categoryId }) => categoryId === props.categoryId)
 );
 </script>
 

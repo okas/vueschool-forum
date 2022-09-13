@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { reactive } from "vue";
 import { useRouter } from "vue-router";
-import { useMainStore } from "../stores/main-store";
+import { useCommonStore } from "../stores/common-store";
+import { useUserStore } from "../stores/user-store";
 import { UserVMRegWithEmailAndPassword } from "../types/userVm-types";
 
-const store = useMainStore();
+const commonStore = useCommonStore();
+const userStore = useUserStore();
 
 const router = useRouter();
 
@@ -13,19 +15,19 @@ const editorObj = reactive<UserVMRegWithEmailAndPassword>(
 );
 
 async function register() {
-  await store.registerUserWithEmailAndPassword(editorObj);
+  await userStore.registerUserWithEmailAndPassword(editorObj);
   goToProfileEdit();
 }
 
 async function registerWithGoogle() {
-  await store.signInWithGoogle();
+  await userStore.signInWithGoogle();
   goToProfileEdit();
 }
 
 function goToProfileEdit() {
   router.push({ name: "ProfileEdit" });
 }
-store._isReady = true;
+commonStore.isReady = true;
 </script>
 
 <template>

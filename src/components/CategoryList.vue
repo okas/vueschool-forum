@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
 import { ForumVM } from "../models/ForumVM";
-import { useMainStore } from "../stores/main-store";
+import { useCategoryStore } from "../stores/category-store";
 import CategoryListItem from "./CategoryListItem.vue";
 
 defineProps<{
   groupedForums: Map<string, Array<ForumVM>>;
 }>();
 
-const { getCategoryNamedFn } = storeToRefs(useMainStore());
+const { getCategoryNamedFn } = storeToRefs(useCategoryStore());
 </script>
 
 <template>

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { useMainStore } from "../stores/main-store";
+import { useCommonStore } from "../stores/common-store";
 
-useMainStore()._isReady = true;
+useCommonStore().isReady = true;
 </script>
 
 <template>
