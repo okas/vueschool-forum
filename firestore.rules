@@ -30,8 +30,9 @@ service cloud.firestore {
 
     function canUpdateThread() {
       return hasUserOwnDocPreReqMet()
-        && request.resource.data.diff(resource.data).affectedKeys()
-          .hasOnly(["lastPostAt", "lastPostId", "title", "contributors", "posts"])
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(
+            ["lastPostAt", "lastPostId", "title", "contributors", "posts", "firstPostId"]
+          )
     }
 
     function canUpdatePost() {
