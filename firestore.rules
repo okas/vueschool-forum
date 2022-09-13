@@ -41,6 +41,11 @@ service cloud.firestore {
           .hasOnly(["text", "edited"])
     }
 
+    function canUpdateUser() {
+      return resxBelongsToUser()
+       || request.auth.uid == resource.id
+    }
+
     match /{document=**} {
       allow read: if true
     }
@@ -67,7 +72,7 @@ service cloud.firestore {
     match /users/{user} {
       allow create: if true
 
-      allow update: if request.auth.uid == resource.id
+      allow update: if canUpdateUser()
     }
   }
 }
