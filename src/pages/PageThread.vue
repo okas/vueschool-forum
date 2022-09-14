@@ -2,7 +2,6 @@
 import { useAsyncState, useConfirmDialog } from "@vueuse/core";
 import { computed, provide, ref } from "vue";
 import { onBeforeRouteLeave, useRoute } from "vue-router";
-import { threadId } from "worker_threads";
 import ModalDialog, { confirmInjectKey } from "../components/ModalDialog.vue";
 import PostEditor from "../components/PostEditor.vue";
 import PostList from "../components/PostList.vue";
