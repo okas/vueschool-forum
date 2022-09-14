@@ -33,13 +33,17 @@ function closeDropDown() {
 
 async function signOut() {
   await userStore.signOut();
-
   router.push({ name: "Home" });
 }
 </script>
 
 <template>
-  <header id="header" v-click-outside="closeMobNavMenu" class="header">
+  <header
+    id="header"
+    v-click-outside="closeMobNavMenu"
+    v-page-scroll="closeMobNavMenu"
+    class="header"
+  >
     <router-link class="logo" :to="{ name: 'Home' }">
       <img src="../assets/svg/vueschool-logo.svg" alt="logo" title="Home" />
     </router-link>

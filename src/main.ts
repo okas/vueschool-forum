@@ -2,6 +2,7 @@ import { createPinia } from "pinia";
 import { Component, createApp, Plugin } from "vue";
 import AppRoot from "./App.vue";
 import clickOutsideDirective from "./directives/click-outside";
+import pageScrollDirective from "./directives/page-scroll";
 import { useFontAwesomePlugin } from "./plugins/font-awesome";
 import router from "./router";
 
@@ -20,7 +21,7 @@ function loadPlugins() {
 }
 
 function loadDirectives() {
-  forumApp.use(clickOutsideDirective);
+  forumApp.use(clickOutsideDirective).use(pageScrollDirective);
 }
 
 function loadGlobalComponents() {
