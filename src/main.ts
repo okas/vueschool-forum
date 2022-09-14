@@ -1,6 +1,7 @@
 import { createPinia } from "pinia";
 import { Component, createApp, Plugin } from "vue";
 import AppRoot from "./App.vue";
+import clickOutsideDirective from "./directives/click-outside";
 import { useFontAwesomePlugin } from "./plugins/font-awesome";
 import router from "./router";
 
@@ -18,6 +19,10 @@ function loadPlugins() {
   forumApp.use(createPinia()).use(router).use(faPlugin);
 }
 
+function loadDirectives() {
+  forumApp.use(clickOutsideDirective);
+}
+
 function loadGlobalComponents() {
   const modules: Record<string, Component & { __name: string }> =
     import.meta.glob("@/components/App*.vue", {
@@ -32,5 +37,6 @@ function loadGlobalComponents() {
 
 loadAsyncDependencies()
   .then(loadPlugins)
+  .then(loadDirectives)
   .then(loadGlobalComponents)
   .then(() => forumApp.mount("#app"));

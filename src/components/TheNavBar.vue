@@ -13,6 +13,10 @@ function toggleUserDropDown() {
   isUserDropDownOpen.value = !isUserDropDownOpen.value;
 }
 
+function closeDropDown() {
+  isUserDropDownOpen.value = false;
+}
+
 async function signOut() {
   await userStore.signOut();
 }
@@ -35,7 +39,10 @@ async function signOut() {
     <nav class="navbar">
       <ul>
         <li v-if="getAuthUser" class="navbar-user">
-          <a @click.prevent="toggleUserDropDown">
+          <a
+            v-click-outside="closeDropDown"
+            @click.prevent="toggleUserDropDown"
+          >
             <img
               v-if="getAuthUser.avatar"
               class="avatar-small"
