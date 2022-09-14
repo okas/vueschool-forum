@@ -15,10 +15,10 @@ import {
   Unsubscribe,
   where,
 } from "firebase/firestore";
+import { fabDb } from "../firebase/index";
 import { HasId } from "../types/HasId";
-import { remove, toBuckets, upsert } from "../utils/array-helpers";
-import { isFulFilled } from "../utils/promise-helpers";
-import { fabDb } from "./../firebase/index";
+import { remove, toBuckets, upsert } from "./array-helpers";
+import { isFulFilled } from "./promise-helpers";
 
 const { warn, error } = console;
 

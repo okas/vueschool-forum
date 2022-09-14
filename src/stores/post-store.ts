@@ -23,21 +23,21 @@ import {
 import { PostVMEdit, PostVMNew } from "../types/postVm-types";
 import { countBy, findById } from "../utils/array-helpers";
 import { ok } from "../utils/assert-helpers";
+import { FirebaseSubscriptionManager } from "../utils/FirebaseSubscriptionManager";
 import {
   makeFirebaseFetchMultiDocsFn,
   makeFirebaseFetchSingleDocFn,
-} from "./firebase-action-sinks";
+} from "../utils/store-firebase-action-sinks";
+import useAcceptHmr from "../utils/store-helpers";
 import { useForumStore } from "./forum-store";
-import useAcceptHmr from "./helpers";
-import { StoreBase } from "./store-base";
 import { useThreadStore } from "./threads-store";
 import { useUserStore } from "./user-store";
 
 export const usePostStore = defineStore(
   "post-store",
   (): PostStoreState & PostStoreGetters & PostStoreActions => {
-    const baseActions = new StoreBase();
-    const { _dbUnsubscribes } = baseActions;
+    const fabSbscrMngr = new FirebaseSubscriptionManager();
+    const { _dbUnsubscribes } = fabSbscrMngr;
 
     const threadStore = useThreadStore();
     const userStore = useUserStore();
@@ -154,7 +154,7 @@ export const usePostStore = defineStore(
       fetchPost,
       fetchPosts,
       fetchAllUserPosts,
-      clearDbSubscriptions: () => baseActions.clearDbSubscriptions(),
+      clearDbSubscriptions: () => fabSbscrMngr.clearDbSubscriptions(),
     };
   }
 );

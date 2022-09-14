@@ -3,18 +3,18 @@ import { reactive } from "vue";
 import { hasIdVmConverter } from "../firebase/firebase-converters";
 import { ForumVM } from "../models/ForumVM";
 import { ForumStoreActions, ForumStoreState } from "../types/forum-store-types";
+import { FirebaseSubscriptionManager } from "../utils/FirebaseSubscriptionManager";
 import {
   makeFirebaseFetchMultiDocsFn,
   makeFirebaseFetchSingleDocFn,
-} from "./firebase-action-sinks";
-import useAcceptHmr from "./helpers";
-import { StoreBase } from "./store-base";
+} from "../utils/store-firebase-action-sinks";
+import useAcceptHmr from "../utils/store-helpers";
 
 export const useForumStore = defineStore(
   "forum-store",
   (): ForumStoreState & ForumStoreActions => {
-    const baseActions = new StoreBase();
-    const { _dbUnsubscribes } = baseActions;
+    const fabSbscrMngr = new FirebaseSubscriptionManager();
+    const { _dbUnsubscribes } = fabSbscrMngr;
 
     const forums = reactive<Array<ForumVM>>([]);
 
@@ -36,7 +36,7 @@ export const useForumStore = defineStore(
       forums,
       fetchForum,
       fetchForums,
-      clearDbSubscriptions: () => baseActions.clearDbSubscriptions(),
+      clearDbSubscriptions: () => fabSbscrMngr.clearDbSubscriptions(),
     };
   }
 );

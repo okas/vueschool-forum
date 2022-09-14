@@ -31,13 +31,13 @@ import {
   UserVMWithActivity,
 } from "../types/userVm-types";
 import { findById } from "../utils/array-helpers";
+import { FirebaseSubscriptionManager } from "../utils/FirebaseSubscriptionManager";
 import {
   makeFirebaseFetchMultiDocsFn,
   makeFirebaseFetchSingleDocFn,
-} from "./firebase-action-sinks";
-import useAcceptHmr from "./helpers";
+} from "../utils/store-firebase-action-sinks";
+import useAcceptHmr from "../utils/store-helpers";
 import { usePostStore } from "./post-store";
-import { StoreBase } from "./store-base";
 import { useThreadStore } from "./threads-store";
 
 const { warn } = console;
@@ -45,8 +45,8 @@ const { warn } = console;
 export const useUserStore = defineStore(
   "user-store",
   (): UserStoreState & UserStoreGetters & UserStoreActions => {
-    const baseActions = new StoreBase();
-    const { _dbUnsubscribes } = baseActions;
+    const fabSbscrMngr = new FirebaseSubscriptionManager();
+    const { _dbUnsubscribes } = fabSbscrMngr;
     let _authObserverUnsubscribeFn: Unsubscribe | null = null;
     let _dbUnsubscribeAuthUser: Unsubscribe | null = null;
 
@@ -247,7 +247,7 @@ export const useUserStore = defineStore(
       fetchUsers,
       fetchAuthUser,
       clearDbSubscriptionAuthUser,
-      clearDbSubscriptions: () => baseActions.clearDbSubscriptions(),
+      clearDbSubscriptions: () => fabSbscrMngr.clearDbSubscriptions(),
     };
   }
 );

@@ -24,20 +24,20 @@ import {
 } from "../types/threadVm-types";
 import { countBy, findById } from "../utils/array-helpers";
 import { ok } from "../utils/assert-helpers";
+import { FirebaseSubscriptionManager } from "../utils/FirebaseSubscriptionManager";
 import {
   makeFirebaseFetchMultiDocsFn,
   makeFirebaseFetchSingleDocFn,
-} from "./firebase-action-sinks";
-import useAcceptHmr from "./helpers";
+} from "../utils/store-firebase-action-sinks";
+import useAcceptHmr from "../utils/store-helpers";
 import { usePostStore } from "./post-store";
-import { StoreBase } from "./store-base";
 import { useUserStore } from "./user-store";
 
 export const useThreadStore = defineStore(
   "thread-store",
   (): ThreadStoreState & ThreadStoreGetters & ThreadStoreActions => {
-    const baseActions = new StoreBase();
-    const { _dbUnsubscribes } = baseActions;
+    const fabSbscrMngr = new FirebaseSubscriptionManager();
+    const { _dbUnsubscribes } = fabSbscrMngr;
 
     const userStore = useUserStore();
     const postStore = usePostStore();
@@ -173,7 +173,7 @@ export const useThreadStore = defineStore(
       editThread,
       fetchThread,
       fetchThreads,
-      clearDbSubscriptions: () => baseActions.clearDbSubscriptions(),
+      clearDbSubscriptions: () => fabSbscrMngr.clearDbSubscriptions(),
     };
   }
 );

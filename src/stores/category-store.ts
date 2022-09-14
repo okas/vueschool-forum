@@ -8,18 +8,18 @@ import {
   CategoryStoreState,
 } from "../types/category-store-types";
 import { findById } from "../utils/array-helpers";
+import { FirebaseSubscriptionManager } from "../utils/FirebaseSubscriptionManager";
 import {
   makeFirebaseFetchMultiDocsFn,
   makeFirebaseFetchSingleDocFn,
-} from "./firebase-action-sinks";
-import useAcceptHmr from "./helpers";
-import { StoreBase } from "./store-base";
+} from "../utils/store-firebase-action-sinks";
+import useAcceptHmr from "../utils/store-helpers";
 
 export const useCategoryStore = defineStore(
   "category-store",
   (): CategoryStoreState & CategoryStoreGetters & CategoryStoreActions => {
-    const baseActions = new StoreBase();
-    const { _dbUnsubscribes } = baseActions;
+    const fabSbscrMngr = new FirebaseSubscriptionManager();
+    const { _dbUnsubscribes } = fabSbscrMngr;
 
     const categories = reactive<Array<CategoryVM>>([]);
 
@@ -48,7 +48,7 @@ export const useCategoryStore = defineStore(
       getCategoryNamedFn,
       fetchCategory,
       fetchAllCategories,
-      clearDbSubscriptions: () => baseActions.clearDbSubscriptions(),
+      clearDbSubscriptions: () => fabSbscrMngr.clearDbSubscriptions(),
     };
   }
 );

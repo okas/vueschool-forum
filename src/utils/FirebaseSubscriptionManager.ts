@@ -1,6 +1,8 @@
 import { Unsubscribe } from "@firebase/util";
 
-export class StoreBase {
+// TODO: migrate to composable pattern.
+
+export class FirebaseSubscriptionManager {
   _dbUnsubscribes: Unsubscribe[] = [];
 
   clearDbSubscriptions() {
