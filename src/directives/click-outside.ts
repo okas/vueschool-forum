@@ -5,7 +5,7 @@ type ExtendedHTMLElement = HTMLElement & {
 };
 
 function getHandler(
-  el: HTMLElement,
+  el: ExtendedHTMLElement,
   binding: DirectiveBinding
 ): (event: MouseEvent) => void {
   return (event: MouseEvent) => {
@@ -20,6 +20,7 @@ export default (app: App) => {
   app.directive("click-outside", {
     mounted(el: ExtendedHTMLElement, binding: DirectiveBinding) {
       el.__click_outside_handler__ = getHandler(el, binding);
+
       document.body.addEventListener("click", el.__click_outside_handler__);
     },
 
