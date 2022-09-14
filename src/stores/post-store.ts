@@ -3,10 +3,14 @@ import {
   collection,
   doc,
   FieldValue,
+  getDoc,
   getDocs,
   increment,
+  limit,
+  orderBy,
   query,
   serverTimestamp,
+  startAfter,
   where,
   writeBatch,
 } from "@firebase/firestore";
@@ -133,15 +137,30 @@ export const usePostStore = defineStore(
       postVmConverter
     );
 
-    async function fetchAllUserPosts() {
-      (
-        await getDocs(
-          query(
-            collection(fabDb, "posts"),
-            where("userId", "==", userStore.authUserId)
-          ).withConverter(postVmConverter)
+    async function fetchAllUserPosts(
+      pageSize: number,
+      lastFetchedPostId?: string
+    ) {
+      const constraints = [
+        where("userId", "==", userStore.authUserId),
+        orderBy("publishedAt", "desc"),
+        limit(pageSize),
+      ];
+
+      if (lastFetchedPostId) {
+        const startAfterDocSnap = await getDoc(
+          doc(fabDb, "posts", lastFetchedPostId)
+        );
+        constraints.splice(-1, 0, startAfter(startAfterDocSnap));
+      }
+
+      const docs = await getDocs(
+        query(collection(fabDb, "posts"), ...constraints).withConverter(
+          postVmConverter
         )
-      ).forEach((qryDocSnap) => {
+      );
+
+      docs.forEach((qryDocSnap) => {
         posts.push(qryDocSnap.data());
       });
     }

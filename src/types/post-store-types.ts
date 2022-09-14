@@ -16,5 +16,5 @@ export interface PostStoreActions extends StoreBaseActions {
   editPost(dto: PostVMEdit, fetchAfter?: boolean): Promise<void>;
   fetchPost(id: string): Promise<PostVm | undefined>;
   fetchPosts(ids?: Array<string>): Promise<Array<PostVm>>;
-  fetchAllUserPosts(): Promise<void>;
+  fetchAllUserPosts(limit: number, lastFetchedPostId?: string): Promise<void>;
 }

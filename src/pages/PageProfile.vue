@@ -12,6 +12,9 @@ import { usePostStore } from "../stores/post-store";
 import { useUserStore } from "../stores/user-store";
 import { UserVmEditForInput } from "../types/userVm-types";
 
+const pageSize = 100;
+const routeToReturn: RouteLocationRaw = { name: "Profile" };
+
 // TODO: refactor activity to component and migrate page to separate page
 
 const props = defineProps<{
@@ -28,15 +31,22 @@ const { isRevealed, reveal, confirm } = useConfirmDialog();
 const { getAuthUser } = storeToRefs(userStore);
 
 const { isReady } = useAsyncState(async () => {
-  await postStore.fetchAllUserPosts();
+  await postStore.fetchAllUserPosts(
+    pageSize,
+    getAuthUser.value.posts.at(-1)?.id
+  );
   commonStore.isReady = true;
 }, undefined);
 
-const hasDirtyForm = ref<boolean>(false);
+const hasDirtyForm = ref(false);
+
+const lastPostsDesc = computed(() =>
+  [...getAuthUser.value.posts]
+    .sort(({ publishedAt: a }, { publishedAt: b }) => b - a)
+    .slice(getAuthUser.value.posts.length - pageSize)
+);
 
 const canReveal = computed(() => isReady.value && getAuthUser.value);
-
-const routeToReturn = { name: "Profile" } as RouteLocationRaw;
 
 provide(confirmInjectKey, confirm);
 
@@ -92,7 +102,7 @@ function cancel() {
 
       <hr />
 
-      <post-list :posts="getAuthUser.posts" />
+      <post-list :posts="lastPostsDesc" />
       <!-- <div class="activity-list">
         <div class="activity">
           <div class="activity-header">
