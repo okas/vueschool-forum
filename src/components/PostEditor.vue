@@ -19,7 +19,7 @@ const submitBtnPhrase = computed(
 const editorText = ref<string>(props.text);
 
 watch(editorText, (newVal) => {
-  const result = (newVal?.trim() ?? "") !== (props.text?.trim() ?? "");
+  const result = (newVal ?? "") !== (props.text?.trim() ?? "");
 
   emits("update:isDirty", result);
 });
@@ -45,7 +45,7 @@ function cancel() {
         <label v-if="!text" for="thread_content">Content:</label>
         <textarea
           id="thread_content"
-          v-model="editorText"
+          v-model.trim="editorText"
           class="form-input"
           name="content"
           rows="8"

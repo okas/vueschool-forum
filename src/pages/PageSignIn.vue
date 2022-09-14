@@ -48,7 +48,7 @@ commonStore.isReady = true;
           <label for="email">Email</label>
           <input
             id="email"
-            v-model="email"
+            v-model.trim="email"
             type="text"
             class="form-input"
             required
@@ -58,7 +58,7 @@ commonStore.isReady = true;
           <label for="password">Password</label>
           <input
             id="password"
-            v-model="password"
+            v-model.trim="password"
             type="password"
             class="form-input"
             required

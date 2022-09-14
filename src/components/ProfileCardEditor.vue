@@ -32,15 +32,15 @@ watch(
   userEditorObj,
   ({ id, name, username, bio, email, website, location, avatar, twitter }) => {
     const result =
-      (id?.trim() ?? "") !== (props.user?.id.trim() ?? "") ||
-      (name?.trim() ?? "") !== (props.user?.name.trim() ?? "") ||
-      (username?.trim() ?? "") !== (props.user?.username.trim() ?? "") ||
-      (bio?.trim() ?? "") !== (props.user?.bio.trim() ?? "") ||
-      (email?.trim() ?? "") !== (props.user?.email.trim() ?? "") ||
-      (website?.trim() ?? "") !== (props.user?.website.trim() ?? "") ||
-      (location?.trim() ?? "") !== (props.user?.location.trim() ?? "") ||
-      (avatar?.trim() ?? "") !== (props.user?.avatar.trim() ?? "") ||
-      (twitter?.trim() ?? "") !== (props.user?.twitter.trim() ?? "");
+      (id ?? "") !== (props.user?.id.trim() ?? "") ||
+      (name ?? "") !== (props.user?.name.trim() ?? "") ||
+      (username ?? "") !== (props.user?.username.trim() ?? "") ||
+      (bio ?? "") !== (props.user?.bio.trim() ?? "") ||
+      (email ?? "") !== (props.user?.email.trim() ?? "") ||
+      (website ?? "") !== (props.user?.website.trim() ?? "") ||
+      (location ?? "") !== (props.user?.location.trim() ?? "") ||
+      (avatar ?? "") !== (props.user?.avatar.trim() ?? "") ||
+      (twitter ?? "") !== (props.user?.twitter.trim() ?? "");
 
     emits("update:isDirty", result);
   }
@@ -69,7 +69,7 @@ function cancel() {
 
       <div class="form-group">
         <input
-          v-model="userEditorObj.username"
+          v-model.trim="userEditorObj.username"
           type="text"
           placeholder="Username"
           class="form-input text-lead text-bold"
@@ -80,7 +80,7 @@ function cancel() {
 
       <div class="form-group">
         <input
-          v-model="userEditorObj.name"
+          v-model.trim="userEditorObj.name"
           type="text"
           placeholder="Full Name"
           class="form-input text-lead"
@@ -93,7 +93,7 @@ function cancel() {
         <label for="user_bio">Bio</label>
         <textarea
           id="user_bio"
-          v-model="userEditorObj.bio"
+          v-model.trim="userEditorObj.bio"
           class="form-input"
           placeholder="Write a few words about yourself."
         ></textarea>
@@ -105,7 +105,7 @@ function cancel() {
         <label class="form-label" for="user_email">Email</label>
         <input
           id="user_email"
-          v-model="userEditorObj.email"
+          v-model.trim="userEditorObj.email"
           autocomplete="off"
           class="form-input"
           required
@@ -117,7 +117,7 @@ function cancel() {
         <label class="form-label" for="user_website">Website</label>
         <input
           id="user_website"
-          v-model="userEditorObj.website"
+          v-model.trim="userEditorObj.website"
           autocomplete="off"
           class="form-input"
         />
@@ -127,7 +127,7 @@ function cancel() {
         <label class="form-label" for="user_email">Twitter</label>
         <input
           id="user_email"
-          v-model="userEditorObj.twitter"
+          v-model.trim="userEditorObj.twitter"
           autocomplete="off"
           class="form-input"
           type="text"
@@ -138,7 +138,7 @@ function cancel() {
         <label class="form-label" for="user_location">Location</label>
         <input
           id="user_location"
-          v-model="userEditorObj.location"
+          v-model.trim="userEditorObj.location"
           autocomplete="off"
           class="form-input"
         />

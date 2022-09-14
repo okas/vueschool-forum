@@ -13,24 +13,24 @@ const emits = defineEmits<{
   (e: "update:isDirty", state: boolean): void;
 }>();
 
-const form = reactive({
+const editorObj = reactive({
   title: props.title,
   text: props.text,
 });
 
 const submitButtonWord = computed(() => (props.title ? "Update" : "Publish"));
 
-watch(form, ({ title, text }) => {
+watch(editorObj, ({ title, text }) => {
   const result =
-    (title?.trim() ?? "") !== (props.title?.trim() ?? "") ||
-    (text?.trim() ?? "") !== (props.text?.trim() ?? "");
+    (title ?? "") !== (props.title?.trim() ?? "") ||
+    (text ?? "") !== (props.text?.trim() ?? "");
 
   emits("update:isDirty", result);
 });
 
 function save() {
   emits("update:isDirty", false);
-  emits("save", { ...form });
+  emits("save", { ...editorObj });
 }
 
 function cancel() {
@@ -44,7 +44,7 @@ function cancel() {
       <label for="thread_title">Title:</label>
       <input
         id="thread_title"
-        v-model="form.title"
+        v-model.trim="editorObj.title"
         type="text"
         class="form-input"
         name="title"
@@ -55,7 +55,7 @@ function cancel() {
       <label for="thread_content">Content:</label>
       <textarea
         id="thread_content"
-        v-model="form.text"
+        v-model.trim="editorObj.text"
         class="form-input"
         name="content"
         rows="8"

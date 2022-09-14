@@ -40,7 +40,7 @@ commonStore.isReady = true;
           <label for="name">Full Name</label>
           <input
             id="name"
-            v-model="editorObj.name"
+            v-model.trim="editorObj.name"
             type="text"
             class="form-input"
             required
@@ -52,7 +52,7 @@ commonStore.isReady = true;
           <label for="username">Username</label>
           <input
             id="username"
-            v-model="editorObj.username"
+            v-model.trim="editorObj.username"
             type="text"
             class="form-input"
             required
@@ -64,7 +64,7 @@ commonStore.isReady = true;
           <label for="email">Email</label>
           <input
             id="email"
-            v-model="editorObj.email"
+            v-model.trim="editorObj.email"
             type="email"
             class="form-input"
             required
@@ -75,7 +75,7 @@ commonStore.isReady = true;
           <label for="password">Password</label>
           <input
             id="password"
-            v-model="editorObj.password"
+            v-model.trim="editorObj.password"
             type="password"
             class="form-input"
             required
@@ -87,7 +87,7 @@ commonStore.isReady = true;
           <label for="avatar">Avatar</label>
           <input
             id="avatar"
-            v-model="editorObj.avatar"
+            v-model.trim="editorObj.avatar"
             type="text"
             class="form-input"
           />
