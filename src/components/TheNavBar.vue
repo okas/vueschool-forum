@@ -1,13 +1,27 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
 import { ref } from "vue";
+import { useRouter } from "vue-router";
 import { useUserStore } from "../stores/user-store";
 
 const userStore = useUserStore();
+const router = useRouter();
 
 const { getAuthUser } = storeToRefs(userStore);
 
 const isUserDropDownOpen = ref(false);
+
+const isMobNavMenuVisible = ref(false);
+
+router.beforeEach(() => closeMobNavMenu());
+
+function toggleMobNavMenu() {
+  isMobNavMenuVisible.value = !isMobNavMenuVisible.value;
+}
+
+function closeMobNavMenu() {
+  isMobNavMenuVisible.value = false;
+}
 
 function toggleUserDropDown() {
   isUserDropDownOpen.value = !isUserDropDownOpen.value;
@@ -19,24 +33,25 @@ function closeDropDown() {
 
 async function signOut() {
   await userStore.signOut();
+
+  router.push({ name: "Home" });
 }
 </script>
 
 <template>
-  <header id="header" class="header">
+  <header id="header" v-click-outside="closeMobNavMenu" class="header">
     <router-link class="logo" :to="{ name: 'Home' }">
       <img src="../assets/svg/vueschool-logo.svg" alt="logo" title="Home" />
     </router-link>
 
-    <div class="btn-hamburger">
+    <div class="btn-hamburger" @click.prevent="toggleMobNavMenu">
       <!-- use .btn-hamburger-active to open the menu -->
       <div class="top bar"></div>
       <div class="middle bar"></div>
       <div class="bottom bar"></div>
     </div>
 
-    <!-- use .navbar-open to open nav -->
-    <nav class="navbar">
+    <nav class="navbar" :class="{ 'navbar-open': isMobNavMenuVisible }">
       <ul>
         <li v-if="getAuthUser" class="navbar-user">
           <a
@@ -87,6 +102,13 @@ async function signOut() {
         <li v-if="!getAuthUser" class="navbar-item">
           <router-link :to="{ name: 'Register' }">Register</router-link>
         </li>
+
+        <li v-if="getAuthUser" class="navbar-item mobile-only">
+          <router-link :to="{ name: 'Profile' }">View profile</router-link>
+        </li>
+        <li v-if="getAuthUser" class="navbar-item mobile-only">
+          <a @click.prevent="signOut">Sign out</a>
+        </li>
       </ul>
 
       <!-- <ul>
@@ -101,13 +123,6 @@ async function signOut() {
         </li>
         <li class="navbar-item">
           <a href="thread.html">Thread</a>
-        </li> -->
-      <!-- Show these option only on mobile-->
-      <!-- <li class="navbar-item mobile-only">
-          <a href="profile.html">My Profile</a>
-        </li>
-        <li class="navbar-item mobile-only">
-          <a href="#">Logout</a>
         </li>
       </ul> -->
     </nav>
