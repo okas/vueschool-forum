@@ -12,7 +12,7 @@ import { usePostStore } from "../stores/post-store";
 import { useUserStore } from "../stores/user-store";
 import { UserVmEditForInput } from "../types/userVm-types";
 
-const pageSize = 100;
+const pageSize = 10;
 const routeToReturn: RouteLocationRaw = { name: "Profile" };
 
 // TODO: refactor activity to component and migrate page to separate page
