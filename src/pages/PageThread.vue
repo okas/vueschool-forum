@@ -55,6 +55,8 @@ const statsPhrase = computed(
     )}`
 );
 
+const isOwner = computed(() => thread.value.userId === userStore.authUserId);
+
 provide(confirmInjectKey, confirm);
 
 onBeforeRouteLeave(async () => {
@@ -90,6 +92,7 @@ async function editPost(dto: PostVMEdit) {
     <header style="display: flex">
       <h1 style="margin-right: 1rem" v-text="thread?.title" />
       <router-link
+        v-if="isOwner"
         v-slot="{ navigate }"
         :to="{
           name: 'ThreadEdit',
