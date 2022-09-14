@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useAsyncState, useConfirmDialog } from "@vueuse/core";
 import { storeToRefs } from "pinia";
-import { onUpdated, provide, ref } from "vue";
+import { computed, onUpdated, provide, ref } from "vue";
 import { onBeforeRouteLeave, RouteLocationRaw, useRouter } from "vue-router";
 import ModalDialog, { confirmInjectKey } from "../components/ModalDialog.vue";
 import PostList from "../components/PostList.vue";
@@ -33,6 +33,8 @@ const { isReady } = useAsyncState(async () => {
 }, undefined);
 
 const hasDirtyForm = ref<boolean>(false);
+
+const canReveal = computed(() => isReady.value && getAuthUser.value);
 
 const routeToReturn = { name: "Profile" } as RouteLocationRaw;
 
@@ -68,7 +70,7 @@ function cancel() {
 </script>
 
 <template>
-  <div v-if="isReady" class="flex-grid">
+  <div v-if="canReveal" class="flex-grid">
     <div class="col-3 push-top">
       <profile-card v-if="!edit" :auth-user="getAuthUser" />
       <profile-card-editor
