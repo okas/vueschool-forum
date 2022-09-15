@@ -74,6 +74,7 @@ const renderData = computed(() =>
     </div>
   </div>
 
+  <slot></slot>
   <!-- <div class="pagination"></div>
     <button class="btn-circle" disabled="">
       <i class="fa fa-angle-left"></i>

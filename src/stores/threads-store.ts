@@ -165,6 +165,17 @@ export const useThreadStore = defineStore(
       threadVmConverter
     );
 
+    async function fetchThreadsByPage(
+      page: number,
+      pageSize: number,
+      ids: Array<string> = []
+    ): Promise<Array<ThreadVM>> {
+      const start = (page - 1) * pageSize;
+      const end = start + pageSize;
+
+      return fetchThreads(ids.slice(start, end));
+    }
+
     return {
       threads,
       getThreadMetaInfoFn,
@@ -173,6 +184,7 @@ export const useThreadStore = defineStore(
       editThread,
       fetchThread,
       fetchThreads,
+      fetchThreadsByPage,
       clearDbSubscriptions: () => fabSbscrMngr.clearDbSubscriptions(),
     };
   }

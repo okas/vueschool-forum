@@ -21,6 +21,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.2.0",
     "@fortawesome/free-solid-svg-icons": "^6.2.0",
     "@fortawesome/vue-fontawesome": "^3.0.1",
+    "@hennge/vue3-pagination": "^1.0.17",
     "@vueuse/core": "^9.2.0",
     "@vueuse/integrations": "^9.2.0",
     "dayjs": "^1.11.5",

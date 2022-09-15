@@ -4,6 +4,7 @@ import AppRoot from "./App.vue";
 import clickOutsideDirective from "./directives/click-outside";
 import pageScrollDirective from "./directives/page-scroll";
 import { useFontAwesomePlugin } from "./plugins/font-awesome";
+import V3Pagination from "./plugins/vue3-pagination";
 import router from "./router";
 
 // TODO: Add SDKs for Firebase products that you want to use
@@ -17,7 +18,7 @@ async function loadAsyncDependencies() {
 }
 
 function loadPlugins() {
-  forumApp.use(createPinia()).use(router).use(faPlugin);
+  forumApp.use(createPinia()).use(router).use(faPlugin).use(V3Pagination);
 }
 
 function loadDirectives() {

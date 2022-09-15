@@ -1,12 +1,15 @@
 <script setup lang="ts">
 import { useAsyncState } from "@vueuse/core";
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import ThreadList from "../components/ThreadList.vue";
 import { useCommonStore } from "../stores/common-store";
 import { useForumStore } from "../stores/forum-store";
 import { useThreadStore } from "../stores/threads-store";
 import { useUserStore } from "../stores/user-store";
+import { ThreadVMWithMeta } from "../types/threadVm-types";
 import { findById } from "../utils/array-helpers";
+
+const pageSize = 10;
 
 const props = defineProps<{
   forumId: string;
@@ -18,17 +21,37 @@ const userStore = useUserStore();
 const threadStore = useThreadStore();
 
 const { isReady } = useAsyncState(async () => {
-  const forum = await forumStore.fetchForum(props.forumId);
-  const forumThreads = await threadStore.fetchThreads(forum.threads);
-  await userStore.fetchUsers(forumThreads.map(({ userId }) => userId));
+  const { threads: ids } = await forumStore.fetchForum(props.forumId);
+  await fetchPagedViewModels(ids);
   commonStore.isReady = true;
 }, undefined);
 
+const page = ref(1);
+
+const currentPageOfThreads = ref<Array<ThreadVMWithMeta>>([]);
+
 const forum = computed(() => findById(forumStore.forums, props.forumId));
 
-const forumThreads = computed(() =>
-  forum.value.threads?.map((id) => threadStore.getThreadMetaInfoFn(id))
+const pageCount = computed(() =>
+  Math.ceil((forum.value.threads?.length ?? 0) / pageSize)
 );
+
+watch(page, () => fetchPagedViewModels());
+
+async function fetchPagedViewModels(ids?: string[]): Promise<void> {
+  const threads = await threadStore.fetchThreadsByPage(
+    page.value,
+    pageSize,
+    ids ?? forum.value.threads
+  );
+
+  await userStore.fetchUsers(threads.map(({ userId }) => userId));
+
+  currentPageOfThreads.value =
+    threads
+      .filter(({ forumId }) => forumId === props.forumId)
+      .map(({ id }) => threadStore.getThreadMetaInfoFn(id)) ?? [];
+}
 </script>
 
 <template>
@@ -49,7 +72,15 @@ const forumThreads = computed(() =>
     </div>
 
     <div class="col-full push-top">
-      <thread-list v-if="forumThreads" :threads="forumThreads" />
+      <thread-list v-if="currentPageOfThreads" :threads="currentPageOfThreads">
+        <v-pagination
+          v-model="page"
+          class="pagination"
+          :pages="pageCount"
+          :range-size="1"
+          active-color="#57ad8d"
+        />
+      </thread-list>
       <div v-else>No threads</div>
     </div>
   </template>

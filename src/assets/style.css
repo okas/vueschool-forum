@@ -299,8 +299,8 @@ figcaption {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 40px;
-  margin-bottom: 40px;
+  margin-top: 40px !important;
+  margin-bottom: 40px !important;
   color: #838486;
 }
 
@@ -333,6 +333,10 @@ figcaption {
   transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
   perspective: 1000px;
+}
+
+.Pagination .Page-active {
+  color: white;
 }
 
 @keyframes shake {
