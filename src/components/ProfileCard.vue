@@ -38,7 +38,7 @@ const lasVisited = computed(() => diffFromUnix(props.authUser.lastVisitAt));
     />
 
     <p>
-      <fa icon="circle-user" />&nbsp;
+      <fa style="color: #57ad8d" icon="circle-user" />&nbsp;
       <span v-text="`${authUser.username} is online`" />
     </p>
 
