@@ -142,7 +142,6 @@ runTransaction(
 )
   .then(() => {
     log("- ✅ all updates done");
-
     process.exit();
   })
   .catch((reason) => {
