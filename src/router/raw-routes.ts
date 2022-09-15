@@ -109,7 +109,7 @@ export const rawRoutes: Readonly<RouteRecordRaw[]> = [
     // will match everything and put it under `$route.params.pathMatch`
     path: "/:pathMatch(.*)*",
     name: "NotFound",
-    component: () => import("../pages/PageNotFound.vue"),
+    component: () => import("../pages/PageSoftNotFound.vue"),
   },
 ];
 

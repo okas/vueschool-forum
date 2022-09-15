@@ -6,7 +6,10 @@ useCommonStore().isReady = true;
 
 <template>
   <div class="col-full text-center">
-    <h1>(soft 404) Not Found 😒</h1>
+    <h1>Not Found 😒</h1>
+    <h3>
+      <em>"Soft 404"</em>
+    </h3>
     <router-link :to="{ name: `Home` }">Read some cool threads</router-link>
   </div>
 </template>
