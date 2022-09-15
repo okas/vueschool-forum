@@ -31,22 +31,27 @@ const { isRevealed, reveal, confirm } = useConfirmDialog();
 const { getAuthUser } = storeToRefs(userStore);
 
 const { isReady } = useAsyncState(async () => {
-  await postStore.fetchAllUserPosts(
-    pageSize,
-    getAuthUser.value.posts.at(-1)?.id
-  );
+  await fetchUserPosts();
   commonStore.isReady = true;
 }, undefined);
 
 const hasDirtyForm = ref(false);
 
 const lastPostsDesc = computed(() =>
-  [...getAuthUser.value.posts]
-    .sort(({ publishedAt: a }, { publishedAt: b }) => b - a)
-    .slice(getAuthUser.value.posts.length - pageSize)
+  [...getAuthUser.value.posts].sort(
+    ({ publishedAt: a }, { publishedAt: b }) => b - a
+  )
 );
 
 const canReveal = computed(() => isReady.value && getAuthUser.value);
+
+const personalizedRecentActivity = computed(
+  () => `${getAuthUser.value.username}'s recent activity`
+);
+
+const hasNoMorePosts = computed(
+  () => getAuthUser.value.posts.length === getAuthUser.value.postsCount
+);
 
 provide(confirmInjectKey, confirm);
 
@@ -63,6 +68,13 @@ onBeforeRouteLeave(async () => {
     return (await reveal()).data;
   }
 });
+
+function fetchUserPosts(): Promise<void> {
+  return postStore.fetchAllUserPosts(
+    pageSize,
+    getAuthUser.value.posts.at(-1)?.id
+  );
+}
 
 async function goToHome() {
   await router.push({ name: "Home" });
@@ -94,15 +106,18 @@ function cancel() {
 
     <div class="col-7 push-top">
       <div class="profile-header">
-        <span class="text-lead"
-          >{{ getAuthUser.username }}'s recent activity</span
-        >
+        <span class="text-lead" v-text="personalizedRecentActivity" />
+
         <a href="#">See only started threads?</a>
       </div>
 
       <hr />
 
       <post-list :posts="lastPostsDesc" />
+      <app-infinite-scroll
+        :done="hasNoMorePosts"
+        @reached-end="fetchUserPosts"
+      />
       <!-- <div class="activity-list">
         <div class="activity">
           <div class="activity-header">
