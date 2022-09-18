@@ -3,10 +3,6 @@ import { PostVm } from "../models/PostVm";
 import { PostVMEdit, PostVMNew } from "./postVm-types";
 import { StoreBaseActions } from "./store-base-types";
 
-export interface PostStoreState {
-  items: Array<PostVm>;
-}
-
 export interface PostStoreGetters {
   getUserPostsCountFn: ComputedRef<(userId: string) => number>;
 }

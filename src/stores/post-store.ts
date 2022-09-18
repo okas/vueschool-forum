@@ -19,12 +19,9 @@ import { computed, reactive } from "vue";
 import { fabDb } from "../firebase";
 import { postVmConverter } from "../firebase/firebase-converters";
 import { PostVm } from "../models/PostVm";
-import {
-  PostStoreActions,
-  PostStoreGetters,
-  PostStoreState,
-} from "../types/post-store-types";
+import { PostStoreActions, PostStoreGetters } from "../types/post-store-types";
 import { PostVMEdit, PostVMNew } from "../types/postVm-types";
+import { StoreBaseState } from "../types/store-base-types";
 import { countBy, findById } from "../utils/array-helpers";
 import { ok } from "../utils/assert-helpers";
 import { FirebaseSubscriptionManager } from "../utils/FirebaseSubscriptionManager";
@@ -39,7 +36,7 @@ import { useUserStore } from "./user-store";
 
 export const usePostStore = defineStore(
   "post-store",
-  (): PostStoreState & PostStoreGetters & PostStoreActions => {
+  (): StoreBaseState<PostVm> & PostStoreGetters & PostStoreActions => {
     const fabSbscrMngr = new FirebaseSubscriptionManager();
     const { _dbUnsubscribes } = fabSbscrMngr;
 

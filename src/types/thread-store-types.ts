@@ -3,10 +3,6 @@ import { ThreadVM } from "../models/ThreadVM";
 import { StoreBaseActions } from "./store-base-types";
 import { ThreadVMEdit, ThreadVMNew, ThreadVMWithMeta } from "./threadVm-types";
 
-export interface ThreadStoreState {
-  items: Array<ThreadVM>;
-}
-
 export interface ThreadStoreGetters {
   getThreadMetaInfoFn: ComputedRef<
     (threadId: string) => ThreadVMWithMeta | undefined

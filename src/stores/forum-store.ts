@@ -2,7 +2,8 @@ import { defineStore } from "pinia";
 import { reactive } from "vue";
 import { hasIdVmConverter } from "../firebase/firebase-converters";
 import { ForumVM } from "../models/ForumVM";
-import { ForumStoreActions, ForumStoreState } from "../types/forum-store-types";
+import { ForumStoreActions } from "../types/forum-store-types";
+import { StoreBaseState } from "../types/store-base-types";
 import { FirebaseSubscriptionManager } from "../utils/FirebaseSubscriptionManager";
 import {
   makeFirebaseFetchMultiDocsFn,
@@ -12,7 +13,7 @@ import useAcceptHmr from "../utils/store-helpers";
 
 export const useForumStore = defineStore(
   "forum-store",
-  (): ForumStoreState & ForumStoreActions => {
+  (): StoreBaseState<ForumVM> & ForumStoreActions => {
     const fabSbscrMngr = new FirebaseSubscriptionManager();
     const { _dbUnsubscribes } = fabSbscrMngr;
 

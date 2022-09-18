@@ -1,6 +1,6 @@
 import { ComputedRef, Ref } from "vue";
 import { UserVM } from "./../models/UserVM";
-import { StoreBaseActions } from "./store-base-types";
+import { StoreBaseActions, StoreBaseState } from "./store-base-types";
 import {
   UserVmEditForInput,
   UserVMNewFormInput,
@@ -8,9 +8,8 @@ import {
   UserVMWithActivity,
 } from "./userVm-types";
 
-export interface UserStoreState {
+export interface UserStoreState extends StoreBaseState<UserVM> {
   authUserId: Ref<string | null>;
-  items: Array<UserVM>;
 }
 
 export interface UserStoreGetters {

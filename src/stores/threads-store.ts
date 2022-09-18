@@ -12,10 +12,10 @@ import { computed, reactive } from "vue";
 import { fabDb } from "../firebase";
 import { threadVmConverter } from "../firebase/firebase-converters";
 import { ThreadVM } from "../models/ThreadVM";
+import { StoreBaseState } from "../types/store-base-types";
 import {
   ThreadStoreActions,
   ThreadStoreGetters,
-  ThreadStoreState,
 } from "../types/thread-store-types";
 import {
   ThreadVMEdit,
@@ -35,7 +35,7 @@ import { useUserStore } from "./user-store";
 
 export const useThreadStore = defineStore(
   "thread-store",
-  (): ThreadStoreState & ThreadStoreGetters & ThreadStoreActions => {
+  (): StoreBaseState<ThreadVM> & ThreadStoreGetters & ThreadStoreActions => {
     const fabSbscrMngr = new FirebaseSubscriptionManager();
     const { _dbUnsubscribes } = fabSbscrMngr;
 
