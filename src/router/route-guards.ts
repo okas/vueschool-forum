@@ -52,11 +52,7 @@ export const routeBeforeEnterGuards: ReadonlyMap<
 
       await useForumStore().fetchForums(category.forums);
 
-      return navigateToOrNotFound(
-        routeObj,
-        categoryStore.categories,
-        "categoryId"
-      );
+      return navigateToOrNotFound(routeObj, categoryStore.items, "categoryId");
     },
   ],
   [
@@ -71,7 +67,7 @@ export const routeBeforeEnterGuards: ReadonlyMap<
 
       await forumStore.fetchForum(forumId);
 
-      return navigateToOrNotFound(routeObj, forumStore.forums, "forumId");
+      return navigateToOrNotFound(routeObj, forumStore.items, "forumId");
     },
   ],
   [
@@ -86,7 +82,7 @@ export const routeBeforeEnterGuards: ReadonlyMap<
 
       await forumStore.fetchForum(forumId);
 
-      return navigateToOrNotFound(routeObj, forumStore.forums, "forumId");
+      return navigateToOrNotFound(routeObj, forumStore.items, "forumId");
     },
   ],
   [
@@ -106,7 +102,7 @@ export const routeBeforeEnterGuards: ReadonlyMap<
 
       await usePostStore().fetchPost(thread.firstPostId);
 
-      return navigateToOrNotFound(routeObj, threadStore.threads, "threadId");
+      return navigateToOrNotFound(routeObj, threadStore.items, "threadId");
     },
   ],
   [
@@ -132,7 +128,7 @@ export const routeBeforeEnterGuards: ReadonlyMap<
         useUserStore().fetchUsers([thread.userId, ...postUserIds]),
       ]);
 
-      return navigateToOrNotFound(routeObj, threadStore.threads, "threadId");
+      return navigateToOrNotFound(routeObj, threadStore.items, "threadId");
     },
   ],
 ]);

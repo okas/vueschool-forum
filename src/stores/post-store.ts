@@ -47,10 +47,10 @@ export const usePostStore = defineStore(
     const userStore = useUserStore();
     const forumStore = useForumStore();
 
-    const posts = reactive<Array<PostVm>>([]);
+    const items = reactive<Array<PostVm>>([]);
 
     const getUserPostsCountFn = computed(
-      () => (id: string) => countBy(posts, ({ userId }) => userId === id)
+      () => (id: string) => countBy(items, ({ userId }) => userId === id)
     );
 
     async function createPost(
@@ -68,7 +68,7 @@ export const usePostStore = defineStore(
         publishedAt: serverTimestamp(),
       };
 
-      const thread = findById(threadStore.threads, threadId);
+      const thread = findById(threadStore.items, threadId);
 
       ok(thread, `Cannot get thread by id "${threadId}".`);
 
@@ -124,14 +124,14 @@ export const usePostStore = defineStore(
     }
 
     const fetchPost = makeFirebaseFetchSingleDocFn(
-      posts,
+      items,
       "posts",
       _dbUnsubscribes,
       postVmConverter
     );
 
     const fetchPosts = makeFirebaseFetchMultiDocsFn(
-      posts,
+      items,
       "posts",
       _dbUnsubscribes,
       postVmConverter
@@ -161,12 +161,12 @@ export const usePostStore = defineStore(
       );
 
       docs.forEach((qryDocSnap) => {
-        posts.push(qryDocSnap.data());
+        items.push(qryDocSnap.data());
       });
     }
 
     return {
-      posts,
+      items,
       getUserPostsCountFn,
       createPost,
       editPost,

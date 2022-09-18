@@ -4,7 +4,7 @@ import { PostVMEdit, PostVMNew } from "./postVm-types";
 import { StoreBaseActions } from "./store-base-types";
 
 export interface PostStoreState {
-  posts: Array<PostVm>;
+  items: Array<PostVm>;
 }
 
 export interface PostStoreGetters {

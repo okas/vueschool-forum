@@ -24,10 +24,10 @@ const { isRevealed, reveal, confirm } = useConfirmDialog();
 
 const hasDirtyForm = ref<boolean>(false);
 
-const thread = computed(() => findById(threadStore.threads, props.threadId));
+const thread = computed(() => findById(threadStore.items, props.threadId));
 
 const firstPostText = computed(
-  () => findById(postStore.posts, thread.value.firstPostId)?.text
+  () => findById(postStore.items, thread.value.firstPostId)?.text
 );
 
 provide(confirmInjectKey, confirm);

@@ -3,7 +3,7 @@ import { CategoryVM } from "./../models/CategoryVM";
 import { StoreBaseActions } from "./store-base-types";
 
 export interface CategoryStoreState {
-  categories: Array<CategoryVM>;
+  items: Array<CategoryVM>;
 }
 
 export interface CategoryStoreGetters {

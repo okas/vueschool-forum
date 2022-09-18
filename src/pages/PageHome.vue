@@ -9,7 +9,7 @@ const commonStore = useCommonStore();
 const forumStore = useForumStore();
 
 const groupedForums = computed(() =>
-  groupByToMap(forumStore.forums, ({ categoryId }) => categoryId)
+  groupByToMap(forumStore.items, ({ categoryId }) => categoryId)
 );
 
 commonStore.setReady();

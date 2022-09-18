@@ -10,7 +10,7 @@ import {
 
 export interface UserStoreState {
   authUserId: Ref<string | null>;
-  users: Array<UserVM>;
+  items: Array<UserVM>;
 }
 
 export interface UserStoreGetters {

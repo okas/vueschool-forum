@@ -16,7 +16,7 @@ const forumStore = useForumStore();
 const name = computed(() => categoryStore.getCategoryNamedFn(props.categoryId));
 
 const categoryForums = computed(() =>
-  forumStore.forums.filter(({ categoryId }) => categoryId === props.categoryId)
+  forumStore.items.filter(({ categoryId }) => categoryId === props.categoryId)
 );
 
 commonStore.setReady();

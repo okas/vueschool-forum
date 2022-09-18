@@ -42,17 +42,17 @@ export const useThreadStore = defineStore(
     const userStore = useUserStore();
     const postStore = usePostStore();
 
-    const threads = reactive<Array<ThreadVM>>([]);
+    const items = reactive<Array<ThreadVM>>([]);
 
     const getThreadMetaInfoFn = computed(() => (threadId: string) => {
-      const thread = findById(threads, threadId);
+      const thread = findById(items, threadId);
       ok(thread, `No thread with id: "${threadId}".`);
 
       const result: ThreadVMWithMeta = {
         ...thread,
 
         get authorName() {
-          return findById(userStore.users, thread.userId)?.name ?? "<missing>";
+          return findById(userStore.items, thread.userId)?.name ?? "<missing>";
         },
 
         get repliesCount() {
@@ -68,7 +68,7 @@ export const useThreadStore = defineStore(
     });
 
     const getUserThreadsCountFn = computed(
-      () => (id: string) => countBy(threads, ({ userId }) => userId === id)
+      () => (id: string) => countBy(items, ({ userId }) => userId === id)
     );
 
     async function createThread({
@@ -120,14 +120,14 @@ export const useThreadStore = defineStore(
     }
 
     async function editThread({ id: threadId, title, text }: ThreadVMEdit) {
-      const thread = findById(threads, threadId);
+      const thread = findById(items, threadId);
       ok(thread, `Edit thread error: no thread with id: "${threadId}".`);
       ok(
         thread.firstPostId,
         `Edit thread error: thread: "${threadId}" is missing "firstPostId".`
       );
 
-      const post = findById(postStore.posts, thread.firstPostId);
+      const post = findById(postStore.items, thread.firstPostId);
       ok(post, `Edit thread error: no post with id: ${thread.firstPostId}.`);
 
       const postRef = doc(fabDb, "posts", thread.firstPostId);
@@ -152,14 +152,14 @@ export const useThreadStore = defineStore(
     }
 
     const fetchThread = makeFirebaseFetchSingleDocFn(
-      threads,
+      items,
       "threads",
       _dbUnsubscribes,
       threadVmConverter
     );
 
     const fetchThreads = makeFirebaseFetchMultiDocsFn(
-      threads,
+      items,
       "threads",
       _dbUnsubscribes,
       threadVmConverter
@@ -177,7 +177,7 @@ export const useThreadStore = defineStore(
     }
 
     return {
-      threads,
+      items,
       getThreadMetaInfoFn,
       getUserThreadsCountFn,
       createThread,

@@ -24,7 +24,7 @@ const { isRevealed, reveal, confirm } = useConfirmDialog();
 
 const hasDirtyForm = ref<boolean>(false);
 
-const forum = computed(() => findById(forumStore.forums, props.forumId));
+const forum = computed(() => findById(forumStore.items, props.forumId));
 
 provide(confirmInjectKey, confirm);
 

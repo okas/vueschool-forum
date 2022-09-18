@@ -21,14 +21,14 @@ export const useCategoryStore = defineStore(
     const fabSbscrMngr = new FirebaseSubscriptionManager();
     const { _dbUnsubscribes } = fabSbscrMngr;
 
-    const categories = reactive<Array<CategoryVM>>([]);
+    const items = reactive<Array<CategoryVM>>([]);
 
     const getCategoryNamedFn = computed(
-      () => (categoryId: string) => findById(categories, categoryId)?.name
+      () => (categoryId: string) => findById(items, categoryId)?.name
     );
 
     const fetchCategory = makeFirebaseFetchSingleDocFn(
-      categories,
+      items,
       "categories",
       _dbUnsubscribes,
       hasIdVmConverter
@@ -36,7 +36,7 @@ export const useCategoryStore = defineStore(
 
     function fetchAllCategories() {
       return makeFirebaseFetchMultiDocsFn(
-        categories,
+        items,
         "categories",
         _dbUnsubscribes,
         hasIdVmConverter
@@ -44,7 +44,7 @@ export const useCategoryStore = defineStore(
     }
 
     return {
-      categories,
+      items,
       getCategoryNamedFn,
       fetchCategory,
       fetchAllCategories,

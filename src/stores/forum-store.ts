@@ -16,24 +16,24 @@ export const useForumStore = defineStore(
     const fabSbscrMngr = new FirebaseSubscriptionManager();
     const { _dbUnsubscribes } = fabSbscrMngr;
 
-    const forums = reactive<Array<ForumVM>>([]);
+    const items = reactive<Array<ForumVM>>([]);
 
     const fetchForum = makeFirebaseFetchSingleDocFn(
-      forums,
+      items,
       "forums",
       _dbUnsubscribes,
       hasIdVmConverter
     );
 
     const fetchForums = makeFirebaseFetchMultiDocsFn(
-      forums,
+      items,
       "forums",
       _dbUnsubscribes,
       hasIdVmConverter
     );
 
     return {
-      forums,
+      items,
       fetchForum,
       fetchForums,
       clearDbSubscriptions: () => fabSbscrMngr.clearDbSubscriptions(),

@@ -4,7 +4,7 @@ import { StoreBaseActions } from "./store-base-types";
 import { ThreadVMEdit, ThreadVMNew, ThreadVMWithMeta } from "./threadVm-types";
 
 export interface ThreadStoreState {
-  threads: Array<ThreadVM>;
+  items: Array<ThreadVM>;
 }
 
 export interface ThreadStoreGetters {

@@ -54,14 +54,14 @@ export const useUserStore = defineStore(
     const threadStore = useThreadStore();
 
     const authUserId = ref<string | null>(null);
-    const users = reactive<Array<UserVM>>([]);
+    const items = reactive<Array<UserVM>>([]);
 
     const getAuthUser = computed(() =>
       authUserId.value ? getUserByIdFn.value(authUserId.value) : undefined
     );
 
     const getUserByIdFn = computed(() => (id: string) => {
-      const user = findById(users, id);
+      const user = findById(items, id);
 
       if (!user) {
         warn(`Cannot get user by id "${id}".`);
@@ -72,11 +72,11 @@ export const useUserStore = defineStore(
         ...user,
 
         get posts() {
-          return postStore.posts.filter(({ userId }) => userId === id);
+          return postStore.items.filter(({ userId }) => userId === id);
         },
 
         get threads() {
-          return threadStore.threads.filter(({ userId }) => userId === id);
+          return threadStore.items.filter(({ userId }) => userId === id);
         },
       };
 
@@ -183,14 +183,14 @@ export const useUserStore = defineStore(
     }
 
     const fetchUser = makeFirebaseFetchSingleDocFn(
-      users,
+      items,
       "users",
       _dbUnsubscribes,
       userVmConverter
     );
 
     const fetchUsers = makeFirebaseFetchMultiDocsFn(
-      users,
+      items,
       "users",
       _dbUnsubscribes,
       userVmConverter
@@ -206,7 +206,7 @@ export const useUserStore = defineStore(
       const customSink: Array<Unsubscribe> = [];
 
       const signedInUser = makeFirebaseFetchSingleDocFn(
-        users,
+        items,
         "users",
         customSink,
         userVmConverter
@@ -233,7 +233,7 @@ export const useUserStore = defineStore(
 
     return {
       authUserId,
-      users,
+      items,
       getAuthUser,
       getUserByIdFn,
       forceInitFireBaseAuthState,

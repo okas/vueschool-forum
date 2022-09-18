@@ -2,7 +2,7 @@ import { ForumVM } from "../models/ForumVM";
 import { StoreBaseActions } from "./store-base-types";
 
 export interface ForumStoreState {
-  forums: Array<ForumVM>;
+  items: Array<ForumVM>;
 }
 
 export interface ForumStoreActions extends StoreBaseActions {

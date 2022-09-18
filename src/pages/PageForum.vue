@@ -39,7 +39,7 @@ const pageAtPaginator = ref<number>(pageAtUri.value);
 
 const currentPageOfThreads = ref<Array<ThreadVMWithMeta>>([]);
 
-const forum = computed(() => findById(forumStore.forums, props.forumId));
+const forum = computed(() => findById(forumStore.items, props.forumId));
 
 const pageCount = computed(() =>
   Math.ceil((forum.value.threads?.length ?? 0) / pageSize)

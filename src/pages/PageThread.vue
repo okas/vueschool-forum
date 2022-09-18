@@ -34,7 +34,7 @@ const hasDirtyFormInPostList = ref<boolean>(false);
 const thread = computed(() => threadStore.getThreadMetaInfoFn(props.threadId));
 
 const posts = computed(() =>
-  postStore.posts
+  postStore.items
     .filter(({ threadId }) => threadId === thread.value.id)
     .sort(({ publishedAt: a }, { publishedAt: b }) => a - b)
 );
