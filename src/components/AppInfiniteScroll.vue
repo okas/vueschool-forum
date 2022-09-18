@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from "vue";
+import { onBeforeUnmount, onMounted, ref, watch } from "vue";
 
 const props = withDefaults(
   defineProps<{
@@ -31,7 +31,7 @@ onMounted(() => {
   observer.value.observe(elem.value);
 });
 
-onUnmounted(unobserve);
+onBeforeUnmount(unobserve);
 
 watch(
   () => props.done,
