@@ -28,7 +28,14 @@ useAsyncState(async () => {
   await fetchPagedViewModels();
 }, undefined);
 
-const page = ref(1);
+const pageAtUri = computed(() => {
+  const { page } = route.query;
+  const result = parseInt(Array.isArray(page) ? page[0] : page);
+
+  return isNaN(result) ? 1 : result;
+});
+
+const pageAtPaginator = ref<number>(pageAtUri.value);
 
 const currentPageOfThreads = ref<Array<ThreadVMWithMeta>>([]);
 
@@ -38,13 +45,23 @@ const pageCount = computed(() =>
   Math.ceil((forum.value.threads?.length ?? 0) / pageSize)
 );
 
-watch(page, () => fetchPagedViewModels());
+watch(pageAtPaginator, () =>
+  router.push({ query: { page: pageAtPaginator.value } })
+);
 
-async function fetchPagedViewModels(ids?: string[]): Promise<void> {
+watch(pageAtUri, (newPage) => {
+  commonStore.setLoading();
+  pageAtPaginator.value = newPage;
+  fetchPagedViewModels();
+});
+
+async function fetchPagedViewModels(): Promise<void> {
+  await nextTick();
+
   const threads = await threadStore.fetchThreadsByPage(
-    page.value,
+    pageAtUri.value,
     pageSize,
-    ids ?? forum.value.threads
+    forum.value.threads
   );
 
   await userStore.fetchUsers(threads.map(({ userId }) => userId));
@@ -78,7 +95,7 @@ async function fetchPagedViewModels(ids?: string[]): Promise<void> {
     <div class="col-full push-top">
       <thread-list v-if="currentPageOfThreads" :threads="currentPageOfThreads">
         <v-pagination
-          v-model="page"
+          v-model="pageAtPaginator"
           class="pagination"
           :pages="pageCount"
           :range-size="1"

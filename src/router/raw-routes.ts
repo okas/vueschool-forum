@@ -49,6 +49,16 @@ export const rawRoutes: Readonly<RouteRecordRaw[]> = [
   {
     path: "/forum/:forumId",
     name: "Forum",
+    redirect: ({ hash, params, query: { page, ...qryRest } }) => ({
+      name: "ForumPaged",
+      query: { ...qryRest, page: page ?? "1" },
+      params,
+      hash,
+    }),
+  },
+  {
+    path: "/forum/:forumId",
+    name: "ForumPaged",
     component: () => import("../pages/PageForum.vue"),
     props: true,
     beforeEnter: routeBeforeEnterGuards.get("Forum"),
