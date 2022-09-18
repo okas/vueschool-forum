@@ -32,7 +32,7 @@ const { getAuthUser } = storeToRefs(userStore);
 
 const { isReady } = useAsyncState(async () => {
   await fetchUserPosts();
-  commonStore.isReady = true;
+  commonStore.setReady();
 }, undefined);
 
 const hasDirtyForm = ref(false);
@@ -57,7 +57,7 @@ provide(confirmInjectKey, confirm);
 
 onUpdated(() => {
   if (getAuthUser.value) {
-    commonStore.isReady = true;
+    commonStore.setReady();
   } else {
     goToHome();
   }

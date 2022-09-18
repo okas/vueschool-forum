@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useCommonStore } from "../stores/common-store";
 
-useCommonStore().isReady = true;
+useCommonStore().setReady();
 </script>
 
 <template>

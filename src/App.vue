@@ -1,34 +1,44 @@
 <script setup lang="ts">
 import { useNProgress } from "@vueuse/integrations/useNProgress";
-import { storeToRefs } from "pinia";
-import { watch } from "vue";
+import { watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import TheNavBar from "./components/TheNavBar.vue";
 import { useCommonStore } from "./stores/common-store";
 
 const commonStore = useCommonStore();
-const { isReady } = storeToRefs(commonStore);
 
-const { afterEach } = useRouter();
+const { beforeEach, afterEach } = useRouter();
 
-const { start, done } = useNProgress(undefined, {
+const { isLoading } = useNProgress(undefined, {
   speed: 200,
   showSpinner: false,
 });
 
-watch(isReady, (newVal) => newVal && done());
+watchEffect(() => (isLoading.value = commonStore.isLoading));
+
+beforeEach((to, from) => {
+  if (from.name !== to.name) {
+    commonStore.setLoading();
+  }
+});
 
 afterEach((to, from) => {
-  if (to.name !== from.name) {
-    isReady.value = false;
-    start();
+  if (from.name !== to.name) {
+    commonStore.setReady(false);
   }
 });
 </script>
 
 <template>
   <the-nav-bar />
-  <fa v-if="!isReady" icon="spinner" spin transform="grow-16 down-16" />
+
+  <fa
+    v-if="!commonStore.isReady"
+    icon="spinner"
+    spin
+    transform="grow-16 down-16"
+  />
+
   <div class="container">
     <router-view />
   </div>

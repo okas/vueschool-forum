@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useAsyncState } from "@vueuse/core";
-import { computed, ref, watch } from "vue";
+import { computed, nextTick, ref, watch } from "vue";
+import { useRoute, useRouter } from "vue-router";
 import ThreadList from "../components/ThreadList.vue";
 import { useCommonStore } from "../stores/common-store";
 import { useForumStore } from "../stores/forum-store";
@@ -20,10 +21,11 @@ const forumStore = useForumStore();
 const userStore = useUserStore();
 const threadStore = useThreadStore();
 
-const { isReady } = useAsyncState(async () => {
-  const { threads: ids } = await forumStore.fetchForum(props.forumId);
-  await fetchPagedViewModels(ids);
-  commonStore.isReady = true;
+const router = useRouter();
+const route = useRoute();
+
+useAsyncState(async () => {
+  await fetchPagedViewModels();
 }, undefined);
 
 const page = ref(1);
@@ -51,11 +53,13 @@ async function fetchPagedViewModels(ids?: string[]): Promise<void> {
     threads
       .filter(({ forumId }) => forumId === props.forumId)
       .map(({ id }) => threadStore.getThreadMetaInfoFn(id)) ?? [];
+
+  commonStore.setReady();
 }
 </script>
 
 <template>
-  <template v-if="isReady">
+  <template v-if="commonStore.isReady">
     <div class="col-full push-top">
       <div class="forum-header">
         <div v-if="forum" class="forum-details">

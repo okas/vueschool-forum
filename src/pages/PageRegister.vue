@@ -27,7 +27,7 @@ async function registerWithGoogle() {
 function goToProfileEdit() {
   router.push({ name: "ProfileEdit" });
 }
-commonStore.isReady = true;
+commonStore.setReady();
 </script>
 
 <template>

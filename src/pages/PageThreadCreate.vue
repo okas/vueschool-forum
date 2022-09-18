@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAsyncState, useConfirmDialog } from "@vueuse/core";
+import { useConfirmDialog } from "@vueuse/core";
 import { computed, provide, ref } from "vue";
 import { onBeforeRouteLeave, useRouter } from "vue-router";
 import ModalDialog, { confirmInjectKey } from "../components/ModalDialog.vue";
@@ -17,11 +17,6 @@ const props = defineProps<{
 const commonStore = useCommonStore();
 const forumStore = useForumStore();
 const threadStore = useThreadStore();
-
-const { isReady } = useAsyncState(async () => {
-  await forumStore.fetchForum(props.forumId);
-  commonStore.isReady = true;
-}, undefined);
 
 const router = useRouter();
 
@@ -58,10 +53,12 @@ function cancel() {
     params: { forumId: props.forumId },
   });
 }
+
+commonStore.setReady();
 </script>
 
 <template>
-  <div v-if="isReady" class="col-full push-top">
+  <div v-if="commonStore.isReady" class="col-full push-top">
     <h1>
       Create new thread in
       <i v-text="forum.name" />

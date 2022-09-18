@@ -10,3 +10,9 @@ export function getCountPhrase(count: number, singularItemName: string) {
 
   return `${count !== 0 ? count : "no"} ${phrase}`;
 }
+
+export function getValOrFirst<TValue>(
+  obj: TValue | TValue[] | null | undefined
+): TValue | undefined {
+  return obj ? (Array.isArray(obj) ? obj[0] : obj) : undefined;
+}

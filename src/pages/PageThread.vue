@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAsyncState, useConfirmDialog } from "@vueuse/core";
+import { useConfirmDialog } from "@vueuse/core";
 import { computed, provide, ref } from "vue";
 import { onBeforeRouteLeave, useRoute } from "vue-router";
 import ModalDialog, { confirmInjectKey } from "../components/ModalDialog.vue";
@@ -21,14 +21,6 @@ const postStore = usePostStore();
 const userStore = useUserStore();
 const threadStore = useThreadStore();
 const route = useRoute();
-
-const { isReady } = useAsyncState(async () => {
-  const { userId, posts } = await threadStore.fetchThread(props.threadId);
-  const threadPosts = await postStore.fetchPosts(posts);
-  const postUserIds = threadPosts.map(({ userId }) => userId);
-  await Promise.allSettled([userStore.fetchUsers([userId, ...postUserIds])]);
-  commonStore.isReady = true;
-}, undefined);
 
 const query = { redirectTo: route.path };
 const signInRoute = { name: "SignIn", query };
@@ -77,10 +69,12 @@ async function addPost(dto: PostVMFormInput) {
 async function editPost(dto: PostVMEdit) {
   await postStore.editPost(dto);
 }
+
+commonStore.setReady();
 </script>
 
 <template>
-  <div v-if="isReady" class="col-large push-top">
+  <div v-if="commonStore.isReady" class="col-large push-top">
     <!-- <ul class="breadcrumbs"></ul>
       <li>
         <a href="#"><i class="fa fa-home fa-btn"></i>Home</a>

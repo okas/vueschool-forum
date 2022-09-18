@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useAsyncState } from "@vueuse/core";
 import { computed } from "vue";
 import CategoryListItem from "../components/CategoryListItem.vue";
 import { useCategoryStore } from "../stores/category-store";
@@ -14,21 +13,17 @@ const commonStore = useCommonStore();
 const categoryStore = useCategoryStore();
 const forumStore = useForumStore();
 
-const { isReady } = useAsyncState(async () => {
-  const category = await categoryStore.fetchCategory(props.categoryId);
-  await forumStore.fetchForums(category.forums);
-  commonStore.isReady = true;
-}, undefined);
-
 const name = computed(() => categoryStore.getCategoryNamedFn(props.categoryId));
 
 const categoryForums = computed(() =>
   forumStore.forums.filter(({ categoryId }) => categoryId === props.categoryId)
 );
+
+commonStore.setReady();
 </script>
 
 <template>
-  <template v-if="isReady">
+  <template v-if="commonStore.isReady">
     <div class="col-full push-top">
       <h1 v-text="name" />
     </div>

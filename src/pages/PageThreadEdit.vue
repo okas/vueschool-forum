@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useAsyncState, useConfirmDialog } from "@vueuse/core";
+import { useConfirmDialog } from "@vueuse/core";
 import { computed, provide, ref } from "vue";
 import { onBeforeRouteLeave, useRouter } from "vue-router";
 import ModalDialog, { confirmInjectKey } from "../components/ModalDialog.vue";
@@ -17,12 +17,6 @@ const props = defineProps<{
 const commonStore = useCommonStore();
 const postStore = usePostStore();
 const threadStore = useThreadStore();
-
-const { isReady } = useAsyncState(async () => {
-  const { firstPostId } = await threadStore.fetchThread(props.threadId);
-  await postStore.fetchPost(firstPostId);
-  commonStore.isReady = true;
-}, undefined);
 
 const router = useRouter();
 
@@ -64,10 +58,12 @@ function functionGoToThread() {
     params: { threadId: props.threadId },
   });
 }
+
+commonStore.setReady();
 </script>
 
 <template>
-  <div v-if="isReady" class="col-full push-top">
+  <div v-if="commonStore.isReady" class="col-full push-top">
     <h1>Editing <i v-text="thread.title" /></h1>
 
     <thread-editor

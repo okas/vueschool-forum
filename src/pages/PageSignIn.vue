@@ -35,7 +35,7 @@ function navigate() {
   );
 }
 
-commonStore.isReady = true;
+commonStore.setReady();
 </script>
 
 <template>
