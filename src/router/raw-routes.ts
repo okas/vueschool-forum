@@ -1,22 +1,12 @@
-import { RouteLocation, RouteLocationRaw, RouteRecordRaw } from "vue-router";
-import { useCategoryStore } from "../stores/category-store";
-import { useForumStore } from "../stores/forum-store";
-import { usePostStore } from "../stores/post-store";
-import { HasId } from "../types/HasId";
-import { getValOrFirst } from "../utils/misc";
-import { useThreadStore } from "./../stores/threads-store";
-import { useUserStore } from "./../stores/user-store";
+import { RouteRecordRaw } from "vue-router";
+import { routeBeforeEnterGuards } from "./route-guards";
 
 export const rawRoutes: Readonly<RouteRecordRaw[]> = [
   {
     path: "/",
     name: "Home",
     component: () => import("../pages/PageHome.vue"),
-    beforeEnter: async () => {
-      const categories = await useCategoryStore().fetchAllCategories();
-      const forumIds = categories.flatMap(({ forums }) => forums);
-      await useForumStore().fetchForums(forumIds);
-    },
+    beforeEnter: routeBeforeEnterGuards.get("Home"),
   },
   {
     path: "/signin",
@@ -28,10 +18,7 @@ export const rawRoutes: Readonly<RouteRecordRaw[]> = [
     path: "/signout",
     name: "SignOut",
     component: () => undefined, // To fullfil `RouteRecordRaw` API.
-    async beforeEnter() {
-      await useUserStore().signOut();
-      return { name: "Home" };
-    },
+    beforeEnter: routeBeforeEnterGuards.get("SignOut"),
   },
   {
     path: "/register",
@@ -57,46 +44,14 @@ export const rawRoutes: Readonly<RouteRecordRaw[]> = [
     name: "Category",
     component: () => import("../pages/PageCategory.vue"),
     props: true,
-    beforeEnter: async (routeObj) => {
-      const categoryStore = useCategoryStore();
-
-      const categoryId = getValOrFirst(routeObj.params.categoryId);
-
-      if (!categoryId?.trim()) {
-        throw getMissingParamError("categoryId");
-      }
-
-      const category = await categoryStore.fetchCategory(categoryId);
-      if (!category) {
-        throw new Error(`No category in database with id: ${categoryId}`);
-      }
-
-      await useForumStore().fetchForums(category.forums);
-
-      return navigateToOrNotFound(
-        routeObj,
-        categoryStore.categories,
-        "categoryId"
-      );
-    },
+    beforeEnter: routeBeforeEnterGuards.get("Category"),
   },
   {
     path: "/forum/:forumId",
     name: "Forum",
     component: () => import("../pages/PageForum.vue"),
     props: true,
-    beforeEnter: async (routeObj) => {
-      const forumStore = useForumStore();
-
-      const forumId = getValOrFirst(routeObj.params.forumId);
-      if (!forumId?.trim()) {
-        throw getMissingParamError("forumId");
-      }
-
-      await forumStore.fetchForum(forumId);
-
-      return navigateToOrNotFound(routeObj, forumStore.forums, "forumId");
-    },
+    beforeEnter: routeBeforeEnterGuards.get("Forum"),
   },
   {
     path: "/forum/:forumId/thread/create",
@@ -104,18 +59,7 @@ export const rawRoutes: Readonly<RouteRecordRaw[]> = [
     meta: { requiresAuth: true },
     component: () => import("../pages/PageThreadCreate.vue"),
     props: true,
-    beforeEnter: async (routeObj) => {
-      const forumStore = useForumStore();
-
-      const forumId = getValOrFirst(routeObj.params.forumId);
-      if (!forumId?.trim()) {
-        throw getMissingParamError("forumId");
-      }
-
-      await forumStore.fetchForum(forumId);
-
-      return navigateToOrNotFound(routeObj, forumStore.forums, "forumId");
-    },
+    beforeEnter: routeBeforeEnterGuards.get("ThreadCreate"),
   },
   {
     path: "/thread/:threadId/edit",
@@ -123,52 +67,14 @@ export const rawRoutes: Readonly<RouteRecordRaw[]> = [
     meta: { requiresAuth: true },
     component: () => import("../pages/PageThreadEdit.vue"),
     props: true,
-    beforeEnter: async (routeObj) => {
-      const threadStore = useThreadStore();
-
-      const threadId = getValOrFirst(routeObj.params.threadId);
-      if (!threadId?.trim()) {
-        throw new Error("Required param 'threadId' is empty or not found.");
-      }
-
-      const thread = await threadStore.fetchThread(threadId);
-      if (!thread) {
-        throw getMissingParamError("threadId");
-      }
-
-      await usePostStore().fetchPost(thread.firstPostId);
-
-      return navigateToOrNotFound(routeObj, threadStore.threads, "threadId");
-    },
+    beforeEnter: routeBeforeEnterGuards.get("ThreadEdit"),
   },
   {
     path: "/thread/:threadId",
     name: "ThreadShow",
     component: () => import("../pages/PageThread.vue"),
     props: true,
-    beforeEnter: async (routeObj) => {
-      const threadStore = useThreadStore();
-
-      const threadId = getValOrFirst(routeObj.params.threadId);
-      if (!threadId?.trim()) {
-        throw new Error("Required param 'threadId' is empty or not found.");
-      }
-
-      const thread = await threadStore.fetchThread(threadId);
-      if (!thread) {
-        throw getMissingParamError("threadId");
-      }
-
-      const threadPosts = await usePostStore().fetchPosts(thread.posts);
-
-      const postUserIds = threadPosts.map(({ userId }) => userId);
-
-      await Promise.allSettled([
-        useUserStore().fetchUsers([thread.userId, ...postUserIds]),
-      ]);
-
-      return navigateToOrNotFound(routeObj, threadStore.threads, "threadId");
-    },
+    beforeEnter: routeBeforeEnterGuards.get("ThreadShow"),
   },
   {
     // will match everything and put it under `$route.params.pathMatch`
@@ -177,35 +83,3 @@ export const rawRoutes: Readonly<RouteRecordRaw[]> = [
     component: () => import("../pages/PageSoftNotFound.vue"),
   },
 ];
-
-function navigateToOrNotFound<TViewModel extends HasId>(
-  route: RouteLocation,
-  array: Array<TViewModel>,
-  paramKeyOrIdValue: string | null | undefined
-): RouteLocationRaw | undefined {
-  return paramKeyOrIdValue &&
-    array.some(
-      ({ id }) => id === (route.params[paramKeyOrIdValue] ?? paramKeyOrIdValue)
-    )
-    ? undefined
-    : getRouteSoft404(route);
-}
-
-function getRouteSoft404({
-  path,
-  query,
-  hash,
-}: RouteLocation): RouteLocationRaw | undefined {
-  return {
-    name: "NotFound",
-    params: {
-      pathMatch: path.substring(1).split("/"),
-    },
-    query,
-    hash,
-  };
-}
-
-function getMissingParamError(paramName: string): Error {
-  return new Error(`Required param '${paramName}' is empty or not found.`);
-}
