@@ -13,6 +13,7 @@ import { fabDb } from "../firebase";
 import { FabCollection } from "../firebase/firebase-collections-enum";
 import { threadVmConverter } from "../firebase/firebase-converters";
 import { ThreadVM } from "../models/ThreadVM";
+import { namePost } from "../types/postVm-types";
 import { StoreBaseState } from "../types/store-base-types";
 import {
   ThreadStoreActions,
@@ -138,7 +139,7 @@ export const useThreadStore = defineStore(
         .update(threadRef, { title })
         .update(postRef, {
           text,
-          edited: {
+          [namePost("edited")]: {
             at: serverTimestamp(),
             by: userStore.authUserId,
             moderated: false,
