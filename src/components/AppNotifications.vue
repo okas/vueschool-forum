@@ -5,8 +5,8 @@ const { notifications, removeNotification } = useNotifications();
 </script>
 
 <template>
-  <ul class="notifications">
-    <li v-for="{ id, message } of notifications" :key="id" class="notification">
+  <ul v-if="notifications?.size" class="notifications">
+    <li v-for="[id, message] of notifications" :key="id" class="notification">
       <span v-text="message" />
 
       <button @click.prevent="removeNotification(id)">
