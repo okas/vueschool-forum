@@ -2,6 +2,7 @@ import { Timestamp } from "@firebase/firestore";
 import { PostVm } from "../models/PostVm";
 import { ThreadVM } from "../models/ThreadVM";
 import { UserVM } from "../models/UserVM";
+import { nameofFactory } from "../utils/nameof-helpers";
 
 export type UserVMWithActivity = UserVM & {
   posts: PostVm[];
@@ -24,3 +25,5 @@ export type UserVmEditForInput = UserVMNewFormInput &
 export type UserVMRegWithEmailAndPassword = UserVMNewFormInput & {
   password: string;
 };
+
+export const nameUser = nameofFactory<UserVM>();

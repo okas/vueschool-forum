@@ -20,9 +20,12 @@ import { fabDb } from "../firebase";
 import { FabCollection } from "../firebase/firebase-collections-enum";
 import { postVmConverter } from "../firebase/firebase-converters";
 import { PostVm } from "../models/PostVm";
+import { nameForum } from "../types/forumVm-types";
 import { PostStoreActions, PostStoreGetters } from "../types/post-store-types";
-import { PostVMEdit, PostVMNew } from "../types/postVm-types";
+import { namePost, PostVMEdit, PostVMNew } from "../types/postVm-types";
 import { StoreBaseState } from "../types/store-base-types";
+import { nameThread } from "../types/threadVm-types";
+import { nameUser } from "../types/userVm-types";
 import { countBy, findById } from "../utils/array-helpers";
 import { ok } from "../utils/assert-helpers";
 import { FirebaseSubscriptionManager } from "../utils/FirebaseSubscriptionManager";
@@ -57,15 +60,6 @@ export const usePostStore = defineStore(
     ): Promise<string> {
       ok(userStore.authUserId, CREATE_CONTENT_ERROR_MSG);
 
-      const postDto: Omit<PostVm, "id" | "publishedAt"> & {
-        publishedAt: FieldValue;
-      } = {
-        ...rest,
-        threadId,
-        userId: userStore.authUserId,
-        publishedAt: serverTimestamp(),
-      };
-
       const thread = findById(threadStore.items, threadId);
 
       ok(thread, `Cannot get thread by id "${threadId}".`);
@@ -75,22 +69,31 @@ export const usePostStore = defineStore(
       const forumRef = doc(fabDb, FabCollection.forums, thread.forumId);
       const userRef = doc(fabDb, FabCollection.users, userStore.authUserId);
 
+      const postDto: Omit<PostVm, "id" | "publishedAt"> & {
+        publishedAt: FieldValue;
+      } = {
+        ...rest,
+        threadId,
+        userId: userStore.authUserId,
+        publishedAt: serverTimestamp(),
+      };
+
       await writeBatch(fabDb)
         .set(postRef, postDto)
         .update(threadRef, {
-          posts: arrayUnion(postRef.id),
-          lastPostAt: serverTimestamp(),
-          contributors: arrayUnion(userStore.authUserId),
-          lastPostId: postRef.id,
+          [nameThread("posts")]: arrayUnion(postRef.id),
+          [nameThread("lastPostAt")]: serverTimestamp(),
+          [nameThread("contributors")]: arrayUnion(userStore.authUserId),
+          [nameThread("lastPostId")]: postRef.id,
           ...(threadCreation && {
-            firstPostId: postRef.id,
+            [nameThread("firstPostId")]: postRef.id,
           }),
         })
         .update(forumRef, {
-          lastPostId: postRef.id,
+          [nameForum("lastPostId")]: postRef.id,
         })
         .update(userRef, {
-          postsCount: increment(1),
+          [nameUser("postsCount")]: increment(1),
         })
         .commit();
 
@@ -110,7 +113,7 @@ export const usePostStore = defineStore(
       await writeBatch(fabDb)
         .update(postRef, {
           text,
-          edited: {
+          [namePost("edited")]: {
             at: serverTimestamp(),
             by: userStore.authUserId,
             moderated: false,
@@ -140,8 +143,8 @@ export const usePostStore = defineStore(
       lastFetchedPostId?: string
     ) {
       const constraints = [
-        where("userId", "==", userStore.authUserId),
-        orderBy("publishedAt", "desc"),
+        where(namePost("userId"), "==", userStore.authUserId),
+        orderBy(namePost("publishedAt"), "desc"),
         limit(pageSize),
       ];
 
