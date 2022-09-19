@@ -41,17 +41,11 @@ async function save({ title, text }: ThreadVMFormInput) {
     text,
   });
 
-  router.push({
-    name: "ThreadShow",
-    params: { threadId },
-  });
+  router.push({ name: "Thread", params: { threadId } });
 }
 
 function cancel() {
-  router.push({
-    name: "Forum",
-    params: { forumId: props.forumId },
-  });
+  router.push({ name: "Forum", params: { forumId: props.forumId } });
 }
 
 commonStore.setReady();

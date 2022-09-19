@@ -81,10 +81,10 @@ export const rawRoutes: Readonly<RouteRecordRaw[]> = [
   },
   {
     path: "/thread/:threadId",
-    name: "ThreadShow",
+    name: "Thread",
     component: () => import("../pages/PageThread.vue"),
     props: true,
-    beforeEnter: routeBeforeEnterGuards.get("ThreadShow"),
+    beforeEnter: routeBeforeEnterGuards.get("Thread"),
   },
   {
     // will match everything and put it under `$route.params.pathMatch`

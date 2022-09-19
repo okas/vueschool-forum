@@ -53,10 +53,7 @@ function cancel() {
 }
 
 function functionGoToThread() {
-  router.push({
-    name: "ThreadShow",
-    params: { threadId: props.threadId },
-  });
+  router.push({ name: "Thread", params: { threadId: props.threadId } });
 }
 
 commonStore.setReady();

@@ -106,7 +106,7 @@ export const routeBeforeEnterGuards: ReadonlyMap<
     },
   ],
   [
-    "ThreadShow",
+    "Thread",
     async (routeObj: RouteLocation) => {
       const threadStore = useThreadStore();
 
