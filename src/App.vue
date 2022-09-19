@@ -2,6 +2,7 @@
 import { useNProgress } from "@vueuse/integrations/useNProgress";
 import { watchEffect } from "vue";
 import { useRouter } from "vue-router";
+import AppNotifications from "./components/AppNotifications.vue";
 import TheNavBar from "./components/TheNavBar.vue";
 import { useCommonStore } from "./stores/common-store";
 
@@ -42,6 +43,8 @@ afterEach((to, from) => {
   <div class="container">
     <router-view />
   </div>
+
+  <app-notifications />
 </template>
 
 <style>
