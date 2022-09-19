@@ -10,6 +10,7 @@ import {
 import { defineStore } from "pinia";
 import { computed, reactive } from "vue";
 import { fabDb } from "../firebase";
+import { FabCollection } from "../firebase/firebase-collections-enum";
 import { threadVmConverter } from "../firebase/firebase-converters";
 import { ThreadVM } from "../models/ThreadVM";
 import { StoreBaseState } from "../types/store-base-types";
@@ -95,9 +96,9 @@ export const useThreadStore = defineStore(
         slug: "",
       };
 
-      const threadRef = doc(collection(fabDb, "threads"));
-      const forumRef = doc(fabDb, "forums", forumId);
-      const userRef = doc(fabDb, "users", userStore.authUserId);
+      const threadRef = doc(collection(fabDb, FabCollection.threads));
+      const forumRef = doc(fabDb, FabCollection.forums, forumId);
+      const userRef = doc(fabDb, FabCollection.users, userStore.authUserId);
 
       await writeBatch(fabDb)
         .set(threadRef, threadDto)
@@ -130,8 +131,8 @@ export const useThreadStore = defineStore(
       const post = findById(postStore.items, thread.firstPostId);
       ok(post, `Edit thread error: no post with id: ${thread.firstPostId}.`);
 
-      const postRef = doc(fabDb, "posts", thread.firstPostId);
-      const threadRef = doc(fabDb, "threads", threadId);
+      const postRef = doc(fabDb, FabCollection.posts, thread.firstPostId);
+      const threadRef = doc(fabDb, FabCollection.threads, threadId);
 
       await writeBatch(fabDb)
         .update(threadRef, { title })
@@ -153,14 +154,14 @@ export const useThreadStore = defineStore(
 
     const fetchThread = makeFirebaseFetchSingleDocFn(
       items,
-      "threads",
+      FabCollection.threads,
       _dbUnsubscribes,
       threadVmConverter
     );
 
     const fetchThreads = makeFirebaseFetchMultiDocsFn(
       items,
-      "threads",
+      FabCollection.threads,
       _dbUnsubscribes,
       threadVmConverter
     );

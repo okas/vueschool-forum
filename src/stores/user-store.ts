@@ -17,6 +17,7 @@ import { Unsubscribe } from "@firebase/util";
 import { defineStore } from "pinia";
 import { computed, reactive, ref } from "vue";
 import { fabAuth, fabDb } from "../firebase";
+import { FabCollection } from "../firebase/firebase-collections-enum";
 import { userVmConverter } from "../firebase/firebase-converters";
 import { UserVM } from "../models/UserVM";
 import {
@@ -115,7 +116,7 @@ export const useUserStore = defineStore(
         user: { uid, ...rest },
       } = await signInWithPopup(fabAuth, provider);
 
-      const userDoc = await getDoc(doc(fabDb, "users", uid));
+      const userDoc = await getDoc(doc(fabDb, FabCollection.users, uid));
 
       if (!userDoc.exists()) {
         await createUser(uid, {
@@ -162,7 +163,7 @@ export const useUserStore = defineStore(
         threadsCount: 0,
       };
 
-      await setDoc(doc(fabDb, "users", id), userDto);
+      await setDoc(doc(fabDb, FabCollection.users, id), userDto);
 
       return id;
     }
@@ -175,7 +176,7 @@ export const useUserStore = defineStore(
         Object.entries(rest).map(([k, v]) => [k, v === undefined ? null : v])
       );
 
-      const userRef = doc(fabDb, "users", id);
+      const userRef = doc(fabDb, FabCollection.users, id);
 
       await writeBatch(fabDb).update(userRef, editDto).commit();
 
@@ -184,14 +185,14 @@ export const useUserStore = defineStore(
 
     const fetchUser = makeFirebaseFetchSingleDocFn(
       items,
-      "users",
+      FabCollection.users,
       _dbUnsubscribes,
       userVmConverter
     );
 
     const fetchUsers = makeFirebaseFetchMultiDocsFn(
       items,
-      "users",
+      FabCollection.users,
       _dbUnsubscribes,
       userVmConverter
     );
@@ -207,7 +208,7 @@ export const useUserStore = defineStore(
 
       const signedInUser = makeFirebaseFetchSingleDocFn(
         items,
-        "users",
+        FabCollection.users,
         customSink,
         userVmConverter
       )(userId);

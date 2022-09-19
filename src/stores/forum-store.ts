@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { reactive } from "vue";
+import { FabCollection } from "../firebase/firebase-collections-enum";
 import { hasIdVmConverter } from "../firebase/firebase-converters";
 import { ForumVM } from "../models/ForumVM";
 import { ForumStoreActions } from "../types/forum-store-types";
@@ -21,14 +22,14 @@ export const useForumStore = defineStore(
 
     const fetchForum = makeFirebaseFetchSingleDocFn(
       items,
-      "forums",
+      FabCollection.forums,
       _dbUnsubscribes,
       hasIdVmConverter
     );
 
     const fetchForums = makeFirebaseFetchMultiDocsFn(
       items,
-      "forums",
+      FabCollection.forums,
       _dbUnsubscribes,
       hasIdVmConverter
     );

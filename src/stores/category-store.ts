@@ -1,5 +1,6 @@
 import { defineStore } from "pinia";
 import { computed, reactive } from "vue";
+import { FabCollection } from "../firebase/firebase-collections-enum";
 import { hasIdVmConverter } from "../firebase/firebase-converters";
 import { CategoryVM } from "../models/CategoryVM";
 import {
@@ -29,7 +30,7 @@ export const useCategoryStore = defineStore(
 
     const fetchCategory = makeFirebaseFetchSingleDocFn(
       items,
-      "categories",
+      FabCollection.categories,
       _dbUnsubscribes,
       hasIdVmConverter
     );
@@ -37,7 +38,7 @@ export const useCategoryStore = defineStore(
     function fetchAllCategories() {
       return makeFirebaseFetchMultiDocsFn(
         items,
-        "categories",
+        FabCollection.categories,
         _dbUnsubscribes,
         hasIdVmConverter
       )();

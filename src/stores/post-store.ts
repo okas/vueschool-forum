@@ -17,6 +17,7 @@ import {
 import { defineStore } from "pinia";
 import { computed, reactive } from "vue";
 import { fabDb } from "../firebase";
+import { FabCollection } from "../firebase/firebase-collections-enum";
 import { postVmConverter } from "../firebase/firebase-converters";
 import { PostVm } from "../models/PostVm";
 import { PostStoreActions, PostStoreGetters } from "../types/post-store-types";
@@ -69,10 +70,10 @@ export const usePostStore = defineStore(
 
       ok(thread, `Cannot get thread by id "${threadId}".`);
 
-      const postRef = doc(collection(fabDb, "posts"));
-      const threadRef = doc(fabDb, "threads", threadId);
-      const forumRef = doc(fabDb, "forums", thread.forumId);
-      const userRef = doc(fabDb, "users", userStore.authUserId);
+      const postRef = doc(collection(fabDb, FabCollection.posts));
+      const threadRef = doc(fabDb, FabCollection.threads, threadId);
+      const forumRef = doc(fabDb, FabCollection.forums, thread.forumId);
+      const userRef = doc(fabDb, FabCollection.users, userStore.authUserId);
 
       await writeBatch(fabDb)
         .set(postRef, postDto)
@@ -104,7 +105,7 @@ export const usePostStore = defineStore(
     }
 
     async function editPost({ id, text }: PostVMEdit) {
-      const postRef = doc(fabDb, "posts", id);
+      const postRef = doc(fabDb, FabCollection.posts, id);
 
       await writeBatch(fabDb)
         .update(postRef, {
@@ -122,14 +123,14 @@ export const usePostStore = defineStore(
 
     const fetchPost = makeFirebaseFetchSingleDocFn(
       items,
-      "posts",
+      FabCollection.posts,
       _dbUnsubscribes,
       postVmConverter
     );
 
     const fetchPosts = makeFirebaseFetchMultiDocsFn(
       items,
-      "posts",
+      FabCollection.posts,
       _dbUnsubscribes,
       postVmConverter
     );
@@ -146,15 +147,16 @@ export const usePostStore = defineStore(
 
       if (lastFetchedPostId) {
         const startAfterDocSnap = await getDoc(
-          doc(fabDb, "posts", lastFetchedPostId)
+          doc(fabDb, FabCollection.posts, lastFetchedPostId)
         );
         constraints.splice(-1, 0, startAfter(startAfterDocSnap));
       }
 
       const docs = await getDocs(
-        query(collection(fabDb, "posts"), ...constraints).withConverter(
-          postVmConverter
-        )
+        query(
+          collection(fabDb, FabCollection.posts),
+          ...constraints
+        ).withConverter(postVmConverter)
       );
 
       docs.forEach((qryDocSnap) => {
