@@ -34,7 +34,6 @@ import {
   makeFirebaseFetchSingleDocFn,
 } from "../utils/store-firebase-action-sinks";
 import useAcceptHmr from "../utils/store-helpers";
-import { useForumStore } from "./forum-store";
 import { useThreadStore } from "./threads-store";
 import { useUserStore } from "./user-store";
 
@@ -46,7 +45,6 @@ export const usePostStore = defineStore(
 
     const threadStore = useThreadStore();
     const userStore = useUserStore();
-    const forumStore = useForumStore();
 
     const items = reactive<Array<PostVm>>([]);
 
@@ -97,12 +95,7 @@ export const usePostStore = defineStore(
         })
         .commit();
 
-      await Promise.allSettled([
-        fetchPost(postRef.id),
-        threadStore.fetchThread(threadId),
-        forumStore.fetchForum(forumRef.id),
-        userStore.fetchUser(userStore.authUserId),
-      ]);
+      await fetchPost(postRef.id);
 
       return postRef.id;
     }
