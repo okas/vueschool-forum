@@ -8,7 +8,7 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits<{
-  (e: "save", dto: ThreadVMFormInput): void;
+  (e: "save", dto?: ThreadVMFormInput): void;
   (e: "cancel"): void;
   (e: "update:isDirty", state: boolean): void;
 }>();
@@ -18,19 +18,20 @@ const editorObj = reactive({
   text: props.text,
 });
 
+const isDirty = computed(
+  () =>
+    (editorObj.title ?? "") !== (props.title?.trim() ?? "") ||
+    (editorObj.text ?? "") !== (props.text?.trim() ?? "")
+);
+
 const submitButtonWord = computed(() => (props.title ? "Update" : "Publish"));
 
-watch(editorObj, ({ title, text }) => {
-  const result =
-    (title ?? "") !== (props.title?.trim() ?? "") ||
-    (text ?? "") !== (props.text?.trim() ?? "");
-
-  emits("update:isDirty", result);
-});
+watch(isDirty, (newValue) => emits("update:isDirty", newValue));
 
 function save() {
   emits("update:isDirty", false);
-  emits("save", { ...editorObj });
+  const dto = isDirty.value ? { ...editorObj } : undefined;
+  emits("save", dto);
 }
 
 function cancel() {

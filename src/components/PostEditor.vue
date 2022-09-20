@@ -7,26 +7,29 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits<{
-  (e: "save", dto: PostVMFormInput): void;
+  (e: "save", dto?: PostVMFormInput): void;
   (e: "cancel"): void;
   (e: "update:isDirty", state: boolean): void;
 }>();
+
+const editorText = ref<string>(props.text);
+
+const isDirty = computed(
+  () => (editorText.value ?? "") !== (props.text?.trim() ?? "")
+);
 
 const submitBtnPhrase = computed(
   () => `${props.text ? "Update" : "Publish"} post`
 );
 
-const editorText = ref<string>(props.text);
-
-watch(editorText, (newVal) => {
-  const result = (newVal ?? "") !== (props.text?.trim() ?? "");
-
-  emits("update:isDirty", result);
-});
+const unWatch = watch(isDirty, (newValue) => emits("update:isDirty", newValue));
 
 function save() {
+  unWatch?.();
   emits("update:isDirty", false);
-  emits("save", { text: editorText.value });
+  const dto = isDirty.value ? { text: editorText.value } : undefined;
+  editorText.value = "";
+  emits("save", dto);
 }
 
 function cancel() {

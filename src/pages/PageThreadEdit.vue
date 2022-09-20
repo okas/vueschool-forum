@@ -38,12 +38,13 @@ onBeforeRouteLeave(async () => {
   }
 });
 
-async function save({ title, text }: ThreadVMFormInput) {
-  await threadStore.editThread({
-    id: props.threadId,
-    title,
-    text,
-  });
+async function save(dto?: ThreadVMFormInput) {
+  if (dto) {
+    await threadStore.editThread({
+      id: props.threadId,
+      ...dto,
+    });
+  }
 
   functionGoToThread();
 }

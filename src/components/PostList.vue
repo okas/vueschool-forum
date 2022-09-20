@@ -62,13 +62,14 @@ function passDirtyEvent(data: boolean) {
 }
 
 function savePost(dto: PostVMFormInput) {
-  const post: PostVMEdit = {
-    id: editingPostId.value.id,
-    ...dto,
-  };
-
+  if (dto) {
+    const post: PostVMEdit = {
+      id: editingPostId.value.id,
+      ...dto,
+    };
+    emits("edit", post);
+  }
   toggleEditModeForPost(editingPostId.value.id);
-  emits("edit", post);
 }
 </script>
 

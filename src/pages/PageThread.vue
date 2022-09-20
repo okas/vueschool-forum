@@ -57,7 +57,11 @@ onBeforeRouteLeave(async () => {
   }
 });
 
-async function addPost(dto: PostVMFormInput) {
+async function addPost(dto?: PostVMFormInput) {
+  if (!dto) {
+    return;
+  }
+
   const post: PostVMNew = {
     threadId: props.threadId,
     ...dto,
@@ -66,7 +70,10 @@ async function addPost(dto: PostVMFormInput) {
   await postStore.createPost(post);
 }
 
-async function editPost(dto: PostVMEdit) {
+async function editPost(dto?: PostVMEdit) {
+  if (!dto) {
+    return;
+  }
   await postStore.editPost(dto);
 }
 
