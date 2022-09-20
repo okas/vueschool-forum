@@ -95,10 +95,7 @@ commonStore.setReady();
       <router-link
         v-if="isOwner"
         v-slot="{ navigate }"
-        :to="{
-          name: 'ThreadEdit',
-          params: { threadId },
-        }"
+        :to="{ name: 'ThreadEdit', params: { threadId } }"
         custom
       >
         <button class="btn-green btn-small" @click="navigate">

@@ -14,8 +14,8 @@ const props = defineProps<{
   threadId: string;
 }>();
 
-const commonStore = useCommonStore();
 const postStore = usePostStore();
+const commonStore = useCommonStore();
 const threadStore = useThreadStore();
 
 const router = useRouter();
