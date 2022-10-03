@@ -11,6 +11,7 @@ import {
   query,
   serverTimestamp,
   startAfter,
+  updateDoc,
   where,
   writeBatch,
 } from "@firebase/firestore";
@@ -103,18 +104,14 @@ export const usePostStore = defineStore(
     async function editPost({ id, text }: PostVMEdit) {
       const postRef = doc(fabDb, FabCollection.posts, id);
 
-      await writeBatch(fabDb)
-        .update(postRef, {
-          text,
-          [namePost("edited")]: {
-            at: serverTimestamp(),
-            by: userStore.authUserId,
-            moderated: false,
-          },
-        })
-        .commit();
-
-      await fetchPost(id);
+      return updateDoc(postRef, {
+        text,
+        [namePost("edited")]: {
+          at: serverTimestamp(),
+          by: userStore.authUserId,
+          moderated: false,
+        },
+      });
     }
 
     const fetchPost = makeFirebaseFetchSingleDocFn(
