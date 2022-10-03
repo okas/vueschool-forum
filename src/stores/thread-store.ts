@@ -132,6 +132,7 @@ export const useThreadStore = defineStore(
       const postRef = doc(fabDb, FabCollection.posts, thread.firstPostId);
       const threadRef = doc(fabDb, FabCollection.threads, threadId);
 
+      await writeBatch(fabDb)
         .update(threadRef, { title })
         .update(postRef, {
           text,
