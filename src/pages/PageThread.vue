@@ -1,16 +1,24 @@
 <script setup lang="ts">
-import { useConfirmDialog } from "@vueuse/core";
+import { reactiveComputed, useConfirmDialog, watchDebounced } from "@vueuse/core";
 import { computed, provide, ref } from "vue";
 import { onBeforeRouteLeave, useRoute } from "vue-router";
 import ModalDialog, { confirmInjectKey } from "../components/ModalDialog.vue";
 import PostEditor from "../components/PostEditor.vue";
 import PostList from "../components/PostList.vue";
+import useNotifications from "../composables/useNotifications";
+import { PostVm } from "../models/PostVm";
 import { useCommonStore } from "../stores/common-store";
 import { usePostStore } from "../stores/post-store";
 import { useThreadStore } from "../stores/thread-store";
 import { useUserStore } from "../stores/user-store";
 import { PostVMEdit, PostVMFormInput, PostVMNew } from "../types/postVm-types";
+import { ThreadVMWithMeta } from "../types/threadVm-types";
 import { getCountPhrase } from "../utils/misc";
+
+interface IPageViewModel {
+  thread: ThreadVMWithMeta;
+  posts: Array<PostVm>;
+}
 
 const props = defineProps<{
   threadId: string;
@@ -26,35 +34,58 @@ const query = { redirectTo: route.path };
 const signInRoute = { name: "SignIn", query };
 const registerRoute = { name: "Register", query };
 
-const { isRevealed, reveal, confirm } = useConfirmDialog();
+const { addNotification } = useNotifications();
+const { isRevealed, reveal, confirm } = useConfirmDialog<boolean, boolean, boolean>();
 
-const hasDirtyForm = ref<boolean>(false);
-const hasDirtyFormInPostList = ref<boolean>(false);
+const isEditing = ref(false);
+const hasDirtyForm = ref(false);
+const hasDirtyFormInPostList = ref(false);
+const postIdsInRefresh = ref<Array<string> | undefined>();
 
-const thread = computed(() => threadStore.getThreadMetaInfoFn(props.threadId));
+const pageViewModel: IPageViewModel = reactiveComputed<IPageViewModel>(() => {
+  const thread = threadStore.getThreadMetaInfoFn(props.threadId);
 
-const posts = computed(() =>
-  postStore.items
-    .filter(({ threadId }) => threadId === thread.value.id)
-    .sort(({ publishedAt: a }, { publishedAt: b }) => a - b)
-);
+  const posts = postStore.items
+    .filter(({ threadId }) => threadId === thread.id)
+    .sort(({ publishedAt: a }, { publishedAt: b }) => a - b);
+
+  return { thread, posts };
+});
 
 const statsPhrase = computed(
   () =>
-    `${getCountPhrase(thread.value.repliesCount, "reply")} by ${getCountPhrase(
-      thread.value.contributorsCount,
+    `${getCountPhrase(pageViewModel.thread.repliesCount, "reply")} by ${getCountPhrase(
+      pageViewModel.thread.contributorsCount,
       "contributor"
     )}`
 );
 
-const isOwner = computed(() => thread.value.userId === userStore.authUserId);
+const isOwner = computed(() => pageViewModel.thread.userId === userStore.authUserId);
 
 provide(confirmInjectKey, confirm);
 
-onBeforeRouteLeave(async () => {
-  if (hasDirtyForm.value || hasDirtyFormInPostList.value) {
-    return (await reveal()).data;
+const unWatch = watchDebounced(
+  pageViewModel,
+  async (undatedGraph) => {
+    conditionallyNotifyThreadGraphChange();
+    (await getEditingCompletionCondition(undatedGraph)) && (isEditing.value = false);
+  },
+  {
+    deep: true,
+    debounce: 500,
   }
+);
+
+onBeforeRouteLeave(async () => {
+  let isOK = true;
+
+  if (hasDirtyForm.value || hasDirtyFormInPostList.value) {
+    isOK = (await reveal(false)).data;
+  }
+
+  unWatch();
+
+  return isOK;
 });
 
 async function addPost(dto?: PostVMFormInput) {
@@ -67,6 +98,7 @@ async function addPost(dto?: PostVMFormInput) {
     ...dto,
   };
 
+  isEditing.value = true;
   await postStore.createPost(post);
 }
 
@@ -74,7 +106,34 @@ async function editPost(dto?: PostVMEdit) {
   if (!dto) {
     return;
   }
+
+  isEditing.value = true;
   await postStore.editPost(dto);
+}
+
+function conditionallyNotifyThreadGraphChange() {
+  !commonStore.isReady ||
+    isEditing.value ||
+    postIdsInRefresh.value?.length ||
+    addNotification("Thread updated");
+}
+
+async function getEditingCompletionCondition({
+  thread,
+  posts,
+}: IPageViewModel): Promise<boolean> {
+  postIdsInRefresh.value = undefined;
+
+  const postDiff = thread.posts.filter((pId) => !posts.find(({ id }) => id === pId));
+
+  if (!postDiff.length) {
+    return true;
+  }
+
+  await postStore.fetchPosts(postDiff);
+  postIdsInRefresh.value = postDiff;
+
+  return false;
 }
 
 commonStore.setReady();
@@ -91,24 +150,22 @@ commonStore.setReady();
     </ul> -->
 
     <header style="display: flex">
-      <h1 style="margin-right: 1rem" v-text="thread?.title" />
+      <h1 style="margin-right: 1rem" v-text="pageViewModel?.thread.title" />
       <router-link
         v-if="isOwner"
         v-slot="{ navigate }"
         :to="{ name: 'ThreadEdit', params: { threadId } }"
         custom
       >
-        <button class="btn-green btn-small" @click="navigate">
-          Edit thread
-        </button>
+        <button class="btn-green btn-small" @click="navigate">Edit thread</button>
       </router-link>
     </header>
 
     <p style="display: flex; justify-content: space-between">
       <span style="margin-top: 0.125rem">
         By
-        <a href="#" class="link-unstyled">{{ thread.authorName }}</a
-        >, <app-date :timestamp="thread.lastPostAt" />.
+        <a href="#" class="link-unstyled">{{ pageViewModel.thread.authorName }}</a
+        >, <app-date :timestamp="pageViewModel.thread.lastPostAt" />.
       </span>
       <span
         style="margin-top: 0.125rem"
@@ -119,7 +176,7 @@ commonStore.setReady();
 
     <post-list
       v-model:is-dirty="hasDirtyFormInPostList"
-      :posts="posts"
+      :posts="pageViewModel?.posts"
       @edit="editPost"
     />
 
@@ -128,7 +185,7 @@ commonStore.setReady();
       v-model:is-dirty="hasDirtyForm"
       @save="addPost"
     >
-      {{ thread?.title }}
+      {{ pageViewModel?.thread.title }}
     </post-editor>
 
     <div v-else class="text-center" style="margin: 3rem 0">
