@@ -35,26 +35,33 @@ export function makeFirebaseFetchSingleDocFn<TViewModel extends HasId>(
   return async (id: string) => {
     const docRef = getSingleDocQuery<TViewModel>(id, collectionName, converter);
 
-    return new Promise((resolve: (vm: TViewModel | undefined) => void) => {
-      const unsubscribe = onSnapshot(
-        docRef,
-        snapshotListenOptions,
-        (docSnap: DocumentSnapshot<DocumentData>): void => {
-          if (!docSnap.exists()) {
-            _warn(collectionName, id);
+    return new Promise(
+      (resolve: null | ((vm: TViewModel | undefined) => void)) => {
+        const unsubscribe = onSnapshot(
+          docRef,
+          snapshotListenOptions,
+          (docSnap: DocumentSnapshot<DocumentData>): void => {
+            let vm: TViewModel | undefined;
 
-            remove(array, ({ id: vmId }) => vmId === docSnap.id);
+            if (docSnap.exists()) {
+              vm = handleSingleDocumentUpsert(docSnap, array);
+            } else {
+              _warn(collectionName, id);
+              remove(array, ({ id: vmId }) => vmId === docSnap.id);
+            }
 
-            return resolve(undefined);
+            resolve?.(vm);
+            resolve = null;
+          },
+          (err) => {
+            error(err);
+            resolve = null;
           }
+        );
 
-          resolve(handleSingleDocumentUpsert(docSnap, array));
-        },
-        error
-      );
-
-      unsubscribesSink.push(unsubscribe);
-    });
+        unsubscribesSink.push(unsubscribe);
+      }
+    );
   };
 }
 
@@ -111,12 +118,10 @@ function getMultiDocSnapHandlerAsync<TViewModel extends HasId>(
           .forEach((docChange: DocumentChange<DocumentData>) => {
             if (docChange.type === "removed") {
               remove(array, ({ id }) => id === docChange.doc.id);
-              return;
+            } else {
+              const vm = handleSingleDocumentUpsert(docChange.doc, array);
+              fetchResultSink?.push(vm);
             }
-
-            const vm = handleSingleDocumentUpsert(docChange.doc, array);
-
-            fetchResultSink?.push(vm);
           });
 
         if (fetchResultSink && !qrySnap.metadata.fromCache) {
@@ -149,7 +154,7 @@ function handleSingleDocumentUpsert<TViewModel extends HasId>(
   docSnap: DocumentSnapshot<DocumentData>,
   array: Array<TViewModel>
 ): TViewModel {
-  const viewModel = vmMapper<TViewModel>(docSnap);
+  const viewModel = docSnap.data() as TViewModel;
 
   upsert(array, viewModel);
 
@@ -194,15 +199,6 @@ function createBucketedQueries<TViewModel extends HasId>(
   }
 
   return queries;
-}
-
-function vmMapper<TViewModel extends HasId>(
-  snap: DocumentSnapshot<DocumentData>
-): TViewModel {
-  return {
-    ...snap.data(),
-    id: snap.id,
-  } as TViewModel;
 }
 
 function _warn(collectionName: string, ...ids: string[]) {
