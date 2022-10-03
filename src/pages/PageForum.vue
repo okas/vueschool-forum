@@ -5,7 +5,7 @@ import { useRoute, useRouter } from "vue-router";
 import ThreadList from "../components/ThreadList.vue";
 import { useCommonStore } from "../stores/common-store";
 import { useForumStore } from "../stores/forum-store";
-import { useThreadStore } from "../stores/threads-store";
+import { useThreadStore } from "../stores/thread-store";
 import { useUserStore } from "../stores/user-store";
 import { ThreadVMWithMeta } from "../types/threadVm-types";
 import { findById } from "../utils/array-helpers";

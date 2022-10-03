@@ -39,7 +39,7 @@ import {
 } from "../utils/store-firebase-action-sinks";
 import useAcceptHmr from "../utils/store-helpers";
 import { usePostStore } from "./post-store";
-import { useThreadStore } from "./threads-store";
+import { useThreadStore } from "./thread-store";
 
 const { warn } = console;
 

@@ -129,13 +129,9 @@ export const useThreadStore = defineStore(
         `Edit thread error: thread: "${threadId}" is missing "firstPostId".`
       );
 
-      const post = findById(postStore.items, thread.firstPostId);
-      ok(post, `Edit thread error: no post with id: ${thread.firstPostId}.`);
-
       const postRef = doc(fabDb, FabCollection.posts, thread.firstPostId);
       const threadRef = doc(fabDb, FabCollection.threads, threadId);
 
-      await writeBatch(fabDb)
         .update(threadRef, { title })
         .update(postRef, {
           text,
@@ -146,11 +142,6 @@ export const useThreadStore = defineStore(
           },
         })
         .commit();
-
-      await Promise.allSettled([
-        fetchThread(threadId),
-        postStore.fetchPost(thread.firstPostId),
-      ]);
     }
 
     const fetchThread = makeFirebaseFetchSingleDocFn(

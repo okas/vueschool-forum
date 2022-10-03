@@ -7,7 +7,7 @@ import PostEditor from "../components/PostEditor.vue";
 import PostList from "../components/PostList.vue";
 import { useCommonStore } from "../stores/common-store";
 import { usePostStore } from "../stores/post-store";
-import { useThreadStore } from "../stores/threads-store";
+import { useThreadStore } from "../stores/thread-store";
 import { useUserStore } from "../stores/user-store";
 import { PostVMEdit, PostVMFormInput, PostVMNew } from "../types/postVm-types";
 import { getCountPhrase } from "../utils/misc";

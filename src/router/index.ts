@@ -6,10 +6,10 @@ import {
   RouteRecordRaw,
   START_LOCATION,
 } from "vue-router";
+import { useThreadStore } from "../stores/thread-store";
 import { useCategoryStore } from "./../stores/category-store";
 import { useForumStore } from "./../stores/forum-store";
 import { usePostStore } from "./../stores/post-store";
-import { useThreadStore } from "./../stores/threads-store";
 import { useUserStore } from "./../stores/user-store";
 import { UserStoreActions } from "./../types/user-store-types";
 import { rawRoutes } from "./raw-routes";

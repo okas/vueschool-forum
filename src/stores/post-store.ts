@@ -34,7 +34,7 @@ import {
   makeFirebaseFetchSingleDocFn,
 } from "../utils/store-firebase-action-sinks";
 import useAcceptHmr from "../utils/store-helpers";
-import { useThreadStore } from "./threads-store";
+import { useThreadStore } from "./thread-store";
 import { useUserStore } from "./user-store";
 
 export const usePostStore = defineStore(
