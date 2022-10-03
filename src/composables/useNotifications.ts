@@ -8,16 +8,19 @@ const notifications = reactive(new Map<string, string>());
  */
 function addNotification(
   message: string,
+  timeoutMs?: number,
   id: string | number = guidAsBase64()
 ): string {
   id = String(id);
   notifications.set(id, message);
 
+  timeoutMs && setTimeout(() => removeNotification(id), timeoutMs);
+
   return id;
 }
 
-function removeNotification(id: string) {
-  notifications.delete(id);
+function removeNotification(id: string | number) {
+  notifications.delete(String(id));
 }
 
 export default function useNotifications() {

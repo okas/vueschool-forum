@@ -41,6 +41,7 @@ const isEditing = ref(false);
 const hasDirtyForm = ref(false);
 const hasDirtyFormInPostList = ref(false);
 const postIdsInRefresh = ref<Array<string> | undefined>();
+const notificationTimeoutMs = ref(5000);
 
 const pageViewModel: IPageViewModel = reactiveComputed<IPageViewModel>(() => {
   const thread = threadStore.getThreadMetaInfoFn(props.threadId);
@@ -115,7 +116,7 @@ function conditionallyNotifyThreadGraphChange() {
   !commonStore.isReady ||
     isEditing.value ||
     postIdsInRefresh.value?.length ||
-    addNotification("Thread updated");
+    addNotification("Thread updated", notificationTimeoutMs.value, undefined);
 }
 
 async function getEditingCompletionCondition({
