@@ -107,10 +107,10 @@ export const routeBeforeEnterGuards: ReadonlyMap<
   ],
   [
     "Thread",
-    async (routeObj: RouteLocation) => {
+    async (to: RouteLocation) => {
       const threadStore = useThreadStore();
 
-      const threadId = getValOrFirst(routeObj.params.threadId);
+      const threadId = getValOrFirst(to.params.threadId);
       if (!threadId?.trim()) {
         throw new Error("Required param 'threadId' is empty or not found.");
       }
@@ -124,11 +124,9 @@ export const routeBeforeEnterGuards: ReadonlyMap<
 
       const postUserIds = threadPosts.map(({ userId }) => userId);
 
-      await Promise.allSettled([
-        useUserStore().fetchUsers([thread.userId, ...postUserIds]),
-      ]);
+      await useUserStore().fetchUsers([thread.userId, ...postUserIds]);
 
-      return navigateToOrNotFound(routeObj, threadStore.items, "threadId");
+      return navigateToOrNotFound(to, threadStore.items, "threadId");
     },
   ],
 ]);
