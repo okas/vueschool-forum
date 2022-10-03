@@ -17,6 +17,7 @@ import {
 } from "firebase/firestore";
 import { fabDb } from "../firebase/index";
 import { HasId } from "../types/HasId";
+import { ok } from "../utils/assert-helpers";
 import { remove, toBuckets, upsert } from "./array-helpers";
 import { isFulFilled } from "./promise-helpers";
 
@@ -33,6 +34,8 @@ export function makeFirebaseFetchSingleDocFn<TViewModel extends HasId>(
   converter?: FirestoreDataConverter<TViewModel>
 ): (id: string) => Promise<TViewModel | undefined> {
   return async (id: string) => {
+    assertFetchSingleDocMissingId(id, collectionName);
+
     const docRef = getSingleDocQuery<TViewModel>(id, collectionName, converter);
 
     return new Promise(
@@ -204,5 +207,15 @@ function createBucketedQueries<TViewModel extends HasId>(
 function _warn(collectionName: string, ...ids: string[]) {
   warn(
     `Fetch documents warning: no documents in collection "${collectionName}" with id(s) "${ids}"!`
+  );
+}
+
+function assertFetchSingleDocMissingId(
+  id: string,
+  collectionName: string
+): asserts id {
+  ok(
+    id,
+    `Fetch (single) error: missing "id", while intending to query collection "${collectionName}".`
   );
 }
