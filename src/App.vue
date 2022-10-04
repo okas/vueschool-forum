@@ -33,16 +33,11 @@ afterEach((to, from) => {
 <template>
   <the-nav-bar />
 
-  <fa
-    v-if="!commonStore.isReady"
-    icon="spinner"
-    spin
-    transform="grow-16 down-16"
-  />
+  <fa v-if="!commonStore.isReady" icon="spinner" spin transform="grow-16 down-16" />
 
-  <div class="container">
+  <main class="container">
     <router-view />
-  </div>
+  </main>
 
   <app-notifications />
 </template>
