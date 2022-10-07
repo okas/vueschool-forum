@@ -6,8 +6,19 @@ service firebase.storage {
       return request.auth != null;
     }
 
-    match /{allPaths=**} {
-      allow read, write: if userIsLoggedIn();
+    function isImage() {
+      return request.resource.contentType.matches("image/.*");
+    }
+
+    function canWriteImge(userId){
+      return userIsLoggedIn()
+        && request.auth.uid == userId
+        && isImage();
+    }
+
+    match /uploads/{userId}/images/{imageName} {
+      allow read;
+      allow write: if canWriteImge(userId);
     }
   }
 }
