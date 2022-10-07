@@ -1,20 +1,42 @@
 <script setup lang="ts">
-import { reactive } from "vue";
+import { computedAsync, useFileDialog, UseFileDialogOptions } from "@vueuse/core";
+import { computed, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useCommonStore } from "../stores/common-store";
 import { useUserStore } from "../stores/user-store";
 import { UserVMRegWithEmailAndPassword } from "../types/userVm-types";
+
+const fileDialogOptions: UseFileDialogOptions = {
+  multiple: false,
+  accept: "image/*",
+};
 
 const commonStore = useCommonStore();
 const userStore = useUserStore();
 
 const router = useRouter();
 
-const editorObj = reactive<UserVMRegWithEmailAndPassword>(
-  {} as UserVMRegWithEmailAndPassword
+const { files, open } = useFileDialog();
+
+const editorObj = reactive({} as UserVMRegWithEmailAndPassword);
+
+const singleFile = computed(() => files.value?.item(0));
+
+const avatarPreviewImgDataUrl = computedAsync<string>(
+  async () =>
+    new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = ({ target: { result } }) => resolve(result.toString());
+      reader.readAsDataURL(singleFile.value);
+    })
 );
 
+function openDialog() {
+  open(fileDialogOptions);
+}
+
 async function register() {
+  editorObj.avatarFile = singleFile.value;
   await userStore.registerUserWithEmailAndPassword(editorObj);
   goToProfileEdit();
 }
@@ -85,12 +107,20 @@ commonStore.setReady();
 
         <div class="form-group">
           <label for="avatar">Avatar</label>
-          <input
+
+          <button
+            v-show="!avatarPreviewImgDataUrl"
             id="avatar"
-            v-model.trim="editorObj.avatar"
-            type="text"
-            class="form-input"
-          />
+            class="form-input btn-small"
+            type="button"
+            @click="openDialog"
+          >
+            Choose file
+          </button>
+
+          <div v-if="avatarPreviewImgDataUrl" @click="openDialog">
+            <img :src="avatarPreviewImgDataUrl" class="avatar-xlarge" avatarPreviewImg />
+          </div>
         </div>
 
         <div class="form-actions">
