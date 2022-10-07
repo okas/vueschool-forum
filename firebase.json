@@ -11,5 +11,8 @@
       "enabled": true,
       "port": 8040
     }
+  },
+  "storage": {
+    "rules": "firebase.storage.rules"
   }
 }

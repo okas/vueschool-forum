@@ -14,6 +14,11 @@ import {
   writeBatch,
 } from "@firebase/firestore";
 import { Unsubscribe } from "@firebase/util";
+import {
+  getDownloadURL,
+  ref as fabStoreRef,
+  uploadBytes,
+} from "firebase/storage";
 import { defineStore } from "pinia";
 import { computed, reactive, ref } from "vue";
 import { fabAuth, fabDb } from "../firebase";
@@ -38,6 +43,7 @@ import {
   makeFirebaseFetchSingleDocFn,
 } from "../utils/store-firebase-action-sinks";
 import useAcceptHmr from "../utils/store-helpers";
+import { fabStor } from "./../firebase/index";
 import { usePostStore } from "./post-store";
 import { useThreadStore } from "./thread-store";
 
@@ -135,16 +141,36 @@ export const useUserStore = defineStore(
     async function registerUserWithEmailAndPassword({
       email,
       password,
+      avatar,
+      avatarFile,
       ...rest
     }: UserVMRegWithEmailAndPassword) {
       const {
         user: { uid },
       } = await createUserWithEmailAndPassword(fabAuth, email, password);
 
+      avatarFile && (avatar = await _overrideAvatarFromFile(avatarFile, uid));
+
       return await createUser(uid, {
         email,
+        avatar,
         ...rest,
       });
+    }
+
+    async function _overrideAvatarFromFile(
+      fileObj: File,
+      uid: string
+    ): Promise<string> {
+      const storeFileName = `uploads/${uid}/images/${Date.now()}-${
+        fileObj.name
+      }`;
+
+      const storageRef = fabStoreRef(fabStor, storeFileName);
+
+      const { ref } = await uploadBytes(storageRef, fileObj);
+
+      return await getDownloadURL(ref);
     }
 
     async function createUser(

@@ -17,7 +17,7 @@ export type UserVMFireBase = Omit<UserVM, "lastVisitAt" | "registeredAt"> & {
 export type UserVMNewFormInput = Pick<
   UserVM,
   "name" | "username" | "email" | "avatar"
->;
+> & { avatarFile?: File };
 
 export type UserVmEditForInput = UserVMNewFormInput &
   Pick<UserVM, "id" | "bio" | "website" | "location" | "avatar" | "twitter">;
