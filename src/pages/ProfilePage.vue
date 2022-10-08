@@ -89,11 +89,8 @@ function cancel() {
 <template>
   <div v-if="canReveal" class="flex-grid">
     <div class="col-3 push-top">
-      <profile-card
-        v-if="!edit"
-        :auth-user="getAuthUser"
-        @update-avatar-file="userStore.updateAvatar"
-      />
+      <profile-card v-if="!edit" :auth-user="getAuthUser" />
+
       <profile-card-editor
         v-else
         v-model:is-dirty="hasDirtyForm"
@@ -113,6 +110,7 @@ function cancel() {
       <hr />
 
       <post-list :posts="lastPostsDesc" />
+
       <app-infinite-scroll :done="hasNoMorePosts" @reached-end="fetchUserPosts" />
       <!-- <div class="activity-list">
         <div class="activity">

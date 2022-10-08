@@ -77,11 +77,16 @@ function cancel() {
   <div class="profile-card">
     <form @submit.prevent="save">
       <div class="form-group" @click="openDialog">
-        <img
-          :src="avatarToShow"
-          class="avatar-xlarge"
-          :title="`${userEditorObj.name}'s profile picture`"
-        />
+        <div class="avatar-edit">
+          <img
+            :src="avatarToShow"
+            class="avatar-xlarge"
+            :title="`${userEditorObj.name}'s profile picture`"
+          />
+          <div class="avatar-upload-overlay">
+            <fa icon="camera" size="3x" inverse />
+          </div>
+        </div>
       </div>
 
       <div class="form-group">
