@@ -47,11 +47,11 @@ watch(
       (id ?? "") !== (props.user?.id.trim() ?? "") ||
       (name ?? "") !== (props.user?.name.trim() ?? "") ||
       (username ?? "") !== (props.user?.username.trim() ?? "") ||
-      (bio ?? "") !== (props.user?.bio.trim() ?? "") ||
+      (bio ?? "") !== (props.user?.bio?.trim() ?? "") ||
       (email ?? "") !== (props.user?.email.trim() ?? "") ||
-      (website ?? "") !== (props.user?.website.trim() ?? "") ||
-      (location ?? "") !== (props.user?.location.trim() ?? "") ||
-      (avatar ?? "") !== (props.user?.avatar.trim() ?? "") ||
+      (website ?? "") !== (props.user?.website?.trim() ?? "") ||
+      (location ?? "") !== (props.user?.location?.trim() ?? "") ||
+      (avatar ?? "") !== (props.user?.avatar?.trim() ?? "") ||
       (twitter ?? "") !== (props.user?.twitter.trim() ?? "");
 
     emits("update:isDirty", result);
