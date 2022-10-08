@@ -3,7 +3,7 @@ import { computed, ref } from "vue";
 import { PostVm } from "../models/PostVm";
 import { useUserStore } from "../stores/user-store";
 import { PostVMEdit, PostVMFormInput } from "../types/postVm-types";
-import { getCountPhrase } from "../utils/misc";
+import { getCountPhrase, getProfileTitle } from "../utils/misc";
 import PostEditor from "./PostEditor.vue";
 
 const props = defineProps<{
@@ -94,7 +94,11 @@ function savePost(dto: PostVMFormInput) {
         <a href="#" class="user-name" v-text="userName" />
 
         <a href="#">
-          <img class="avatar-large" :src="userAvatar" alt="" />
+          <img
+            class="avatar-large"
+            :src="userAvatar"
+            :title="getProfileTitle(userName)"
+          />
         </a>
 
         <p

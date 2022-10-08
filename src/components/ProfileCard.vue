@@ -7,7 +7,7 @@ import { useCommonStore } from "../stores/common-store";
 import { useUserStore } from "../stores/user-store";
 import { UserVMWithActivity } from "../types/userVm-types";
 import { diffFromUnix, formatMonthYearFromUnix } from "../utils/dateTimeDiffFormat";
-import { getCountPhrase } from "../utils/misc";
+import { getCountPhrase, getProfileTitle } from "../utils/misc";
 
 const fileDialogOptions: UseFileDialogOptions = {
   multiple: false,
@@ -28,6 +28,8 @@ const { addNotification } = useNotifications();
 const singleFile = computed(() => files.value?.item(0));
 
 const memberSince = computed(() => formatMonthYearFromUnix(props.authUser.registeredAt));
+
+const avatarTitle = computed(() => getProfileTitle(props.authUser.name));
 
 const avatarPreviewImgDataUrl = computedAsync<string>(
   async () => {
@@ -88,7 +90,7 @@ function openDialog() {
         <img
           :src="avatarToShow"
           class="avatar-xlarge img-update"
-          :title="`${authUser.name}'s profile picture`"
+          :title="avatarTitle"
         />
         <div class="avatar-upload-overlay">
           <fa v-if="!commonStore.isLoading" icon="camera" size="3x" inverse />

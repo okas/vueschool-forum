@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import { ref } from "vue";
+import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../stores/user-store";
+import { getProfileTitle } from "../utils/misc";
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -12,6 +13,8 @@ const { getAuthUser } = storeToRefs(userStore);
 const isUserDropDownOpen = ref(false);
 
 const isMobNavMenuVisible = ref(false);
+
+const avatarTitle = computed(() => getProfileTitle(getAuthUser.value.name));
 
 router.beforeEach(() => closeMobNavMenu());
 
@@ -66,7 +69,7 @@ async function signOut() {
               v-if="getAuthUser.avatar"
               class="avatar-small"
               :src="getAuthUser.avatar"
-              :alt="`${getAuthUser.name} profile picture`"
+              :title="avatarTitle"
             />
             <span>
               {{ getAuthUser.name }}

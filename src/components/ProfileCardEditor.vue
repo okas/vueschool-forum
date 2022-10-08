@@ -3,6 +3,7 @@ import { computedAsync, useFileDialog, UseFileDialogOptions } from "@vueuse/core
 import { computed, reactive, watch } from "vue";
 import { UserVM } from "../models/UserVM";
 import { UserVmEditForInput } from "../types/userVm-types";
+import { getProfileTitle } from "../utils/misc";
 
 const fileDialogOptions: UseFileDialogOptions = {
   multiple: false,
@@ -39,6 +40,8 @@ const avatarPreviewImgDataUrl = computedAsync<string>(
 const avatarToShow = computed(
   () => avatarPreviewImgDataUrl.value ?? userEditorObj.avatar
 );
+
+const avatarTitle = computed(() => getProfileTitle(userEditorObj.name));
 
 watch(
   userEditorObj,
@@ -81,7 +84,7 @@ function cancel() {
           <img
             :src="avatarToShow"
             class="avatar-xlarge"
-            :title="`${userEditorObj.name}'s profile picture`"
+            :title="avatarTitle"
           />
           <div class="avatar-upload-overlay">
             <fa icon="camera" size="3x" inverse />
