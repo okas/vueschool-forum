@@ -11,7 +11,7 @@ import {
   getDoc,
   serverTimestamp,
   setDoc,
-  writeBatch,
+  updateDoc,
 } from "@firebase/firestore";
 import { Unsubscribe } from "@firebase/util";
 import {
@@ -189,7 +189,7 @@ export const useUserStore = defineStore(
         threadsCount: 0,
       };
 
-      await setDoc(doc(fabDb, FabCollection.users, id), userDto);
+      await setDoc(_getRef(id), userDto);
 
       return id;
     }
@@ -202,9 +202,9 @@ export const useUserStore = defineStore(
         Object.entries(rest).map(([k, v]) => [k, v === undefined ? null : v])
       );
 
-      const userRef = doc(fabDb, FabCollection.users, id);
+      const userRef = _getRef(id);
 
-      await writeBatch(fabDb).update(userRef, editDto).commit();
+      await updateDoc(userRef, editDto);
 
       fetchAfter && (await fetchUser(id));
     }
@@ -256,6 +256,10 @@ export const useUserStore = defineStore(
     function clearDbSubscriptionAuthUser() {
       _dbUnsubscribeAuthUser?.();
       _dbUnsubscribeAuthUser = null;
+    }
+
+    function _getRef(id: string) {
+      return doc(fabDb, FabCollection.users, id);
     }
 
     return {
