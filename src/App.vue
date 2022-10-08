@@ -42,11 +42,10 @@ afterEach((to, from) => {
   <app-notifications />
 </template>
 
-<style>
+<style lang="scss">
 @import "nprogress/nprogress.css";
-@import "assets/style.css";
+@import "assets/style.scss";
 
-/* @import "~bootstrap/css/bootstrap.css"; */
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
   -webkit-font-smoothing: antialiased;
