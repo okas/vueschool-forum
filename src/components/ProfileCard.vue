@@ -63,7 +63,7 @@ function openDialog() {
 
 <template>
   <div class="profile-card">
-    <div class="form-group" @click="openDialog">
+    <div class="form-group" @click.prevent="openDialog">
       <img
         :src="avatarToShow"
         class="avatar-xlarge"
