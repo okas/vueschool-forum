@@ -3,6 +3,7 @@ import { useNProgress } from "@vueuse/integrations/useNProgress";
 import { watchEffect } from "vue";
 import { useRouter } from "vue-router";
 import AppNotifications from "./components/AppNotifications.vue";
+import AppSpinner from "./components/AppSpinner.vue";
 import TheNavBar from "./components/TheNavBar.vue";
 import { useCommonStore } from "./stores/common-store";
 
@@ -33,7 +34,7 @@ afterEach((to, from) => {
 <template>
   <the-nav-bar />
 
-  <fa v-if="!commonStore.isReady" icon="spinner" spin transform="grow-16 down-16" />
+  <app-spinner v-if="!commonStore.isReady" transform="down-16" />
 
   <main class="container">
     <router-view />
