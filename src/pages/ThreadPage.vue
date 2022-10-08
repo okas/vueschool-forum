@@ -116,7 +116,7 @@ function conditionallyNotifyThreadGraphChange() {
   !commonStore.isReady ||
     isEditing.value ||
     postIdsInRefresh.value?.length ||
-    addNotification("Thread updated", notificationTimeoutMs.value, undefined);
+    addNotification({ message: "Thread updated" }, notificationTimeoutMs.value);
 }
 
 async function getEditingCompletionCondition({

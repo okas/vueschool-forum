@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { computedAsync, useFileDialog, UseFileDialogOptions } from "@vueuse/core";
-import { computed, ref, watch } from "vue";
+import { computed, watch } from "vue";
 import AppSpinner from "../components/AppSpinner.vue";
-import useNotifications from "../composables/useNotifications";
+import useNotifications, { INote } from "../composables/useNotifications";
 import { useCommonStore } from "../stores/common-store";
-import { UserVMEditAvatarFile, UserVMWithActivity } from "../types/userVm-types";
+import { useUserStore } from "../stores/user-store";
+import { UserVMWithActivity } from "../types/userVm-types";
 import { diffFromUnix, formatMonthYearFromUnix } from "../utils/dateTimeDiffFormat";
 import { getCountPhrase } from "../utils/misc";
 
@@ -17,17 +18,12 @@ const props = defineProps<{
   authUser: UserVMWithActivity;
 }>();
 
-const emits = defineEmits<{
-  (e: "updateAvatarFile", dto: UserVMEditAvatarFile): void;
-}>();
-
 const commonStore = useCommonStore();
+const userStore = useUserStore();
 
 const { files, open, reset } = useFileDialog();
 
 const { addNotification } = useNotifications();
-
-const isUploadingImage = ref(false);
 
 const singleFile = computed(() => files.value?.item(0));
 
@@ -53,27 +49,32 @@ const avatarToShow = computed(
 
 const lasVisited = computed(() => diffFromUnix(props.authUser.lastVisitAt));
 
-watch(singleFile, (updatedVal) => {
+watch(singleFile, async (updatedVal) => {
   if (!updatedVal) {
     return;
   }
 
-  emits("updateAvatarFile", {
-    id: props.authUser.id,
-    avatarFile: updatedVal,
-  });
+  commonStore.setLoading(true);
 
-  isUploadingImage.value = commonStore.isLoading = true;
-});
+  let note: INote;
+  let timeoutMs: number;
 
-watch(
-  () => props.authUser.avatar,
-  () => {
-    isUploadingImage.value = commonStore.isLoading = false;
-    addNotification("New avatar stored", 2500);
+  try {
+    await userStore.updateAvatar({
+      id: props.authUser.id,
+      avatarFile: updatedVal,
+    });
+    note = { message: "New avatar stored" };
+    timeoutMs = 2500;
+  } catch (err) {
+    note = { message: "Avatar storing error", type: "error" };
+    timeoutMs = 5000;
+  } finally {
+    addNotification(note, timeoutMs);
+    commonStore.setLoading(false);
     reset();
   }
-);
+});
 
 function openDialog() {
   open(fileDialogOptions);
@@ -90,7 +91,7 @@ function openDialog() {
           :title="`${authUser.name}'s profile picture`"
         />
         <div class="avatar-upload-overlay">
-          <fa v-if="!isUploadingImage" icon="camera" size="3x" inverse />
+          <fa v-if="!commonStore.isLoading" icon="camera" size="3x" inverse />
           <app-spinner v-else inverse />
         </div>
       </div>

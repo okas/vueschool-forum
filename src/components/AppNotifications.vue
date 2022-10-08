@@ -6,7 +6,12 @@ const { notifications, removeNotification } = useNotifications();
 
 <template>
   <transition-group name="notification" tag="ul" class="notifications-container">
-    <li v-for="[id, message] of notifications" :key="id" class="notification">
+    <li
+      v-for="[id, { message, type }] of notifications"
+      :key="id"
+      class="notification"
+      :class="`notification-type-${type}`"
+    >
       <span v-text="message" />
 
       <button @click.prevent="removeNotification(id)">
@@ -49,6 +54,13 @@ const { notifications, removeNotification } = useNotifications();
 
   &-move {
     transition: transform 0.8s ease;
+  }
+
+  &-type {
+    &-error {
+      border-color: rgb(146, 5, 5);
+      box-shadow: 2px 2px 3px 2px rgba(146, 5, 5, 0.5);
+    }
   }
 }
 </style>
