@@ -2,6 +2,7 @@ import { ComputedRef, Ref } from "vue";
 import { UserVM } from "./../models/UserVM";
 import { StoreBaseActions, StoreBaseState } from "./store-base-types";
 import {
+  UserVMEditAvatarFile,
   UserVmEditForInput,
   UserVMNewFormInput,
   UserVMRegWithEmailAndPassword,
@@ -51,6 +52,11 @@ export interface UserStoreActions extends StoreBaseActions {
     fetchAfter?: boolean
   ): Promise<string>;
   editUser(dto: UserVmEditForInput, fetchAfter?: boolean): Promise<void>;
+  /**
+   * Uploads avatar file to Google Firebase Storage and returns URL of it.
+   * @returns URL of the uploaded avatar image file.
+   */
+  updateAvatar(dto: UserVMEditAvatarFile): Promise<string>;
   fetchUser(id: string): Promise<UserVM | undefined>;
   fetchUsers(ids?: Array<string>): Promise<Array<UserVM>>;
   /**

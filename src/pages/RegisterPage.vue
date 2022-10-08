@@ -121,7 +121,7 @@ commonStore.setReady();
           </button>
 
           <div v-if="avatarPreviewImgDataUrl" @click="openDialog">
-            <img :src="avatarPreviewImgDataUrl" class="avatar-xlarge" avatarPreviewImg />
+            <img :src="avatarPreviewImgDataUrl" class="avatar-xlarge" />
           </div>
         </div>
 

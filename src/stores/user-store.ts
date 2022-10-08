@@ -31,12 +31,14 @@ import {
   UserStoreState,
 } from "../types/user-store-types";
 import {
+  UserVMEditAvatarFile,
   UserVmEditForInput,
   UserVMNewFormInput,
   UserVMRegWithEmailAndPassword,
   UserVMWithActivity,
 } from "../types/userVm-types";
 import { findById } from "../utils/array-helpers";
+import { ok } from "../utils/assert-helpers";
 import { FirebaseSubscriptionManager } from "../utils/FirebaseSubscriptionManager";
 import {
   makeFirebaseFetchMultiDocsFn,
@@ -141,42 +143,24 @@ export const useUserStore = defineStore(
     async function registerUserWithEmailAndPassword({
       email,
       password,
-      avatar,
-      avatarFile,
       ...rest
     }: UserVMRegWithEmailAndPassword) {
       const {
         user: { uid },
       } = await createUserWithEmailAndPassword(fabAuth, email, password);
 
-      avatarFile && (avatar = await _overrideAvatarFromFile(avatarFile, uid));
-
       return await createUser(uid, {
         email,
-        avatar,
         ...rest,
       });
     }
 
-    async function _overrideAvatarFromFile(
-      fileObj: File,
-      uid: string
-    ): Promise<string> {
-      const storeFileName = `uploads/${uid}/images/${Date.now()}-${
-        fileObj.name
-      }`;
-
-      const storageRef = fabStoreRef(fabStor, storeFileName);
-
-      const { ref } = await uploadBytes(storageRef, fileObj);
-
-      return await getDownloadURL(ref);
-    }
-
     async function createUser(
       id: string,
-      { email, avatar = null, ...rest }: UserVMNewFormInput
+      { email, avatar = null, avatarFile, ...rest }: UserVMNewFormInput
     ): Promise<string> {
+      avatarFile && (avatar = await _uploadAvatar(avatarFile, id));
+
       const userDto: UserVMNewFormInput & {
         registeredAt: FieldValue;
       } & Pick<UserVM, "usernameLower" | "postsCount" | "threadsCount"> = {
@@ -195,9 +179,11 @@ export const useUserStore = defineStore(
     }
 
     async function editUser(
-      { id, ...rest }: UserVmEditForInput,
+      { id, avatarFile, ...rest }: UserVmEditForInput,
       fetchAfter = false
     ) {
+      avatarFile && (rest.avatar = await _uploadAvatar(avatarFile, id));
+
       const editDto = Object.fromEntries(
         Object.entries(rest).map(([k, v]) => [k, v === undefined ? null : v])
       );
@@ -207,6 +193,22 @@ export const useUserStore = defineStore(
       await updateDoc(userRef, editDto);
 
       fetchAfter && (await fetchUser(id));
+    }
+
+    async function updateAvatar({
+      id,
+      avatarFile,
+    }: UserVMEditAvatarFile): Promise<string> {
+      ok(avatarFile, "Avatar file update error: no file data.");
+
+      const avatar = await _uploadAvatar(avatarFile, id);
+
+      const userRef = _getRef(id);
+
+      await updateDoc(userRef, { avatar });
+
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      return avatar!;
     }
 
     const fetchUser = makeFirebaseFetchSingleDocFn(
@@ -262,6 +264,16 @@ export const useUserStore = defineStore(
       return doc(fabDb, FabCollection.users, id);
     }
 
+    async function _uploadAvatar(fileObj: File, uid: string): Promise<string> {
+      const storeFileName = `uploads/${uid}/images/${fileObj.name}`;
+
+      const storageRef = fabStoreRef(fabStor, storeFileName);
+
+      const { ref } = await uploadBytes(storageRef, fileObj);
+
+      return getDownloadURL(ref);
+    }
+
     return {
       authUserId,
       items,
@@ -274,6 +286,7 @@ export const useUserStore = defineStore(
       registerUserWithEmailAndPassword,
       createUser,
       editUser,
+      updateAvatar,
       fetchUser,
       fetchUsers,
       fetchAuthUser,

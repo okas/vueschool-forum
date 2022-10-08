@@ -1,7 +1,13 @@
 <script setup lang="ts">
-import { reactive, toRaw, watch } from "vue";
+import { computedAsync, useFileDialog, UseFileDialogOptions } from "@vueuse/core";
+import { computed, reactive, watch } from "vue";
 import { UserVM } from "../models/UserVM";
 import { UserVmEditForInput } from "../types/userVm-types";
+
+const fileDialogOptions: UseFileDialogOptions = {
+  multiple: false,
+  accept: "image/*",
+};
 
 const props = defineProps<{
   user: UserVM;
@@ -13,20 +19,26 @@ const emits = defineEmits<{
   (e: "update:isDirty", state: boolean): void;
 }>();
 
-const { id, name, username, bio, email, website, location, avatar, twitter } =
-  toRaw(props.user);
+const { files, open } = useFileDialog();
 
-const userEditorObj = reactive<UserVmEditForInput>({
-  id,
-  name,
-  username,
-  bio,
-  email,
-  website,
-  location,
-  avatar,
-  twitter,
-});
+const userEditorObj = reactive<UserVmEditForInput>(props.user);
+
+const singleFile = computed(() => files.value?.item(0));
+
+const avatarPreviewImgDataUrl = computedAsync<string>(
+  async () =>
+    new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = ({ target: { result } }) => resolve(result.toString());
+      reader.readAsDataURL(singleFile.value);
+    }),
+  undefined,
+  { lazy: true }
+);
+
+const avatarToShow = computed(
+  () => avatarPreviewImgDataUrl.value ?? userEditorObj.avatar
+);
 
 watch(
   userEditorObj,
@@ -46,8 +58,13 @@ watch(
   }
 );
 
+function openDialog() {
+  open(fileDialogOptions);
+}
+
 function save() {
   emits("update:isDirty", false);
+  userEditorObj.avatarFile = singleFile.value;
   emits("save", userEditorObj);
 }
 
@@ -59,13 +76,13 @@ function cancel() {
 <template>
   <div class="profile-card">
     <form @submit.prevent="save">
-      <p class="text-center">
+      <div class="form-group" @click="openDialog">
         <img
-          :src="userEditorObj.avatar"
+          :src="avatarToShow"
           class="avatar-xlarge"
           :title="`${userEditorObj.name}'s profile picture`"
         />
-      </p>
+      </div>
 
       <div class="form-group">
         <input

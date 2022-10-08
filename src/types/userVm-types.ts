@@ -14,10 +14,10 @@ export type UserVMFireBase = Omit<UserVM, "lastVisitAt" | "registeredAt"> & {
   registeredAt: Timestamp;
 };
 
-export type UserVMNewFormInput = Pick<
-  UserVM,
-  "name" | "username" | "email" | "avatar"
-> & { avatarFile?: File };
+export type UserVMAvatarFile = { avatarFile?: File };
+
+export type UserVMNewFormInput = UserVMAvatarFile &
+  Pick<UserVM, "name" | "username" | "email" | "avatar">;
 
 export type UserVmEditForInput = UserVMNewFormInput &
   Pick<UserVM, "id" | "bio" | "website" | "location" | "avatar" | "twitter">;
@@ -25,5 +25,7 @@ export type UserVmEditForInput = UserVMNewFormInput &
 export type UserVMRegWithEmailAndPassword = UserVMNewFormInput & {
   password: string;
 };
+
+export type UserVMEditAvatarFile = UserVMAvatarFile & Pick<UserVM, "id">;
 
 export const nameUser = nameofFactory<UserVM>();

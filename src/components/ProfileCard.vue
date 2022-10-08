@@ -1,41 +1,81 @@
 <script setup lang="ts">
-import { computed } from "vue";
-import { UserVMWithActivity } from "../types/userVm-types";
-import {
-  diffFromUnix,
-  formatMonthYearFromUnix,
-} from "../utils/dateTimeDiffFormat";
+import { computedAsync, useFileDialog, UseFileDialogOptions } from "@vueuse/core";
+import { computed, watch } from "vue";
+import { UserVMEditAvatarFile, UserVMWithActivity } from "../types/userVm-types";
+import { diffFromUnix, formatMonthYearFromUnix } from "../utils/dateTimeDiffFormat";
 import { getCountPhrase } from "../utils/misc";
+
+const fileDialogOptions: UseFileDialogOptions = {
+  multiple: false,
+  accept: "image/*",
+};
 
 const props = defineProps<{
   authUser: UserVMWithActivity;
 }>();
 
-const memberSince = computed(() =>
-  formatMonthYearFromUnix(props.authUser.registeredAt)
+const emits = defineEmits<{
+  (e: "updateAvatarFile", dto: UserVMEditAvatarFile): void;
+}>();
+
+const { files, open, reset } = useFileDialog();
+
+const singleFile = computed(() => files.value?.item(0));
+
+const memberSince = computed(() => formatMonthYearFromUnix(props.authUser.registeredAt));
+
+const avatarPreviewImgDataUrl = computedAsync<string>(
+  async () => {
+    return singleFile.value
+      ? new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.onload = ({ target: { result } }) => resolve(result.toString());
+          reader.readAsDataURL(singleFile.value);
+        })
+      : undefined;
+  },
+  undefined,
+  { lazy: true }
+);
+
+const avatarToShow = computed(
+  () => avatarPreviewImgDataUrl.value ?? props.authUser.avatar
 );
 
 const lasVisited = computed(() => diffFromUnix(props.authUser.lastVisitAt));
+
+watch(
+  singleFile,
+  (updatedVal) =>
+    updatedVal &&
+    emits("updateAvatarFile", {
+      id: props.authUser.id,
+      avatarFile: updatedVal,
+    })
+);
+
+watch(() => props.authUser.avatar, reset);
+
+function openDialog() {
+  open(fileDialogOptions);
+}
 </script>
 
 <template>
   <div class="profile-card">
-    <p class="text-center">
+    <div class="form-group" @click="openDialog">
       <img
-        :src="authUser.avatar"
+        :src="avatarToShow"
         class="avatar-xlarge"
         :title="`${authUser.name}'s profile picture`"
       />
-    </p>
+    </div>
 
     <h1 class="title" v-text="authUser.username" />
 
     <p class="text-lead" v-text="authUser.name" />
 
-    <p
-      class="text-justify"
-      v-text="!authUser.bio ? 'No bio specified' : authUser.bio"
-    />
+    <p class="text-justify" v-text="authUser.bio ?? 'No bio specified'" />
 
     <p>
       <fa style="color: #57ad8d" icon="circle-user" />&nbsp;
@@ -61,10 +101,7 @@ const lasVisited = computed(() => diffFromUnix(props.authUser.lastVisitAt));
 
     <p v-if="authUser.twitter" class="text-large text-center">
       <fa :icon="['fab', 'twitter']" />&nbsp;
-      <a
-        :href="`https://twitter.com/${authUser.twitter}`"
-        v-text="authUser.twitter"
-      />
+      <a :href="`https://twitter.com/${authUser.twitter}`" v-text="authUser.twitter" />
     </p>
 
     <p v-if="authUser.location" class="text-large text-center">
