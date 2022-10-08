@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { computedAsync, useFileDialog, UseFileDialogOptions } from "@vueuse/core";
-import { computed, watch } from "vue";
+import { computed, ref, watch } from "vue";
+import AppSpinner from "../components/AppSpinner.vue";
+import useNotifications from "../composables/useNotifications";
+import { useCommonStore } from "../stores/common-store";
 import { UserVMEditAvatarFile, UserVMWithActivity } from "../types/userVm-types";
 import { diffFromUnix, formatMonthYearFromUnix } from "../utils/dateTimeDiffFormat";
 import { getCountPhrase } from "../utils/misc";
@@ -18,7 +21,13 @@ const emits = defineEmits<{
   (e: "updateAvatarFile", dto: UserVMEditAvatarFile): void;
 }>();
 
+const commonStore = useCommonStore();
+
 const { files, open, reset } = useFileDialog();
+
+const { addNotification } = useNotifications();
+
+const isUploadingImage = ref(false);
 
 const singleFile = computed(() => files.value?.item(0));
 
@@ -44,17 +53,27 @@ const avatarToShow = computed(
 
 const lasVisited = computed(() => diffFromUnix(props.authUser.lastVisitAt));
 
-watch(
-  singleFile,
-  (updatedVal) =>
-    updatedVal &&
-    emits("updateAvatarFile", {
-      id: props.authUser.id,
-      avatarFile: updatedVal,
-    })
-);
+watch(singleFile, (updatedVal) => {
+  if (!updatedVal) {
+    return;
+  }
 
-watch(() => props.authUser.avatar, reset);
+  emits("updateAvatarFile", {
+    id: props.authUser.id,
+    avatarFile: updatedVal,
+  });
+
+  isUploadingImage.value = commonStore.isLoading = true;
+});
+
+watch(
+  () => props.authUser.avatar,
+  () => {
+    isUploadingImage.value = commonStore.isLoading = false;
+    addNotification("New avatar stored", 2500);
+    reset();
+  }
+);
 
 function openDialog() {
   open(fileDialogOptions);
@@ -64,11 +83,17 @@ function openDialog() {
 <template>
   <div class="profile-card">
     <div class="form-group" @click.prevent="openDialog">
-      <img
-        :src="avatarToShow"
-        class="avatar-xlarge"
-        :title="`${authUser.name}'s profile picture`"
-      />
+      <div class="avatar-edit">
+        <img
+          :src="avatarToShow"
+          class="avatar-xlarge img-update"
+          :title="`${authUser.name}'s profile picture`"
+        />
+        <div class="avatar-upload-overlay">
+          <fa v-if="!isUploadingImage" icon="camera" size="3x" inverse />
+          <app-spinner v-else inverse />
+        </div>
+      </div>
     </div>
 
     <h1 class="title" v-text="authUser.username" />
