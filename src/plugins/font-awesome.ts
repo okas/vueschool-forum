@@ -28,6 +28,7 @@ async function getIconDefinitions(): Promise<IconDefinition[]> {
         m.faPaperPlane,
         m.faXmark,
         m.faCamera,
+        m.faImagePortrait,
       ];
     }
   );

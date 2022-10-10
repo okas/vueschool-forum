@@ -2,7 +2,7 @@
 import { computed } from "vue";
 import { useUserStore } from "../stores/user-store";
 import { ThreadVMWithMeta } from "../types/threadVm-types";
-import { getCountPhrase } from "../utils/misc";
+import { getCountPhrase, getProfileTitle } from "../utils/misc";
 
 const props = defineProps<{
   threads: Array<ThreadVMWithMeta>;
@@ -55,12 +55,13 @@ const renderData = computed(() =>
       </div>
 
       <div class="activity">
-        <p
-          class="replies-count"
-          v-text="getCountPhrase(repliesCount, 'reply')"
-        />
+        <p class="replies-count" v-text="getCountPhrase(repliesCount, 'reply')" />
 
-        <img class="avatar-medium" :src="userAvatar" alt="" />
+        <app-avatar-img
+          class="avatar-medium"
+          :src="userAvatar"
+          :title="getProfileTitle(userName)"
+        />
 
         <div>
           <p class="text-xsmall">

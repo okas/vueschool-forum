@@ -81,11 +81,12 @@ function cancel() {
     <form @submit.prevent="save">
       <div class="form-group" @click="openDialog">
         <div class="avatar-edit">
-          <img
+          <app-avatar-img
             :src="avatarToShow"
-            class="avatar-xlarge"
+            class="avatar-xlarge img-update"
             :title="avatarTitle"
           />
+
           <div class="avatar-upload-overlay">
             <fa icon="camera" size="3x" inverse />
           </div>

@@ -94,7 +94,7 @@ function savePost(dto: PostVMFormInput) {
         <a href="#" class="user-name" v-text="userName" />
 
         <a href="#">
-          <img
+          <app-avatar-img
             class="avatar-large"
             :src="userAvatar"
             :title="getProfileTitle(userName)"

@@ -16,3 +16,7 @@ export function getValOrFirst<TValue>(
 ): TValue | undefined {
   return obj ? (Array.isArray(obj) ? obj[0] : obj) : undefined;
 }
+
+export function getProfileTitle(name: string) {
+  return `${name || "## n/a ##"}'s profile picture`;
+}

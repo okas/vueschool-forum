@@ -86,11 +86,12 @@ function openDialog() {
   <div class="profile-card">
     <div class="form-group" @click.prevent="openDialog">
       <div class="avatar-edit">
-        <img
+        <app-avatar-img
           :src="avatarToShow"
           class="avatar-xlarge img-update"
           :title="avatarTitle"
         />
+
         <div class="avatar-upload-overlay">
           <fa v-if="!commonStore.isLoading" icon="camera" size="3x" inverse />
           <app-spinner v-else inverse />
