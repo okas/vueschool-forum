@@ -101,10 +101,7 @@ function savePost(dto: PostVMFormInput) {
           />
         </a>
 
-        <p
-          class="desktop-only text-small"
-          v-text="getCountPhrase(postsCount, 'post')"
-        />
+        <p class="desktop-only text-small" v-text="getCountPhrase(postsCount, 'post')" />
         <p
           class="desktop-only text-small"
           v-text="getCountPhrase(threadsCount, 'thread')"

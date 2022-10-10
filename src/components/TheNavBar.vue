@@ -61,10 +61,7 @@ async function signOut() {
     <nav class="navbar" :class="{ 'navbar-open': isMobNavMenuVisible }">
       <ul>
         <li v-if="getAuthUser" class="navbar-user">
-          <a
-            v-click-outside="closeDropDown"
-            @click.prevent="toggleUserDropDown"
-          >
+          <a v-click-outside="closeDropDown" @click.prevent="toggleUserDropDown">
             <img
               v-if="getAuthUser.avatar"
               class="avatar-small"
@@ -73,11 +70,7 @@ async function signOut() {
             />
             <span>
               {{ getAuthUser.name }}
-              <img
-                class="icon-profile"
-                src="../assets/svg/arrow-profile.svg"
-                alt=""
-              />
+              <img class="icon-profile" src="../assets/svg/arrow-profile.svg" alt="" />
             </span>
           </a>
 
@@ -92,9 +85,7 @@ async function signOut() {
             <div class="triangle-drop"></div>
             <ul class="dropdown-menu">
               <li class="dropdown-menu-item">
-                <router-link :to="{ name: 'Profile' }">
-                  View profile
-                </router-link>
+                <router-link :to="{ name: 'Profile' }">View profile</router-link>
               </li>
               <li class="dropdown-menu-item">
                 <a @click.prevent="signOut">Sign out</a>

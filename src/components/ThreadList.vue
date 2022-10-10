@@ -49,8 +49,7 @@ const renderData = computed(() =>
           </router-link>
         </p>
         <p class="text-faded text-xsmall">
-          By <a href="#" v-text="userName" />,
-          <app-date :timestamp="publishedAt" />.
+          By <a href="#" v-text="userName" />, <app-date :timestamp="publishedAt" />.
         </p>
       </div>
 
