@@ -1,5 +1,5 @@
 import { createPinia } from "pinia";
-import { createApp, Plugin } from "vue";
+import { createApp } from "vue";
 import AppRoot from "./App.vue";
 import clickOutsideDirective from "./directives/click-outside";
 import pageScrollDirective from "./directives/page-scroll";
@@ -11,21 +11,19 @@ import router from "./router";
 // https://firebase.google.com/docs/web/setup#available-libraries
 
 const forumApp = createApp(AppRoot);
-let faPlugin: Plugin;
 
-async function loadAsyncDependencies() {
-  faPlugin = await useFontAwesomePlugin();
-}
-
-function loadPlugins() {
-  forumApp.use(createPinia()).use(router).use(faPlugin).use(V3Pagination);
+async function loadPlugins() {
+  forumApp
+    .use(createPinia())
+    .use(router)
+    .use(await useFontAwesomePlugin())
+    .use(V3Pagination);
 }
 
 function loadDirectives() {
   forumApp.use(clickOutsideDirective).use(pageScrollDirective);
 }
 
-loadAsyncDependencies()
-  .then(loadPlugins)
+loadPlugins()
   .then(loadDirectives)
   .then(() => forumApp.mount("#app"));
