@@ -47,15 +47,15 @@ watch(
   userEditorObj,
   ({ id, name, username, bio, email, website, location, avatar, twitter }) => {
     const result =
-      (id ?? "") !== (props.user?.id.trim() ?? "") ||
-      (name ?? "") !== (props.user?.name.trim() ?? "") ||
-      (username ?? "") !== (props.user?.username.trim() ?? "") ||
-      (bio ?? "") !== (props.user?.bio?.trim() ?? "") ||
-      (email ?? "") !== (props.user?.email.trim() ?? "") ||
-      (website ?? "") !== (props.user?.website?.trim() ?? "") ||
-      (location ?? "") !== (props.user?.location?.trim() ?? "") ||
-      (avatar ?? "") !== (props.user?.avatar?.trim() ?? "") ||
-      (twitter ?? "") !== (props.user?.twitter.trim() ?? "");
+      (id ?? "") !== (props.user.id.trim() ?? "") ||
+      (name ?? "") !== (props.user.name.trim() ?? "") ||
+      (username ?? "") !== (props.user.username.trim() ?? "") ||
+      (bio ?? "") !== (props.user.bio?.trim() ?? "") ||
+      (email ?? "") !== (props.user.email.trim() ?? "") ||
+      (website ?? "") !== (props.user.website?.trim() ?? "") ||
+      (location ?? "") !== (props.user.location?.trim() ?? "") ||
+      (avatar ?? "") !== (props.user.avatar?.trim() ?? "") ||
+      (twitter ?? "") !== (props.user.twitter?.trim() ?? "");
 
     emits("update:isDirty", result);
   }
