@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { computedAsync, useFileDialog, UseFileDialogOptions } from "@vueuse/core";
 import { computed, watch } from "vue";
-import AppSpinner from "../components/AppSpinner.vue";
 import useNotifications, { INote } from "../composables/useNotifications";
 import { useCommonStore } from "../stores/common-store";
 import { useUserStore } from "../stores/user-store";
