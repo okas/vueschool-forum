@@ -25,5 +25,6 @@ declare module '@vue/runtime-core' {
     TheNavBar: typeof import('./../components/TheNavBar.vue')['default']
     ThreadEditor: typeof import('./../components/ThreadEditor.vue')['default']
     ThreadList: typeof import('./../components/ThreadList.vue')['default']
+    ThreadListItem: typeof import('./../components/ThreadListItem.vue')['default']
   }
 }
