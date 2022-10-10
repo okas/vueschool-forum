@@ -84,7 +84,7 @@ onBeforeRouteLeave(async () => {
     isOK = (await reveal(false)).data;
   }
 
-  unWatch();
+  isOK && unWatch();
 
   return isOK;
 });
