@@ -18,6 +18,7 @@ declare module '@vue/runtime-core' {
     ModalDialog: typeof import('./../components/ModalDialog.vue')['default']
     PostEditor: typeof import('./../components/PostEditor.vue')['default']
     PostList: typeof import('./../components/PostList.vue')['default']
+    PostListItem: typeof import('./../components/PostListItem.vue')['default']
     ProfileCard: typeof import('./../components/ProfileCard.vue')['default']
     ProfileCardEditor: typeof import('./../components/ProfileCardEditor.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
