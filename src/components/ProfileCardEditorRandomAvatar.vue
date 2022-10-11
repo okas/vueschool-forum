@@ -1,13 +1,16 @@
 <script setup lang="ts">
-export interface IHitData {
-  webformatURL: string;
-}
-
-import { createFetch, CreateFetchOptions } from "@vueuse/core";
+import { createFetch, CreateFetchOptions, useFetch } from "@vueuse/core";
 import { computed, watch } from "vue";
 
 interface IWordsResp {
   word: string;
+}
+
+interface IHitData {
+  id: number;
+  webformatURL: string;
+  webformatWidth: number;
+  tags: string;
 }
 
 interface IPixabayResp {
@@ -30,7 +33,7 @@ const imagesApiKey = "30503892-e453399cd8db88ca76c1b7ec6";
 
 const emits = defineEmits<{
   (e: "start"): void;
-  (e: "hit", dto: IHitData): void;
+  (e: "hit", blob: File): void;
 }>();
 
 const useWordsApi = createFetch(wordsApiConf);
@@ -53,17 +56,34 @@ const { data: imageData } = useImagesApi<IPixabayResp>(imageApiUrl, {
   refetch: true,
 }).json<IPixabayResp>();
 
-watch(imageData, (newImageData) => {
+watch(imageData, async (newImageData) => {
   if (!newImageData.total) {
     execWordsReq();
   } else {
-    emits("hit", newImageData.hits[0]);
+    const file = await downloadFile(newImageData);
+
+    emits("hit", file);
   }
 });
 
 function getRandomImage() {
   emits("start");
   execWordsReq();
+}
+
+async function downloadFile({ hits: [firstHit] }: IPixabayResp): Promise<File> {
+  const { data: blob } = await useFetch(firstHit.webformatURL).blob();
+
+  return new File([blob.value], getFileName(firstHit), {
+    type: "image/jpg",
+  });
+}
+
+function getFileName({ id, webformatWidth, tags }: IHitData): string {
+  return `${id}_${tags
+    .split(",")
+    .map((tag) => tag.trim().replace(" ", "-"))
+    .join("_")}_${webformatWidth}.jpg`;
 }
 </script>
 

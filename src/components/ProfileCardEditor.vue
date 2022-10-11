@@ -1,13 +1,11 @@
 <script setup lang="ts">
 import { computedAsync, useFileDialog, UseFileDialogOptions } from "@vueuse/core";
-import { computed, reactive, watch } from "vue";
+import { computed, onUnmounted, reactive, ref, watch } from "vue";
 import { UserVM } from "../models/UserVM";
 import { useCommonStore } from "../stores/common-store";
 import { UserVmEditForInput } from "../types/userVm-types";
 import { getProfileTitle } from "../utils/misc";
-import ProfileCardEditorRandomAvatar, {
-  IHitData,
-} from "./ProfileCardEditorRandomAvatar.vue";
+import ProfileCardEditorRandomAvatar from "./ProfileCardEditorRandomAvatar.vue";
 
 const fileDialogOptions: UseFileDialogOptions = {
   multiple: false,
@@ -28,9 +26,17 @@ const commonStore = useCommonStore();
 
 const { files, open } = useFileDialog();
 
+const randomAvatarImgData = ref<
+  | {
+      file: File;
+      objUrl: string;
+    }
+  | undefined
+>();
+
 const userEditorObj = reactive<UserVmEditForInput>(props.user);
 
-const singleFile = computed(() => files.value?.item(0));
+const singleFile = computed<File | undefined>(() => files.value?.item(0));
 
 const avatarPreviewImgDataUrl = computedAsync<string>(
   async () =>
@@ -43,8 +49,11 @@ const avatarPreviewImgDataUrl = computedAsync<string>(
   { lazy: true }
 );
 
-const avatarToShow = computed(
-  () => avatarPreviewImgDataUrl.value ?? userEditorObj.avatar
+const avatarToShow = computed<string | undefined>(
+  () =>
+    avatarPreviewImgDataUrl.value ??
+    randomAvatarImgData.value?.objUrl ??
+    userEditorObj.avatar
 );
 
 const avatarTitle = computed(() => getProfileTitle(userEditorObj.name));
@@ -67,13 +76,21 @@ watch(
   }
 );
 
+onUnmounted(
+  () => randomAvatarImgData.value && URL.revokeObjectURL(randomAvatarImgData.value.objUrl)
+);
+
 function openDialog() {
   open(fileDialogOptions);
 }
 
 function save() {
   emits("update:isDirty", false);
-  userEditorObj.avatarFile = singleFile.value;
+
+  userEditorObj.avatarFile = singleFile?.value ?? randomAvatarImgData?.value?.file;
+
+  commonStore.setLoading();
+
   emits("save", userEditorObj);
 }
 
@@ -81,8 +98,11 @@ function cancel() {
   emits("cancel");
 }
 
-function gotImage({ webformatURL }: IHitData) {
-  userEditorObj.avatar = webformatURL;
+function gotImage(file: File) {
+  randomAvatarImgData.value = {
+    objUrl: URL.createObjectURL(file),
+    file: file,
+  };
 }
 </script>
 
