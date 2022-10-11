@@ -69,7 +69,7 @@ const unWatch = watchDebounced(
   pageViewModel,
   async (undatedGraph) => {
     conditionallyNotifyThreadGraphChange();
-    (await getEditingCompletionCondition(undatedGraph)) && (isEditing.value = false);
+    (await getEditingCompletionCondition(undatedGraph)) && setEditing(false);
   },
   {
     deep: true,
@@ -89,7 +89,7 @@ onBeforeRouteLeave(async () => {
   return isOK;
 });
 
-async function addPost(dto?: PostVMFormInput) {
+function addPost(dto?: PostVMFormInput) {
   if (!dto) {
     return;
   }
@@ -99,17 +99,19 @@ async function addPost(dto?: PostVMFormInput) {
     ...dto,
   };
 
-  isEditing.value = true;
-  await postStore.createPost(post);
+  setEditing();
+
+  postStore.createPost(post);
 }
 
-async function editPost(dto?: PostVMEdit) {
+function editPost(dto?: PostVMEdit) {
   if (!dto) {
     return;
   }
 
-  isEditing.value = true;
-  await postStore.editPost(dto);
+  setEditing();
+
+  postStore.editPost(dto);
 }
 
 function conditionallyNotifyThreadGraphChange() {
@@ -117,6 +119,11 @@ function conditionallyNotifyThreadGraphChange() {
     isEditing.value ||
     postIdsInRefresh.value?.length ||
     addNotification({ message: "Thread updated" }, notificationTimeoutMs.value);
+}
+
+function setEditing(stateForced = true) {
+  isEditing.value = stateForced;
+  commonStore.setLoading(stateForced);
 }
 
 async function getEditingCompletionCondition({
