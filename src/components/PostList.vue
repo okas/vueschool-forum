@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { computed } from "vue";
+import { computed, ref } from "vue";
 import { PostVm } from "../models/PostVm";
 import { useUserStore } from "../stores/user-store";
-import { PostVMEdit } from "../types/postVm-types";
+import { PostVMEdit, PostVMFormInput } from "../types/postVm-types";
 import PostListItem from "./PostListItem.vue";
 
 const props = defineProps<{
@@ -15,6 +15,8 @@ const emits = defineEmits<{
 }>();
 
 const userStore = useUserStore();
+
+const postToEdit = ref<string | undefined>();
 
 const renderData = computed(() =>
   props.posts.map(({ id: postId, userId, text, publishedAt, edited }) => {
@@ -39,12 +41,33 @@ const renderData = computed(() =>
   })
 );
 
-function passEditEvent(dto: PostVMEdit) {
-  emits("edit", dto);
+function savePost(dto: PostVMFormInput) {
+  if (dto && postToEdit.value) {
+    const post: PostVMEdit = {
+      id: postToEdit.value,
+      ...dto,
+    };
+
+    emits("edit", post);
+  }
+
+  endEditing();
 }
 
 function passUpdateIsDirtyEvent(dto: boolean) {
   emits("update:isDirty", dto);
+}
+
+function endEditing() {
+  postToEdit.value = undefined;
+}
+
+function listItemClickEdit(postId: string) {
+  postToEdit.value = postId;
+}
+
+function verifyIfIsEditing(postId: string) {
+  return postId === postToEdit.value;
 }
 </script>
 
@@ -54,9 +77,16 @@ function passUpdateIsDirtyEvent(dto: boolean) {
       v-for="post of renderData"
       :key="post.postId"
       v-bind="post"
-      @edit="passEditEvent"
-      @update:is-dirty="passUpdateIsDirtyEvent"
-    />
+      @click-edit="listItemClickEdit"
+    >
+      <post-editor
+        v-if="verifyIfIsEditing(post.postId)"
+        :text="post.text"
+        @update:is-dirty="passUpdateIsDirtyEvent"
+        @save="savePost"
+        @cancel="endEditing"
+      />
+    </post-list-item>
   </div>
 </template>
 

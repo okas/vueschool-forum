@@ -1,9 +1,7 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed } from "vue";
 import { useUserStore } from "../stores/user-store";
-import { PostVMEdit, PostVMFormInput } from "../types/postVm-types";
 import { getCountPhrase, getProfileTitle } from "../utils/misc";
-import PostEditor from "./PostEditor.vue";
 
 const props = defineProps<{
   postId: string;
@@ -22,13 +20,10 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits<{
-  (e: "edit", dto: PostVMEdit): void;
-  (e: "update:isDirty", state: boolean): void;
+  (e: "clickEdit", postId: string): void;
 }>();
 
 const userStore = useUserStore();
-
-const isEditing = ref(false);
 
 const postsCountPhrase = computed(() => getCountPhrase(props.postsCount, "reply"));
 
@@ -38,24 +33,8 @@ const profileTitlePhrase = computed(() => getProfileTitle(props.userName));
 
 const isUserOwnPost = computed(() => props.userId === userStore.authUserId);
 
-function toggleEditModeForPost() {
-  isEditing.value = !isEditing.value;
-}
-
-function passDirtyEvent(data: boolean) {
-  emits("update:isDirty", data);
-}
-
-function savePost(dto: PostVMFormInput) {
-  if (dto) {
-    const post: PostVMEdit = {
-      id: props.postId,
-      ...dto,
-    };
-    emits("edit", post);
-  }
-
-  toggleEditModeForPost();
+function clickEdit() {
+  emits("clickEdit", props.postId);
 }
 </script>
 
@@ -80,17 +59,9 @@ function savePost(dto: PostVMFormInput) {
     </div>
 
     <div class="post-content">
-      <div>
-        <post-editor
-          v-if="isEditing"
-          :text="text"
-          @update:is-dirty="passDirtyEvent"
-          @save="savePost"
-          @cancel="toggleEditModeForPost"
-        />
-
-        <p v-else v-text="text" />
-      </div>
+      <slot>
+        <p v-text="text" />
+      </slot>
 
       <a
         v-if="isUserOwnPost"
@@ -98,7 +69,7 @@ function savePost(dto: PostVMFormInput) {
         style="margin-left: auto; padding-left: 0.625rem"
         class="link-unstyled"
         title="Make a change"
-        @click.prevent="toggleEditModeForPost"
+        @click.prevent="clickEdit"
       >
         <fa icon="pencil-alt" />
       </a>
