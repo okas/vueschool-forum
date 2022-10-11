@@ -31,6 +31,10 @@ const imagesApiConf: CreateFetchOptions = {
 
 const imagesApiKey = "30503892-e453399cd8db88ca76c1b7ec6";
 
+defineProps<{
+  disabled?: boolean;
+}>();
+
 const emits = defineEmits<{
   (e: "start"): void;
   (e: "hit", blob: File): void;
@@ -89,7 +93,11 @@ function getFileName({ id, webformatWidth, tags }: IHitData): string {
 
 <template>
   <div class="text-center random-avatar-picker">
-    <button class="btn-green btn-xsmall" @click.prevent="getRandomImage">
+    <button
+      class="btn-green btn-xsmall"
+      :disabled="disabled"
+      @click.prevent="getRandomImage"
+    >
       Random Avatar
     </button>
 

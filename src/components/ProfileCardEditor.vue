@@ -81,6 +81,10 @@ onUnmounted(
 );
 
 function openDialog() {
+  if (commonStore.isLoading) {
+    return;
+  }
+
   open(fileDialogOptions);
 }
 
@@ -110,7 +114,10 @@ function gotImage(file: File) {
   <div class="profile-card">
     <form @submit.prevent="save">
       <div class="form-group" @click="openDialog">
-        <div class="avatar-edit">
+        <div
+          class="avatar-edit"
+          :style="commonStore.isLoading ? { cursor: 'auto' } : undefined"
+        >
           <app-avatar-img
             :src="avatarToShow"
             class="avatar-xlarge img-update"
@@ -125,6 +132,7 @@ function gotImage(file: File) {
       </div>
 
       <profile-card-editor-random-avatar
+        :disabled="commonStore.isLoading"
         @hit="gotImage"
         @start="commonStore.setLoading()"
       />

@@ -78,6 +78,10 @@ watch(singleFile, async (updatedVal) => {
 });
 
 function openDialog() {
+  if (isLoading.value) {
+    return;
+  }
+
   open(fileDialogOptions);
 }
 
