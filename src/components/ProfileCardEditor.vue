@@ -2,8 +2,12 @@
 import { computedAsync, useFileDialog, UseFileDialogOptions } from "@vueuse/core";
 import { computed, reactive, watch } from "vue";
 import { UserVM } from "../models/UserVM";
+import { useCommonStore } from "../stores/common-store";
 import { UserVmEditForInput } from "../types/userVm-types";
 import { getProfileTitle } from "../utils/misc";
+import ProfileCardEditorRandomAvatar, {
+  IHitData,
+} from "./ProfileCardEditorRandomAvatar.vue";
 
 const fileDialogOptions: UseFileDialogOptions = {
   multiple: false,
@@ -19,6 +23,8 @@ const emits = defineEmits<{
   (e: "cancel"): void;
   (e: "update:isDirty", state: boolean): void;
 }>();
+
+const commonStore = useCommonStore();
 
 const { files, open } = useFileDialog();
 
@@ -74,6 +80,10 @@ function save() {
 function cancel() {
   emits("cancel");
 }
+
+function gotImage({ webformatURL }: IHitData) {
+  userEditorObj.avatar = webformatURL;
+}
 </script>
 
 <template>
@@ -85,6 +95,7 @@ function cancel() {
             :src="avatarToShow"
             class="avatar-xlarge img-update"
             :title="avatarTitle"
+            @load="commonStore.setLoading(false)"
           />
 
           <div class="avatar-upload-overlay">
@@ -92,6 +103,11 @@ function cancel() {
           </div>
         </div>
       </div>
+
+      <profile-card-editor-random-avatar
+        @hit="gotImage"
+        @start="commonStore.setLoading()"
+      />
 
       <div class="form-group">
         <input

@@ -21,6 +21,7 @@ declare module '@vue/runtime-core' {
     PostListItem: typeof import('./../components/PostListItem.vue')['default']
     ProfileCard: typeof import('./../components/ProfileCard.vue')['default']
     ProfileCardEditor: typeof import('./../components/ProfileCardEditor.vue')['default']
+    ProfileCardEditorRandomAvatar: typeof import('./../components/ProfileCardEditorRandomAvatar.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     TheNavBar: typeof import('./../components/TheNavBar.vue')['default']
