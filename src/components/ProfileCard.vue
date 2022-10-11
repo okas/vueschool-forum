@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computedAsync, useFileDialog, UseFileDialogOptions } from "@vueuse/core";
-import { computed, watch } from "vue";
+import { computed, ref, watch } from "vue";
 import useNotifications, { INote } from "../composables/useNotifications";
 import { useCommonStore } from "../stores/common-store";
 import { useUserStore } from "../stores/user-store";
@@ -23,6 +23,8 @@ const userStore = useUserStore();
 const { files, open, reset } = useFileDialog();
 
 const { addNotification } = useNotifications();
+
+const isLoading = ref(false);
 
 const singleFile = computed(() => files.value?.item(0));
 
@@ -55,7 +57,7 @@ watch(singleFile, async (updatedVal) => {
     return;
   }
 
-  commonStore.setLoading(true);
+  setLoadingState();
 
   let note: INote;
   let timeoutMs: number;
@@ -71,14 +73,23 @@ watch(singleFile, async (updatedVal) => {
     note = { message: "Avatar storing error", type: "error" };
     timeoutMs = 5000;
   } finally {
-    addNotification(note, timeoutMs);
-    commonStore.setLoading(false);
-    reset();
+    finalizeUpdate(note, timeoutMs);
   }
 });
 
 function openDialog() {
   open(fileDialogOptions);
+}
+
+function finalizeUpdate(note: INote, timeoutMs: number) {
+  addNotification(note, timeoutMs);
+  setLoadingState(false);
+  reset();
+}
+
+function setLoadingState(state = true) {
+  commonStore.setLoading(state);
+  isLoading.value = state;
 }
 </script>
 
@@ -93,7 +104,7 @@ function openDialog() {
         />
 
         <div class="avatar-upload-overlay">
-          <fa v-if="!commonStore.isLoading" icon="camera" size="3x" inverse />
+          <fa v-if="!isLoading" icon="camera" size="3x" inverse />
           <app-spinner v-else inverse />
         </div>
       </div>
