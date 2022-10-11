@@ -14,13 +14,9 @@ const emits = defineEmits<{
 
 const editorText = ref<string>(props.text);
 
-const isDirty = computed(
-  () => (editorText.value ?? "") !== (props.text?.trim() ?? "")
-);
+const isDirty = computed(() => (editorText.value ?? "") !== (props.text?.trim() ?? ""));
 
-const submitBtnPhrase = computed(
-  () => `${props.text ? "Update" : "Publish"} post`
-);
+const submitBtnPhrase = computed(() => `${props.text ? "Update" : "Publish"} post`);
 
 const unWatch = watch(isDirty, (newValue) => emits("update:isDirty", newValue));
 
@@ -41,7 +37,9 @@ function cancel() {
   <div class="col-full">
     <h1 v-if="!text">
       Create new post in
-      <i><slot>current thread</slot></i>
+      <i>
+        <slot>current thread</slot>
+      </i>
     </h1>
     <form @submit.prevent="save">
       <div class="form-group">
