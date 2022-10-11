@@ -179,14 +179,38 @@ export const useUserStore = defineStore(
     }
 
     async function editUser(
-      { id, avatarFile, ...rest }: UserVmEditForInput,
+      {
+        id,
+        avatarFile = undefined,
+        email = "",
+        name = "",
+        username = "",
+        avatar = null,
+        bio = null,
+        location = null,
+        twitter = null,
+        website = null,
+      }: UserVmEditForInput,
       fetchAfter = false
     ) {
-      avatarFile && (rest.avatar = await _uploadAvatar(avatarFile, id));
+      avatarFile && (avatar = await _uploadAvatar(avatarFile, id));
 
-      const editDto = Object.fromEntries(
-        Object.entries(rest).map(([k, v]) => [k, v === undefined ? null : v])
+      ok(
+        email && name && username,
+        "Edit user error: missing required filed values!"
       );
+
+      const editDto = {
+        id,
+        name,
+        email,
+        username,
+        avatar,
+        bio,
+        location,
+        twitter,
+        website,
+      };
 
       const userRef = _getRef(id);
 
