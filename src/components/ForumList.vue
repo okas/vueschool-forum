@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ForumVM } from "../models/ForumVM";
+import type { ForumVM } from "../models/ForumVM";
 
 defineProps<{
   forums: Array<ForumVM>;
@@ -12,12 +12,7 @@ function countPhrase(length: number) {
 
 <template>
   <div
-    v-for="{
-      id: forumId,
-      name,
-      description,
-      threads: { length } = [],
-    } of forums"
+    v-for="{ id: forumId, name, description, threads: { length } = [] } of forums"
     :key="forumId"
     class="forum-listing"
   >

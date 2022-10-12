@@ -7,7 +7,7 @@ import ThreadEditor from "../components/ThreadEditor.vue";
 import { useCommonStore } from "../stores/common-store";
 import { useForumStore } from "../stores/forum-store";
 import { useThreadStore } from "../stores/thread-store";
-import { ThreadVMFormInput } from "../types/threadVm-types";
+import type { ThreadVMFormInput } from "../types/threadVm-types";
 import { findById } from "../utils/array-helpers";
 
 const props = defineProps<{
@@ -58,11 +58,7 @@ commonStore.setReady();
       <i v-text="forum.name" />
     </h1>
 
-    <thread-editor
-      v-model:is-dirty="hasDirtyForm"
-      @save="save"
-      @cancel="cancel"
-    />
+    <thread-editor v-model:is-dirty="hasDirtyForm" @save="save" @cancel="cancel" />
   </div>
 
   <modal-dialog v-if="isRevealed" />

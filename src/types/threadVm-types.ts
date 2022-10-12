@@ -1,7 +1,7 @@
-import { Timestamp } from "firebase/firestore";
-import { ThreadVM } from "../models/ThreadVM";
+import type { Timestamp } from "firebase/firestore";
+import type { ThreadVM } from "../models/ThreadVM";
 import { nameofFactory } from "../utils/nameof-helpers";
-import { PostVMFormInput } from "./postVm-types";
+import type { PostVMFormInput } from "./postVm-types";
 
 export type ThreadVMFormInput = Pick<ThreadVM, "title"> & PostVMFormInput;
 

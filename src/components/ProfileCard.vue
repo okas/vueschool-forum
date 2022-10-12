@@ -1,11 +1,18 @@
 <script setup lang="ts">
-import { computedAsync, useFileDialog, UseFileDialogOptions } from "@vueuse/core";
+import {
+  computedAsync,
+  useFileDialog,
+  type UseFileDialogOptions,
+} from "@vueuse/core";
 import { computed, ref, watch } from "vue";
-import useNotifications, { INote } from "../composables/useNotifications";
+import useNotifications, { type INote } from "../composables/useNotifications";
 import { useCommonStore } from "../stores/common-store";
 import { useUserStore } from "../stores/user-store";
-import { UserVMWithActivity } from "../types/userVm-types";
-import { diffFromUnix, formatMonthYearFromUnix } from "../utils/dateTimeDiffFormat";
+import type { UserVMWithActivity } from "../types/userVm-types";
+import {
+  diffFromUnix,
+  formatMonthYearFromUnix,
+} from "../utils/dateTimeDiffFormat";
 import { getCountPhrase, getProfileTitle } from "../utils/misc";
 
 const fileDialogOptions: UseFileDialogOptions = {
@@ -28,7 +35,9 @@ const isLoading = ref(false);
 
 const singleFile = computed(() => files.value?.item(0));
 
-const memberSince = computed(() => formatMonthYearFromUnix(props.authUser.registeredAt));
+const memberSince = computed(() =>
+  formatMonthYearFromUnix(props.authUser.registeredAt)
+);
 
 const avatarTitle = computed(() => getProfileTitle(props.authUser.name));
 
@@ -37,7 +46,8 @@ const avatarPreviewImgDataUrl = computedAsync<string>(
     return singleFile.value
       ? new Promise((resolve) => {
           const reader = new FileReader();
-          reader.onload = ({ target: { result } }) => resolve(result.toString());
+          reader.onload = ({ target: { result } }) =>
+            resolve(result.toString());
           reader.readAsDataURL(singleFile.value);
         })
       : undefined;

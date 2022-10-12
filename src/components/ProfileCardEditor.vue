@@ -1,9 +1,13 @@
 <script setup lang="ts">
-import { computedAsync, useFileDialog, UseFileDialogOptions } from "@vueuse/core";
+import {
+  computedAsync,
+  useFileDialog,
+  type UseFileDialogOptions,
+} from "@vueuse/core";
 import { computed, onUnmounted, reactive, ref, watch } from "vue";
-import { UserVM } from "../models/UserVM";
+import type { UserVM } from "../models/UserVM";
 import { useCommonStore } from "../stores/common-store";
-import { UserVmEditForInput } from "../types/userVm-types";
+import type { UserVmEditForInput } from "../types/userVm-types";
 import { getProfileTitle } from "../utils/misc";
 import ProfileCardEditorRandomAvatar from "./ProfileCardEditorRandomAvatar.vue";
 
@@ -77,7 +81,9 @@ watch(
 );
 
 onUnmounted(
-  () => randomAvatarImgData.value && URL.revokeObjectURL(randomAvatarImgData.value.objUrl)
+  () =>
+    randomAvatarImgData.value &&
+    URL.revokeObjectURL(randomAvatarImgData.value.objUrl)
 );
 
 function openDialog() {
@@ -91,7 +97,8 @@ function openDialog() {
 function save() {
   emits("update:isDirty", false);
 
-  userEditorObj.avatarFile = singleFile?.value ?? randomAvatarImgData?.value?.file;
+  userEditorObj.avatarFile =
+    singleFile?.value ?? randomAvatarImgData?.value?.file;
 
   commonStore.setLoading();
 

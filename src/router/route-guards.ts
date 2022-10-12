@@ -1,4 +1,4 @@
-import {
+import type {
   NavigationGuardWithThis,
   RouteLocation,
   RouteLocationNamedRaw,
@@ -9,7 +9,7 @@ import { useForumStore } from "../stores/forum-store";
 import { usePostStore } from "../stores/post-store";
 import { useThreadStore } from "../stores/thread-store";
 import { useUserStore } from "../stores/user-store";
-import { HasId } from "../types/HasId";
+import type { HasId } from "../types/HasId";
 import { getValOrFirst } from "../utils/misc";
 
 export const routeBeforeEnterGuards: ReadonlyMap<

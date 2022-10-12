@@ -1,4 +1,4 @@
-import { App, DirectiveBinding } from "vue";
+import type { App, DirectiveBinding } from "vue";
 
 type ExtendedHTMLElement = HTMLElement & {
   __click_outside_handler__: (event: MouseEvent) => void;

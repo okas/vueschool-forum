@@ -1,10 +1,14 @@
 <script setup lang="ts">
-import { computedAsync, useFileDialog, UseFileDialogOptions } from "@vueuse/core";
+import {
+  computedAsync,
+  useFileDialog,
+  type UseFileDialogOptions,
+} from "@vueuse/core";
 import { computed, reactive } from "vue";
 import { useRouter } from "vue-router";
 import { useCommonStore } from "../stores/common-store";
 import { useUserStore } from "../stores/user-store";
-import { UserVMRegWithEmailAndPassword } from "../types/userVm-types";
+import type { UserVMRegWithEmailAndPassword } from "../types/userVm-types";
 
 const fileDialogOptions: UseFileDialogOptions = {
   multiple: false,

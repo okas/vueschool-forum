@@ -1,6 +1,9 @@
-import { IconDefinition, library } from "@fortawesome/fontawesome-svg-core";
+import {
+  library,
+  type IconDefinition,
+} from "@fortawesome/fontawesome-svg-core";
 import { FontAwesomeIcon } from "@fortawesome/vue-fontawesome";
-import { App } from "vue";
+import type { App } from "vue";
 
 export async function useFontAwesomePlugin() {
   const appIconDefinitions = await getIconDefinitions();

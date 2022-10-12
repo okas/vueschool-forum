@@ -6,13 +6,13 @@ import ModalDialog, { confirmInjectKey } from "../components/ModalDialog.vue";
 import PostEditor from "../components/PostEditor.vue";
 import PostList from "../components/PostList.vue";
 import useNotifications from "../composables/useNotifications";
-import { PostVm } from "../models/PostVm";
+import type { PostVm } from "../models/PostVm";
 import { useCommonStore } from "../stores/common-store";
 import { usePostStore } from "../stores/post-store";
 import { useThreadStore } from "../stores/thread-store";
 import { useUserStore } from "../stores/user-store";
-import { PostVMEdit, PostVMFormInput, PostVMNew } from "../types/postVm-types";
-import { ThreadVMWithMeta } from "../types/threadVm-types";
+import type { PostVMEdit, PostVMFormInput, PostVMNew } from "../types/postVm-types";
+import type { ThreadVMWithMeta } from "../types/threadVm-types";
 import { getCountPhrase } from "../utils/misc";
 
 interface IPageViewModel {

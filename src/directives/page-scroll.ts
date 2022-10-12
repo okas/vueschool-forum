@@ -1,5 +1,5 @@
 import { useThrottleFn } from "@vueuse/shared";
-import { App, DirectiveBinding } from "vue";
+import type { App, DirectiveBinding } from "vue";
 
 type ExtendedHTMLElement = HTMLElement & {
   __page_scroll_handler__: () => void;

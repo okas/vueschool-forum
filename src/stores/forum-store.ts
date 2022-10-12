@@ -2,9 +2,9 @@ import { defineStore } from "pinia";
 import { reactive } from "vue";
 import { FabCollection } from "../firebase/firebase-collections-enum";
 import { hasIdVmConverter } from "../firebase/firebase-converters";
-import { ForumVM } from "../models/ForumVM";
-import { ForumStoreActions } from "../types/forum-store-types";
-import { StoreBaseState } from "../types/store-base-types";
+import type { ForumVM } from "../models/ForumVM";
+import type { ForumStoreActions } from "../types/forum-store-types";
+import type { StoreBaseState } from "../types/store-base-types";
 import { FirebaseSubscriptionManager } from "../utils/FirebaseSubscriptionManager";
 import {
   makeFirebaseFetchMultiDocsFn,

@@ -1,4 +1,4 @@
-import { RouteRecordRaw } from "vue-router";
+import type { RouteRecordRaw } from "vue-router";
 import { routeBeforeEnterGuards } from "./route-guards";
 
 export const rawRoutes: Readonly<RouteRecordRaw[]> = [

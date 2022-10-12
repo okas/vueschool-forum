@@ -1,17 +1,17 @@
 import {
   createRouter,
   createWebHistory,
-  RouteLocationNormalized,
-  RouteLocationRaw,
-  RouteRecordRaw,
   START_LOCATION,
+  type RouteLocationNormalized,
+  type RouteLocationRaw,
+  type RouteRecordRaw,
 } from "vue-router";
 import { useThreadStore } from "../stores/thread-store";
 import { useCategoryStore } from "./../stores/category-store";
 import { useForumStore } from "./../stores/forum-store";
 import { usePostStore } from "./../stores/post-store";
 import { useUserStore } from "./../stores/user-store";
-import { UserStoreActions } from "./../types/user-store-types";
+import type { UserStoreActions } from "./../types/user-store-types";
 import { rawRoutes } from "./raw-routes";
 
 function getRouteRecords(

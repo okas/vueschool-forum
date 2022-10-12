@@ -2,7 +2,11 @@
 import { useAsyncState, useConfirmDialog } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { computed, onUpdated, provide, ref } from "vue";
-import { onBeforeRouteLeave, RouteLocationRaw, useRouter } from "vue-router";
+import {
+  onBeforeRouteLeave,
+  useRouter,
+  type RouteLocationRaw,
+} from "vue-router";
 import ModalDialog, { confirmInjectKey } from "../components/ModalDialog.vue";
 import PostList from "../components/PostList.vue";
 import ProfileCard from "../components/ProfileCard.vue";
@@ -10,7 +14,7 @@ import ProfileCardEditor from "../components/ProfileCardEditor.vue";
 import { useCommonStore } from "../stores/common-store";
 import { usePostStore } from "../stores/post-store";
 import { useUserStore } from "../stores/user-store";
-import { UserVmEditForInput } from "../types/userVm-types";
+import type { UserVmEditForInput } from "../types/userVm-types";
 
 const pageSize = 10;
 const routeToReturn: RouteLocationRaw = { name: "Profile" };
@@ -38,7 +42,9 @@ const { isReady } = useAsyncState(async () => {
 const hasDirtyForm = ref(false);
 
 const lastPostsDesc = computed(() =>
-  [...getAuthUser.value.posts].sort(({ publishedAt: a }, { publishedAt: b }) => b - a)
+  [...getAuthUser.value.posts].sort(
+    ({ publishedAt: a }, { publishedAt: b }) => b - a
+  )
 );
 
 const canReveal = computed(() => isReady.value && getAuthUser.value);
@@ -68,7 +74,10 @@ onBeforeRouteLeave(async () => {
 });
 
 function fetchUserPosts(): Promise<void> {
-  return postStore.fetchAllUserPosts(pageSize, getAuthUser.value.posts.at(-1)?.id);
+  return postStore.fetchAllUserPosts(
+    pageSize,
+    getAuthUser.value.posts.at(-1)?.id
+  );
 }
 
 async function goToHome() {

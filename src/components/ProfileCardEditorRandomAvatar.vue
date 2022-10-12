@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { createFetch, CreateFetchOptions, useFetch } from "@vueuse/core";
+import { createFetch, useFetch, type CreateFetchOptions } from "@vueuse/core";
 import { computed, watch } from "vue";
 
 interface IWordsResp {
@@ -43,10 +43,13 @@ const emits = defineEmits<{
 const useWordsApi = createFetch(wordsApiConf);
 const useImagesApi = createFetch(imagesApiConf);
 
-const { execute: execWordsReq, data: wordData } = useWordsApi<IWordsResp>(`randomword`, {
-  immediate: false,
-  refetch: true,
-}).json<IWordsResp>();
+const { execute: execWordsReq, data: wordData } = useWordsApi<IWordsResp>(
+  `randomword`,
+  {
+    immediate: false,
+    refetch: true,
+  }
+).json<IWordsResp>();
 
 const imageApiUrl = computed(
   () =>

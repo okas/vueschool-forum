@@ -2,8 +2,8 @@ import { defineStore } from "pinia";
 import { computed, reactive } from "vue";
 import { FabCollection } from "../firebase/firebase-collections-enum";
 import { hasIdVmConverter } from "../firebase/firebase-converters";
-import { CategoryVM } from "../models/CategoryVM";
-import {
+import type { CategoryVM } from "../models/CategoryVM";
+import type {
   CategoryStoreActions,
   CategoryStoreGetters,
   CategoryStoreState,

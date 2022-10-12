@@ -7,7 +7,7 @@ import { useCommonStore } from "../stores/common-store";
 import { useForumStore } from "../stores/forum-store";
 import { useThreadStore } from "../stores/thread-store";
 import { useUserStore } from "../stores/user-store";
-import { ThreadVMWithMeta } from "../types/threadVm-types";
+import type { ThreadVMWithMeta } from "../types/threadVm-types";
 import { findById } from "../utils/array-helpers";
 
 const pageSize = 10;
@@ -45,9 +45,7 @@ const pageCount = computed(() =>
   Math.ceil((forum.value.threads?.length ?? 0) / pageSize)
 );
 
-watch(pageAtPaginator, () =>
-  router.push({ query: { page: pageAtPaginator.value } })
-);
+watch(pageAtPaginator, () => router.push({ query: { page: pageAtPaginator.value } }));
 
 watch(pageAtUri, (newPage) => {
   commonStore.setLoading();

@@ -1,7 +1,7 @@
-import { ComputedRef, Ref } from "vue";
-import { UserVM } from "./../models/UserVM";
-import { StoreBaseActions, StoreBaseState } from "./store-base-types";
-import {
+import type { ComputedRef, Ref } from "vue";
+import type { UserVM } from "./../models/UserVM";
+import type { StoreBaseActions, StoreBaseState } from "./store-base-types";
+import type {
   UserVMEditAvatarFile,
   UserVmEditForInput,
   UserVMNewFormInput,

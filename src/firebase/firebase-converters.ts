@@ -1,10 +1,10 @@
-import { FirestoreDataConverter } from "firebase/firestore";
-import { PostVm } from "../models/PostVm";
-import { ThreadVM } from "../models/ThreadVM";
-import { UserVM } from "../models/UserVM";
-import { HasId } from "../types/HasId";
-import { PostVmFireBase } from "../types/postVm-types";
-import { ThreadVmFireBase } from "../types/threadVm-types";
+import type { FirestoreDataConverter } from "firebase/firestore";
+import type { PostVm } from "../models/PostVm";
+import type { ThreadVM } from "../models/ThreadVM";
+import type { UserVM } from "../models/UserVM";
+import type { HasId } from "../types/HasId";
+import type { PostVmFireBase } from "../types/postVm-types";
+import type { ThreadVmFireBase } from "../types/threadVm-types";
 import { tryGetSeconds } from "../utils/firebase-helpers";
 
 export const postVmConverter: FirestoreDataConverter<PostVm> = {

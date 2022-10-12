@@ -2,7 +2,6 @@ import {
   arrayUnion,
   collection,
   doc,
-  FieldValue,
   getDoc,
   getDocs,
   increment,
@@ -14,17 +13,25 @@ import {
   updateDoc,
   where,
   writeBatch,
+  type FieldValue,
 } from "@firebase/firestore";
 import { defineStore } from "pinia";
 import { computed, reactive } from "vue";
 import { fabDb } from "../firebase";
 import { FabCollection } from "../firebase/firebase-collections-enum";
 import { postVmConverter } from "../firebase/firebase-converters";
-import { PostVm } from "../models/PostVm";
+import type { PostVm } from "../models/PostVm";
 import { nameForum } from "../types/forumVm-types";
-import { PostStoreActions, PostStoreGetters } from "../types/post-store-types";
-import { namePost, PostVMEdit, PostVMNew } from "../types/postVm-types";
-import { StoreBaseState } from "../types/store-base-types";
+import type {
+  PostStoreActions,
+  PostStoreGetters,
+} from "../types/post-store-types";
+import {
+  namePost,
+  type PostVMEdit,
+  type PostVMNew,
+} from "../types/postVm-types";
+import type { StoreBaseState } from "../types/store-base-types";
 import { nameThread } from "../types/threadVm-types";
 import { nameUser } from "../types/userVm-types";
 import { countBy, findById } from "../utils/array-helpers";

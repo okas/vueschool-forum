@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, reactive, watch } from "vue";
-import { ThreadVMFormInput } from "../types/threadVm-types";
+import type { ThreadVMFormInput } from "../types/threadVm-types";
 
 const props = defineProps<{
   title?: string;
@@ -65,9 +65,7 @@ function cancel() {
     </div>
 
     <div class="btn-group">
-      <button class="btn btn-ghost" type="button" @click.prevent="cancel">
-        Cancel
-      </button>
+      <button class="btn btn-ghost" type="button" @click.prevent="cancel">Cancel</button>
       <button
         class="btn btn-blue"
         type="submit"

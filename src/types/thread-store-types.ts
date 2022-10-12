@@ -1,7 +1,11 @@
-import { ComputedRef } from "vue";
-import { ThreadVM } from "../models/ThreadVM";
-import { StoreBaseActions } from "./store-base-types";
-import { ThreadVMEdit, ThreadVMNew, ThreadVMWithMeta } from "./threadVm-types";
+import type { ComputedRef } from "vue";
+import type { ThreadVM } from "../models/ThreadVM";
+import type { StoreBaseActions } from "./store-base-types";
+import type {
+  ThreadVMEdit,
+  ThreadVMNew,
+  ThreadVMWithMeta,
+} from "./threadVm-types";
 
 export interface ThreadStoreGetters {
   getThreadMetaInfoFn: ComputedRef<

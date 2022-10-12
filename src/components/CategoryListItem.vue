@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useRoute } from "vue-router";
-import { ForumVM } from "../models/ForumVM";
+import type { ForumVM } from "../models/ForumVM";
 import ForumList from "./ForumList.vue";
 
 const props = defineProps<{

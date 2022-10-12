@@ -1,22 +1,22 @@
 import {
   collection,
   doc,
-  DocumentChange,
-  DocumentData,
   documentId,
   DocumentReference,
   DocumentSnapshot,
-  FirestoreDataConverter,
   onSnapshot,
   Query,
   query,
   QuerySnapshot,
-  SnapshotListenOptions,
-  Unsubscribe,
   where,
+  type DocumentChange,
+  type DocumentData,
+  type FirestoreDataConverter,
+  type SnapshotListenOptions,
+  type Unsubscribe,
 } from "firebase/firestore";
 import { fabDb } from "../firebase/index";
-import { HasId } from "../types/HasId";
+import type { HasId } from "../types/HasId";
 import { ok } from "../utils/assert-helpers";
 import { remove, toBuckets, upsert } from "./array-helpers";
 import { isFulFilled } from "./promise-helpers";

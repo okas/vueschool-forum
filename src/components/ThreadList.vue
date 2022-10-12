@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useUserStore } from "../stores/user-store";
-import { ThreadVMWithMeta } from "../types/threadVm-types";
+import type { ThreadVMWithMeta } from "../types/threadVm-types";
 import ThreadListItem from "./ThreadListItem.vue";
 
 const props = defineProps<{

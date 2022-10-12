@@ -1,4 +1,4 @@
-import { Unsubscribe } from "@firebase/util";
+import type { Unsubscribe } from "@firebase/util";
 
 // TODO: migrate to composable pattern.
 

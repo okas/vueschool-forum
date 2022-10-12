@@ -1,5 +1,5 @@
-import { ForumVM } from "../models/ForumVM";
-import { StoreBaseActions } from "./store-base-types";
+import type { ForumVM } from "../models/ForumVM";
+import type { StoreBaseActions } from "./store-base-types";
 
 export interface ForumStoreActions extends StoreBaseActions {
   fetchForum(id: string): Promise<ForumVM | undefined>;

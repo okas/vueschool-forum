@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, ref } from "vue";
-import { PostVm } from "../models/PostVm";
+import type { PostVm } from "../models/PostVm";
 import { useUserStore } from "../stores/user-store";
-import { PostVMEdit, PostVMFormInput } from "../types/postVm-types";
+import type { PostVMEdit, PostVMFormInput } from "../types/postVm-types";
 import PostListItem from "./PostListItem.vue";
 
 const props = defineProps<{

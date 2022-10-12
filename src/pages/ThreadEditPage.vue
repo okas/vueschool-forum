@@ -7,7 +7,7 @@ import ThreadEditor from "../components/ThreadEditor.vue";
 import { useCommonStore } from "../stores/common-store";
 import { usePostStore } from "../stores/post-store";
 import { useThreadStore } from "../stores/thread-store";
-import { ThreadVMFormInput } from "../types/threadVm-types";
+import type { ThreadVMFormInput } from "../types/threadVm-types";
 import { findById } from "../utils/array-helpers";
 
 const props = defineProps<{

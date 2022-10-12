@@ -1,5 +1,5 @@
-import { Timestamp } from "firebase/firestore";
-import { PostVm } from "../models/PostVm";
+import type { Timestamp } from "firebase/firestore";
+import type { PostVm } from "../models/PostVm";
 import { nameofFactory } from "../utils/nameof-helpers";
 
 export type PostVMFormInput = Pick<PostVm, "text">;

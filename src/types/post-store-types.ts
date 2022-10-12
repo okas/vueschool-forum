@@ -1,7 +1,7 @@
-import { ComputedRef } from "vue";
-import { PostVm } from "../models/PostVm";
-import { PostVMEdit, PostVMNew } from "./postVm-types";
-import { StoreBaseActions } from "./store-base-types";
+import type { ComputedRef } from "vue";
+import type { PostVm } from "../models/PostVm";
+import type { PostVMEdit, PostVMNew } from "./postVm-types";
+import type { StoreBaseActions } from "./store-base-types";
 
 export interface PostStoreGetters {
   getUserPostsCountFn: ComputedRef<(userId: string) => number>;

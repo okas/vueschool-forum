@@ -1,4 +1,4 @@
-import { acceptHMRUpdate, StoreDefinition } from "pinia";
+import { acceptHMRUpdate, type StoreDefinition } from "pinia";
 
 export default function useAcceptHmr(store: StoreDefinition) {
   if (import.meta.hot) {

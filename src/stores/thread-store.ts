@@ -2,24 +2,24 @@ import {
   arrayUnion,
   collection,
   doc,
-  FieldValue,
   increment,
   serverTimestamp,
   writeBatch,
+  type FieldValue,
 } from "@firebase/firestore";
 import { defineStore } from "pinia";
 import { computed, reactive } from "vue";
 import { fabDb } from "../firebase";
 import { FabCollection } from "../firebase/firebase-collections-enum";
 import { threadVmConverter } from "../firebase/firebase-converters";
-import { ThreadVM } from "../models/ThreadVM";
+import type { ThreadVM } from "../models/ThreadVM";
 import { namePost } from "../types/postVm-types";
-import { StoreBaseState } from "../types/store-base-types";
-import {
+import type { StoreBaseState } from "../types/store-base-types";
+import type {
   ThreadStoreActions,
   ThreadStoreGetters,
 } from "../types/thread-store-types";
-import {
+import type {
   ThreadVMEdit,
   ThreadVMNew,
   ThreadVMWithMeta,

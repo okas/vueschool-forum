@@ -13,7 +13,7 @@ import {
   setDoc,
   updateDoc,
 } from "@firebase/firestore";
-import { Unsubscribe } from "@firebase/util";
+import type { Unsubscribe } from "@firebase/util";
 import {
   getDownloadURL,
   ref as fabStoreRef,
@@ -24,13 +24,13 @@ import { computed, reactive, ref } from "vue";
 import { fabAuth, fabDb } from "../firebase";
 import { FabCollection } from "../firebase/firebase-collections-enum";
 import { userVmConverter } from "../firebase/firebase-converters";
-import { UserVM } from "../models/UserVM";
-import {
+import type { UserVM } from "../models/UserVM";
+import type {
   UserStoreActions,
   UserStoreGetters,
   UserStoreState,
 } from "../types/user-store-types";
-import {
+import type {
   UserVMEditAvatarFile,
   UserVmEditForInput,
   UserVMNewFormInput,

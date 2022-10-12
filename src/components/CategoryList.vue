@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import { ForumVM } from "../models/ForumVM";
+import type { ForumVM } from "../models/ForumVM";
 import { useCategoryStore } from "../stores/category-store";
 import CategoryListItem from "./CategoryListItem.vue";
 
