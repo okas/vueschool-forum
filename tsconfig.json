@@ -1,4 +1,5 @@
 {
+  "extends": "@vue/tsconfig/tsconfig.web.json",
   "compilerOptions": {
     "strict": true,
     "useDefineForClassFields": true,

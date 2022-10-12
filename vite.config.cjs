@@ -1,5 +1,5 @@
 import vue from "@vitejs/plugin-vue";
-import { resolve } from "path";
+import { fileURLToPath, URL } from "node:url";
 import Components from "unplugin-vue-components/vite";
 import { defineConfig } from "vite";
 import eslintPlugin from "vite-plugin-eslint";
@@ -15,16 +15,16 @@ export default defineConfig({
   ],
   resolve: {
     alias: {
-      "@": resolve(__dirname, "./src"),
+      "@": fileURLToPath(new URL("./src", import.meta.url)),
     },
   },
   define: {
     __VUE_OPTIONS_API__: false,
     __VUE_PROD_DEVTOOLS__: false,
   },
-  hmr: true,
   cors: {
     origin: "*",
+    hmr: true,
   },
   server: {
     port: 8080,
