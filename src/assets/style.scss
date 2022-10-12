@@ -1828,7 +1828,7 @@ button {
     position: relative;
   }
 
-  &-edit {
+  &-edit > * {
     cursor: pointer;
   }
 

@@ -109,15 +109,16 @@ function setLoadingState(state = true) {
 
 <template>
   <div class="profile-card">
-    <div class="form-group" @click.prevent="openDialog">
+    <div class="form-group">
       <div class="avatar-edit">
         <app-avatar-img
           :src="avatarToShow"
           class="avatar-xlarge img-update"
           :title="avatarTitle"
+          @click.prevent="openDialog"
         />
 
-        <div class="avatar-upload-overlay">
+        <div class="avatar-upload-overlay" @click.prevent="openDialog">
           <fa v-if="!isLoading" icon="camera" size="3x" inverse />
           <app-spinner v-else inverse />
         </div>

@@ -124,8 +124,16 @@ commonStore.setReady();
             Choose file
           </button>
 
-          <div v-if="avatarPreviewImgDataUrl" @click="openDialog">
-            <img :src="avatarPreviewImgDataUrl" class="avatar-xlarge" />
+          <div v-if="avatarPreviewImgDataUrl" class="avatar-edit">
+            <app-avatar-img
+              :src="avatarPreviewImgDataUrl"
+              class="avatar-xlarge"
+              @click="openDialog"
+            />
+
+            <div class="avatar-upload-overlay" @click="openDialog">
+              <fa icon="camera" size="3x" inverse />
+            </div>
           </div>
         </div>
 

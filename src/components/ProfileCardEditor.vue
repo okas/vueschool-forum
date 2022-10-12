@@ -120,7 +120,7 @@ function gotImage(file: File) {
 <template>
   <div class="profile-card">
     <form @submit.prevent="save">
-      <div class="form-group" @click="openDialog">
+      <div class="form-group">
         <div
           class="avatar-edit"
           :style="commonStore.isLoading ? { cursor: 'auto' } : undefined"
@@ -129,10 +129,11 @@ function gotImage(file: File) {
             :src="avatarToShow"
             class="avatar-xlarge img-update"
             :title="avatarTitle"
+            @click="openDialog"
             @load="commonStore.setLoading(false)"
           />
 
-          <div class="avatar-upload-overlay">
+          <div class="avatar-upload-overlay" @click="openDialog">
             <fa icon="camera" size="3x" inverse />
           </div>
         </div>
