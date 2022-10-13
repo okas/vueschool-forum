@@ -5,6 +5,7 @@ import useNotifications from "../composables/useNotifications";
 import { useCommonStore } from "../stores/common-store";
 import { useUserStore } from "../stores/user-store";
 import { getValOrFirst } from "../utils/misc";
+import { getSentenceCase } from "../utils/string-helpers";
 
 const commonStore = useCommonStore();
 const userStore = useUserStore();
@@ -22,7 +23,9 @@ async function signIn() {
   } catch (err) {
     addNotification(
       {
-        message: String(err).includes("auth/missing-email") ? "Missing email" : err,
+        message: String(err).includes("auth/missing-email")
+          ? "Missing email"
+          : err,
         type: "error",
       },
       5000
@@ -59,12 +62,20 @@ commonStore.setReady();
           <vee-field
             id="email"
             v-model.trim="email"
-            rules="required"
+            rules="required|email"
             name="email"
             type="text"
             class="form-input"
           />
-          <vee-error-message name="email" class="form-error" />
+
+          <vee-error-message
+            v-slot="{ message }"
+            name="email"
+            class="form-error"
+            as="span"
+          >
+            {{ getSentenceCase(message) }}
+          </vee-error-message>
         </div>
         <div class="form-group">
           <label for="password">Password</label>
@@ -76,7 +87,15 @@ commonStore.setReady();
             class="form-input"
             name="password"
           />
-          <vee-error-message name="password" class="form-error" />
+
+          <vee-error-message
+            v-slot="{ message }"
+            name="password"
+            class="form-error"
+            as="span"
+          >
+            {{ getSentenceCase(message) }}
+          </vee-error-message>
         </div>
 
         <div class="push-top">
@@ -84,7 +103,9 @@ commonStore.setReady();
         </div>
 
         <div class="form-actions text-right">
-          <router-link :to="{ name: 'Register' }">Create an account?</router-link>
+          <router-link :to="{ name: 'Register' }"
+            >Create an account?</router-link
+          >
         </div>
       </vee-form>
 

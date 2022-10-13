@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { useChangeCase } from "@vueuse/integrations/useChangeCase";
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import AvatarFilePicker from "../components/AvatarFilePicker.vue";
@@ -8,6 +7,7 @@ import { useCommonStore } from "../stores/common-store";
 import { useUserStore } from "../stores/user-store";
 import type { IFileInfo } from "../types/avatar-utility-types";
 import type { UserVMRegWithEmailAndPassword } from "../types/userVm-types";
+import { getSentenceCase } from "../utils/string-helpers";
 
 const commonStore = useCommonStore();
 const userStore = useUserStore();
@@ -62,13 +62,14 @@ commonStore.setReady();
             type="text"
             class="form-input"
           />
+
           <vee-error-message
             v-slot="{ message }"
             name="name"
             class="form-error"
             as="span"
           >
-            {{ useChangeCase(message, "sentenceCase") }}
+            {{ getSentenceCase(message) }}
           </vee-error-message>
         </div>
 
@@ -82,13 +83,14 @@ commonStore.setReady();
             class="form-input"
             rules="required"
           />
+
           <vee-error-message
             v-slot="{ message }"
             name="username"
             class="form-error"
             as="span"
           >
-            {{ useChangeCase(message, "sentenceCase") }}
+            {{ getSentenceCase(message) }}
           </vee-error-message>
         </div>
 
@@ -100,7 +102,17 @@ commonStore.setReady();
             name="email"
             type="email"
             class="form-input"
+            rules="required|email"
           />
+
+          <vee-error-message
+            v-slot="{ message }"
+            name="email"
+            class="form-error"
+            as="span"
+          >
+            {{ getSentenceCase(message) }}
+          </vee-error-message>
         </div>
 
         <div class="form-group">
@@ -111,7 +123,17 @@ commonStore.setReady();
             name="password"
             type="password"
             class="form-input"
+            rules="required"
           />
+
+          <vee-error-message
+            v-slot="{ message }"
+            name="password"
+            class="form-error"
+            as="span"
+          >
+            {{ getSentenceCase(message) }}
+          </vee-error-message>
         </div>
 
         <div class="form-group">
