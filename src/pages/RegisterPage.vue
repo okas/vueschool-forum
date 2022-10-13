@@ -123,7 +123,7 @@ commonStore.setReady();
             name="password"
             type="password"
             class="form-input"
-            rules="required"
+            rules="required|min:6"
           />
 
           <vee-error-message
