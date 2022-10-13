@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { ErrorMessage, Field, Form as VeeForm } from "vee-validate";
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import AvatarFilePicker from "../components/AvatarFilePicker.vue";
@@ -43,67 +42,60 @@ function toggleButtonAndPicker() {
   isPickerRevealed.value = !isPickerRevealed.value;
 }
 
-function validateRequired<TValue>(value: TValue): boolean | string {
-  return String(value).trim() ? true : `This is required`;
-}
-
 commonStore.setReady();
 </script>
 
 <template>
   <div class="flex-grid justify-center">
     <div class="col-2">
-      <vee-form class="card card-form" @submit="register">
+      <vee-form class="card card-form" @submit.prevent="register">
         <h1 class="text-center">Register</h1>
 
         <div class="form-group">
           <label for="name">Full Name</label>
-          <field
+          <vee-field
             id="name"
             v-model.trim="editorObj.name"
-            :rules="validateRequired"
+            rules="required"
             name="name"
             type="text"
             class="form-input"
           />
-          <error-message name="name" class="form-error" />
+          <vee-error-message name="name" class="form-error" />
         </div>
 
         <div class="form-group">
           <label for="username">Username</label>
-          <field
+          <vee-field
             id="username"
             v-model.trim="editorObj.username"
             name="username"
             type="text"
             class="form-input"
-            :rules="validateRequired"
+            rules="required"
           />
-          <error-message name="username" class="form-error" />
+          <vee-error-message name="username" class="form-error" />
         </div>
 
         <div class="form-group">
           <label for="email">Email</label>
-          <field
+          <vee-field
             id="email"
             v-model.trim="editorObj.email"
             name="email"
             type="email"
             class="form-input"
-            required
           />
         </div>
 
         <div class="form-group">
           <label for="password">Password</label>
-          <field
+          <vee-field
             id="password"
             v-model.trim="editorObj.password"
             name="password"
             type="password"
             class="form-input"
-            required
-            minlength="6"
           />
         </div>
 

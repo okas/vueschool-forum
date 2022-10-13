@@ -29,5 +29,8 @@ declare module '@vue/runtime-core' {
     ThreadEditor: typeof import('./../components/ThreadEditor.vue')['default']
     ThreadList: typeof import('./../components/ThreadList.vue')['default']
     ThreadListItem: typeof import('./../components/ThreadListItem.vue')['default']
+    VeeErrorMessage: typeof import('vee-validate')['ErrorMessage']
+    VeeField: typeof import('vee-validate')['Field']
+    VeeForm: typeof import('vee-validate')['Form']
   }
 }

@@ -4,6 +4,7 @@ import AppRoot from "./App.vue";
 import clickOutsideDirective from "./directives/click-outside";
 import pageScrollDirective from "./directives/page-scroll";
 import { useFontAwesomePlugin } from "./plugins/font-awesome";
+import VeeValidatePlugin from "./plugins/vee-validate";
 import V3Pagination from "./plugins/vue3-pagination";
 import router from "./router";
 
@@ -17,6 +18,7 @@ async function loadPlugins() {
     .use(createPinia())
     .use(router)
     .use(await useFontAwesomePlugin())
+    .use(VeeValidatePlugin)
     .use(V3Pagination);
 }
 

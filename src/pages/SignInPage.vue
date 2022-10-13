@@ -51,28 +51,32 @@ commonStore.setReady();
 <template>
   <div class="flex-grid justify-center">
     <div class="col-2">
-      <form class="card card-form" @submit.prevent="signIn">
+      <vee-form class="card card-form" @submit="signIn">
         <h1 class="text-center">Login</h1>
 
         <div class="form-group">
           <label for="email">Email</label>
-          <input
+          <vee-field
             id="email"
             v-model.trim="email"
+            rules="required"
+            name="email"
             type="text"
             class="form-input"
-            required
           />
+          <vee-error-message name="email" class="form-error" />
         </div>
         <div class="form-group">
           <label for="password">Password</label>
-          <input
+          <vee-field
             id="password"
             v-model.trim="password"
+            rules="required"
             type="password"
             class="form-input"
-            required
+            name="password"
           />
+          <vee-error-message name="password" class="form-error" />
         </div>
 
         <div class="push-top">
@@ -82,7 +86,7 @@ commonStore.setReady();
         <div class="form-actions text-right">
           <router-link :to="{ name: 'Register' }">Create an account?</router-link>
         </div>
-      </form>
+      </vee-form>
 
       <div class="push-top text-center">
         <button class="btn-red btn-xsmall" @click="signInWithGoogle">
