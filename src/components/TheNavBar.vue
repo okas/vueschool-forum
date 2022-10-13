@@ -62,7 +62,7 @@ async function signOut() {
       <ul>
         <li v-if="getAuthUser" class="navbar-user">
           <a v-click-outside="closeDropDown" @click.prevent="toggleUserDropDown">
-            <img
+            <app-avatar-img
               v-if="getAuthUser.avatar"
               class="avatar-small"
               :src="getAuthUser.avatar"
