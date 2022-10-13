@@ -3,10 +3,12 @@ import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import AvatarFilePicker from "../components/AvatarFilePicker.vue";
 import AvatarRandomPicker from "../components/AvatarRandomPicker.vue";
+import { FabCollection } from "../firebase/firebase-collections-enum";
 import { useCommonStore } from "../stores/common-store";
 import { useUserStore } from "../stores/user-store";
 import type { IFileInfo } from "../types/avatar-utility-types";
 import type { UserVMRegWithEmailAndPassword } from "../types/userVm-types";
+import { nameUser } from "../types/userVm-types";
 import { getSentenceCase } from "../utils/string-helpers";
 
 const commonStore = useCommonStore();
@@ -81,7 +83,14 @@ commonStore.setReady();
             name="username"
             type="text"
             class="form-input"
-            rules="required"
+            :rules="{
+              required: true,
+              min: 3,
+              unique: {
+                col: FabCollection.users,
+                field: nameUser('username'),
+              },
+            }"
           />
 
           <vee-error-message
@@ -102,7 +111,9 @@ commonStore.setReady();
             name="email"
             type="email"
             class="form-input"
-            rules="required|email"
+            :rules="`required|email|unique:${FabCollection.users},${nameUser(
+              'email'
+            )}`"
           />
 
           <vee-error-message

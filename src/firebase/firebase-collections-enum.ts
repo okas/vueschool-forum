@@ -1,4 +1,4 @@
-export const enum FabCollection {
+export enum FabCollection {
   stats = "stats",
   users = "users",
   posts = "posts",
