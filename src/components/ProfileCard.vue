@@ -39,7 +39,7 @@ const memberSince = computed(() =>
   formatMonthYearFromUnix(props.authUser.registeredAt)
 );
 
-const avatarTitle = computed(() => getProfileTitle(props.authUser.name));
+const avatarTitle = computed(() => getProfileTitle(props.authUser.username));
 
 const avatarPreviewImgDataUrl = computedAsync<string>(
   async () => {

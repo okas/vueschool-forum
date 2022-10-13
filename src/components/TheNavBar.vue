@@ -14,7 +14,7 @@ const isUserDropDownOpen = ref(false);
 
 const isMobNavMenuVisible = ref(false);
 
-const avatarTitle = computed(() => getProfileTitle(getAuthUser.value.name));
+const avatarTitle = computed(() => getProfileTitle(getAuthUser.value.username));
 
 router.beforeEach(() => closeMobNavMenu());
 

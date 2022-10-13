@@ -60,7 +60,7 @@ const avatarToShow = computed<string | undefined>(
     userEditorObj.avatar
 );
 
-const avatarTitle = computed(() => getProfileTitle(userEditorObj.name));
+const avatarTitle = computed(() => getProfileTitle(userEditorObj.username));
 
 watch(
   userEditorObj,
