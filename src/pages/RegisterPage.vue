@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useChangeCase } from "@vueuse/integrations/useChangeCase";
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import AvatarFilePicker from "../components/AvatarFilePicker.vue";
@@ -61,7 +62,14 @@ commonStore.setReady();
             type="text"
             class="form-input"
           />
-          <vee-error-message name="name" class="form-error" />
+          <vee-error-message
+            v-slot="{ message }"
+            name="name"
+            class="form-error"
+            as="span"
+          >
+            {{ useChangeCase(message, "sentenceCase") }}
+          </vee-error-message>
         </div>
 
         <div class="form-group">
@@ -74,7 +82,14 @@ commonStore.setReady();
             class="form-input"
             rules="required"
           />
-          <vee-error-message name="username" class="form-error" />
+          <vee-error-message
+            v-slot="{ message }"
+            name="username"
+            class="form-error"
+            as="span"
+          >
+            {{ useChangeCase(message, "sentenceCase") }}
+          </vee-error-message>
         </div>
 
         <div class="form-group">

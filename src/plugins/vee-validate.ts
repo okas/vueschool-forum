@@ -1,7 +1,6 @@
+import { required } from "@vee-validate/rules";
 import { defineRule } from "vee-validate";
 
 export default () => {
-  defineRule("required", <TValue>(val: TValue) =>
-    val?.toString().trim() ? true : `This is required`
-  );
+  defineRule("required", required);
 };
