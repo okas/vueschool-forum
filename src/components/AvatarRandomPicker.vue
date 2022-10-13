@@ -19,6 +19,8 @@ interface IPixabayResp {
   hits: Array<IHitData>;
 }
 
+//TODO: externalize API keys!
+
 const wordsApiConf: CreateFetchOptions = {
   baseUrl: "https://api.api-ninjas.com/v1",
   fetchOptions: {
