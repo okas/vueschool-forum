@@ -1,24 +1,16 @@
 <script setup lang="ts">
-import {
-  computedAsync,
-  useFileDialog,
-  type UseFileDialogOptions,
-} from "@vueuse/core";
 import { computed, ref, watch } from "vue";
+import AvatarFilePicker from "../components/AvatarFilePicker.vue";
 import useNotifications, { type INote } from "../composables/useNotifications";
 import { useCommonStore } from "../stores/common-store";
 import { useUserStore } from "../stores/user-store";
+import type { IFileInfo } from "../types/avatar-utility-types";
 import type { UserVMWithActivity } from "../types/userVm-types";
 import {
   diffFromUnix,
   formatMonthYearFromUnix,
 } from "../utils/dateTimeDiffFormat";
 import { getCountPhrase, getProfileTitle } from "../utils/misc";
-
-const fileDialogOptions: UseFileDialogOptions = {
-  multiple: false,
-  accept: "image/*",
-};
 
 const props = defineProps<{
   authUser: UserVMWithActivity;
@@ -27,13 +19,11 @@ const props = defineProps<{
 const commonStore = useCommonStore();
 const userStore = useUserStore();
 
-const { files, open, reset } = useFileDialog();
-
 const { addNotification } = useNotifications();
 
-const isLoading = ref(false);
+const userSelectedAvatarFileData = ref<IFileInfo | undefined>();
 
-const singleFile = computed(() => files.value?.item(0));
+const isLoading = ref(false);
 
 const memberSince = computed(() =>
   formatMonthYearFromUnix(props.authUser.registeredAt)
@@ -41,29 +31,14 @@ const memberSince = computed(() =>
 
 const avatarTitle = computed(() => getProfileTitle(props.authUser.username));
 
-const avatarPreviewImgDataUrl = computedAsync<string>(
-  async () => {
-    return singleFile.value
-      ? new Promise((resolve) => {
-          const reader = new FileReader();
-          reader.onload = ({ target: { result } }) =>
-            resolve(result.toString());
-          reader.readAsDataURL(singleFile.value);
-        })
-      : undefined;
-  },
-  undefined,
-  { lazy: true }
-);
-
-const avatarToShow = computed(
-  () => avatarPreviewImgDataUrl.value ?? props.authUser.avatar
+const avatarToShow = computed<string | undefined>(
+  () => userSelectedAvatarFileData.value?.objUrl ?? props.authUser.avatar
 );
 
 const lasVisited = computed(() => diffFromUnix(props.authUser.lastVisitAt));
 
-watch(singleFile, async (updatedVal) => {
-  if (!updatedVal) {
+watch(userSelectedAvatarFileData, async ({ file }) => {
+  if (!file) {
     return;
   }
 
@@ -75,7 +50,7 @@ watch(singleFile, async (updatedVal) => {
   try {
     await userStore.updateAvatar({
       id: props.authUser.id,
-      avatarFile: updatedVal,
+      avatarFile: file,
     });
     note = { message: "New avatar stored" };
     timeoutMs = 2500;
@@ -87,23 +62,19 @@ watch(singleFile, async (updatedVal) => {
   }
 });
 
-function openDialog() {
-  if (isLoading.value) {
-    return;
-  }
-
-  open(fileDialogOptions);
-}
-
 function finalizeUpdate(note: INote, timeoutMs: number) {
   addNotification(note, timeoutMs);
   setLoadingState(false);
-  reset();
+  userSelectedAvatarFileData.value = undefined;
 }
 
 function setLoadingState(state = true) {
   commonStore.setLoading(state);
   isLoading.value = state;
+}
+
+function storeFileDateToState(dto: IFileInfo) {
+  userSelectedAvatarFileData.value = dto;
 }
 </script>
 
@@ -111,17 +82,15 @@ function setLoadingState(state = true) {
   <div class="profile-card">
     <div class="form-group">
       <div class="avatar-edit">
-        <app-avatar-img
-          :src="avatarToShow"
-          class="avatar-xlarge img-update"
+        <avatar-file-picker
           :title="avatarTitle"
-          @click.prevent="openDialog"
-        />
-
-        <div class="avatar-upload-overlay" @click.prevent="openDialog">
+          :avatar-src="avatarToShow"
+          @img-loaded="commonStore.setLoading(false)"
+          @file-picked="storeFileDateToState"
+        >
           <fa v-if="!isLoading" icon="camera" size="3x" inverse />
           <app-spinner v-else inverse />
-        </div>
+        </avatar-file-picker>
       </div>
     </div>
 

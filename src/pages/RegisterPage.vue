@@ -1,48 +1,26 @@
 <script setup lang="ts">
-import {
-  computedAsync,
-  useFileDialog,
-  type UseFileDialogOptions,
-} from "@vueuse/core";
-import { computed, reactive } from "vue";
+import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
+import AvatarFilePicker from "../components/AvatarFilePicker.vue";
+import AvatarRandomPicker from "../components/AvatarRandomPicker.vue";
 import { useCommonStore } from "../stores/common-store";
 import { useUserStore } from "../stores/user-store";
+import type { IFileInfo } from "../types/avatar-utility-types";
 import type { UserVMRegWithEmailAndPassword } from "../types/userVm-types";
-
-const fileDialogOptions: UseFileDialogOptions = {
-  multiple: false,
-  accept: "image/*",
-};
 
 const commonStore = useCommonStore();
 const userStore = useUserStore();
 
 const router = useRouter();
 
-const { files, open } = useFileDialog();
+const isPickerRevealed = ref(false);
+
+const userSelectedAvatarFileData = ref<IFileInfo | undefined>();
 
 const editorObj = reactive({} as UserVMRegWithEmailAndPassword);
 
-const singleFile = computed(() => files.value?.item(0));
-
-const avatarPreviewImgDataUrl = computedAsync<string>(
-  async () =>
-    new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = ({ target: { result } }) => resolve(result.toString());
-      reader.readAsDataURL(singleFile.value);
-    }),
-  undefined,
-  { lazy: true }
-);
-
-function openDialog() {
-  open(fileDialogOptions);
-}
-
 async function register() {
-  editorObj.avatarFile = singleFile.value;
+  editorObj.avatarFile = userSelectedAvatarFileData.value?.file;
   await userStore.registerUserWithEmailAndPassword(editorObj);
   goToProfileEdit();
 }
@@ -55,6 +33,15 @@ async function registerWithGoogle() {
 function goToProfileEdit() {
   router.push({ name: "ProfileEdit" });
 }
+
+function storeFileDateToState(dto: IFileInfo) {
+  userSelectedAvatarFileData.value = dto;
+}
+
+function toggleButtonAndPicker() {
+  isPickerRevealed.value = !isPickerRevealed.value;
+}
+
 commonStore.setReady();
 </script>
 
@@ -113,28 +100,30 @@ commonStore.setReady();
 
         <div class="form-group">
           <label for="avatar">Avatar</label>
-
           <button
-            v-show="!avatarPreviewImgDataUrl"
+            v-show="!isPickerRevealed"
             id="avatar"
             class="form-input btn-small"
             type="button"
-            @click="openDialog"
+            @click.prevent="toggleButtonAndPicker"
           >
             Choose file
           </button>
 
-          <div v-if="avatarPreviewImgDataUrl" class="avatar-edit">
-            <app-avatar-img
-              :src="avatarPreviewImgDataUrl"
-              class="avatar-xlarge"
-              @click="openDialog"
-            />
+          <template v-if="isPickerRevealed">
+            <avatar-file-picker
+              :avatar-src="userSelectedAvatarFileData?.objUrl"
+              @img-loaded="commonStore.setLoading(false)"
+              @file-picked="storeFileDateToState"
+            >
+            </avatar-file-picker>
 
-            <div class="avatar-upload-overlay" @click="openDialog">
-              <fa icon="camera" size="3x" inverse />
-            </div>
-          </div>
+            <avatar-random-picker
+              :disabled="commonStore.isLoading"
+              @file-picked="storeFileDateToState"
+              @start="commonStore.setLoading"
+            />
+          </template>
         </div>
 
         <div class="form-actions">

@@ -1,20 +1,12 @@
 <script setup lang="ts">
-import {
-  computedAsync,
-  useFileDialog,
-  type UseFileDialogOptions,
-} from "@vueuse/core";
-import { computed, onUnmounted, reactive, ref, watch } from "vue";
+import { computed, reactive, ref, watch } from "vue";
 import type { UserVM } from "../models/UserVM";
 import { useCommonStore } from "../stores/common-store";
+import type { IFileInfo } from "../types/avatar-utility-types";
 import type { UserVmEditForInput } from "../types/userVm-types";
 import { getProfileTitle } from "../utils/misc";
-import ProfileCardEditorRandomAvatar from "./ProfileCardEditorRandomAvatar.vue";
-
-const fileDialogOptions: UseFileDialogOptions = {
-  multiple: false,
-  accept: "image/*",
-};
+import AvatarFilePicker from "./AvatarFilePicker.vue";
+import AvatarRandomPicker from "./AvatarRandomPicker.vue";
 
 const props = defineProps<{
   user: UserVM;
@@ -28,36 +20,12 @@ const emits = defineEmits<{
 
 const commonStore = useCommonStore();
 
-const { files, open } = useFileDialog();
-
-const randomAvatarImgData = ref<
-  | {
-      file: File;
-      objUrl: string;
-    }
-  | undefined
->();
+const userSelectedAvatarFileData = ref<IFileInfo | undefined>();
 
 const userEditorObj = reactive<UserVmEditForInput>(props.user);
 
-const singleFile = computed<File | undefined>(() => files.value?.item(0));
-
-const avatarPreviewImgDataUrl = computedAsync<string>(
-  async () =>
-    new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = ({ target: { result } }) => resolve(result.toString());
-      reader.readAsDataURL(singleFile.value);
-    }),
-  undefined,
-  { lazy: true }
-);
-
 const avatarToShow = computed<string | undefined>(
-  () =>
-    avatarPreviewImgDataUrl.value ??
-    randomAvatarImgData.value?.objUrl ??
-    userEditorObj.avatar
+  () => userSelectedAvatarFileData.value?.objUrl ?? userEditorObj.avatar
 );
 
 const avatarTitle = computed(() => getProfileTitle(userEditorObj.username));
@@ -80,25 +48,10 @@ watch(
   }
 );
 
-onUnmounted(
-  () =>
-    randomAvatarImgData.value &&
-    URL.revokeObjectURL(randomAvatarImgData.value.objUrl)
-);
-
-function openDialog() {
-  if (commonStore.isLoading) {
-    return;
-  }
-
-  open(fileDialogOptions);
-}
-
 function save() {
   emits("update:isDirty", false);
 
-  userEditorObj.avatarFile =
-    singleFile?.value ?? randomAvatarImgData?.value?.file;
+  userEditorObj.avatarFile = userSelectedAvatarFileData?.value?.file;
 
   commonStore.setLoading();
 
@@ -109,11 +62,8 @@ function cancel() {
   emits("cancel");
 }
 
-function gotImage(file: File) {
-  randomAvatarImgData.value = {
-    objUrl: URL.createObjectURL(file),
-    file: file,
-  };
+function storeFileDateToState(dto: IFileInfo) {
+  userSelectedAvatarFileData.value = dto;
 }
 </script>
 
@@ -121,29 +71,19 @@ function gotImage(file: File) {
   <div class="profile-card">
     <form @submit.prevent="save">
       <div class="form-group">
-        <div
-          class="avatar-edit"
-          :style="commonStore.isLoading ? { cursor: 'auto' } : undefined"
-        >
-          <app-avatar-img
-            :src="avatarToShow"
-            class="avatar-xlarge img-update"
-            :title="avatarTitle"
-            @click="openDialog"
-            @load="commonStore.setLoading(false)"
-          />
+        <avatar-file-picker
+          :avatar-src="avatarToShow"
+          :title="avatarTitle"
+          @img-loaded="commonStore.setLoading(false)"
+          @file-picked="storeFileDateToState"
+        />
 
-          <div class="avatar-upload-overlay" @click="openDialog">
-            <fa icon="camera" size="3x" inverse />
-          </div>
-        </div>
+        <avatar-random-picker
+          :disabled="commonStore.isLoading"
+          @file-picked="storeFileDateToState"
+          @start="commonStore.setLoading"
+        />
       </div>
-
-      <profile-card-editor-random-avatar
-        :disabled="commonStore.isLoading"
-        @hit="gotImage"
-        @start="commonStore.setLoading()"
-      />
 
       <div class="form-group">
         <input

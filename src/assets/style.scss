@@ -1823,23 +1823,6 @@ button {
   max-height: 200px;
 }
 
-.avatar {
-  &-edit {
-    position: relative;
-  }
-
-  &-edit > * {
-    cursor: pointer;
-  }
-
-  &-edit &-upload-overlay {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-  }
-}
-
 .card {
   background: white;
   margin-top: 20px;

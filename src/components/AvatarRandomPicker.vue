@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { createFetch, useFetch, type CreateFetchOptions } from "@vueuse/core";
-import { computed, watch } from "vue";
+import { computed, onUnmounted, reactive, watch } from "vue";
+import type { IFileInfo } from "../types/avatar-utility-types";
 
 interface IWordsResp {
   word: string;
@@ -37,11 +38,13 @@ defineProps<{
 
 const emits = defineEmits<{
   (e: "start"): void;
-  (e: "hit", blob: File): void;
+  (e: "filePicked", dto: IFileInfo): void;
 }>();
 
 const useWordsApi = createFetch(wordsApiConf);
 const useImagesApi = createFetch(imagesApiConf);
+
+const createdObjectUrls = reactive<Array<string>>([]);
 
 const { execute: execWordsReq, data: wordData } = useWordsApi<IWordsResp>(
   `randomword`,
@@ -54,24 +57,29 @@ const { execute: execWordsReq, data: wordData } = useWordsApi<IWordsResp>(
 const imageApiUrl = computed(
   () =>
     `?key=${imagesApiKey}&per_page=${3}&safesearch=true&q=${
-      wordData.value?.word ?? "alfa"
+      wordData.value?.word ?? "alpha"
     }`
 );
 
-const { data: imageData } = useImagesApi<IPixabayResp>(imageApiUrl, {
+const { data: imageInfo } = useImagesApi<IPixabayResp>(imageApiUrl, {
   immediate: false,
   refetch: true,
 }).json<IPixabayResp>();
 
-watch(imageData, async (newImageData) => {
-  if (!newImageData.total) {
+watch(imageInfo, async (updatedImageInfo) => {
+  if (!updatedImageInfo.total) {
     execWordsReq();
   } else {
-    const file = await downloadFile(newImageData);
+    const file = await downloadFile(updatedImageInfo);
+    const objUrl = URL.createObjectURL(file);
 
-    emits("hit", file);
+    createdObjectUrls.push(objUrl);
+
+    emits("filePicked", { file, objUrl });
   }
 });
+
+onUnmounted(() => createdObjectUrls.forEach((url) => URL.revokeObjectURL(url)));
 
 function getRandomImage() {
   emits("start");
