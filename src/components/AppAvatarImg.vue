@@ -1,5 +1,16 @@
+<script lang="ts">
+const defaultSrc = "/user-placeholder.png";
+</script>
+
 <script setup lang="ts">
-withDefaults(defineProps<{ src?: string }>(), { src: "/user-placeholder.png" });
+withDefaults(
+  defineProps<{
+    src?: string | undefined;
+  }>(),
+  {
+    src: defaultSrc,
+  }
+);
 </script>
 
 <template>
