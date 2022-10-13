@@ -1,13 +1,17 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import useNotifications from "../composables/useNotifications";
 import { useCommonStore } from "../stores/common-store";
 import { useUserStore } from "../stores/user-store";
+import { getValOrFirst } from "../utils/misc";
 
 const commonStore = useCommonStore();
 const userStore = useUserStore();
 const router = useRouter();
 const route = useRoute();
+
+const { addNotification } = useNotifications();
 
 const email = ref<string>(null);
 const password = ref<string>(null);
@@ -16,7 +20,15 @@ async function signIn() {
   try {
     await userStore.signInWithEmailAndPassword(email.value, password.value);
   } catch (err) {
-    alert(err);
+    addNotification(
+      {
+        message: String(err).includes("auth/missing-email") ? "Missing email" : err,
+        type: "error",
+      },
+      5000
+    );
+
+    return;
   }
 
   navigate();
@@ -30,9 +42,7 @@ async function signInWithGoogle() {
 function navigate() {
   const { redirectTo } = route.query;
 
-  router.push(
-    Array.isArray(redirectTo) ? redirectTo[0] : redirectTo ?? { name: "Home" }
-  );
+  router.push(getValOrFirst(redirectTo) ?? { name: "Home" });
 }
 
 commonStore.setReady();
@@ -70,9 +80,7 @@ commonStore.setReady();
         </div>
 
         <div class="form-actions text-right">
-          <router-link :to="{ name: 'Register' }">
-            Create an account?
-          </router-link>
+          <router-link :to="{ name: 'Register' }">Create an account?</router-link>
         </div>
       </form>
 
