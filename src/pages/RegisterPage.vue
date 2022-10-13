@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Field as VeeField, Form as VeeForm } from "vee-validate";
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import AvatarFilePicker from "../components/AvatarFilePicker.vue";
@@ -48,38 +49,44 @@ commonStore.setReady();
 <template>
   <div class="flex-grid justify-center">
     <div class="col-2">
-      <form action="" class="card card-form" @submit.prevent="register">
+      <vee-form
+        class="card card-form"
+        :validation-schema="{
+          name: (val:string) =>  val?.trim?.() ? true: 'Name is required',
+          username: (val:string) => val?.trim?.() ? true: 'Username is required',
+        }"
+        @submit="register"
+      >
         <h1 class="text-center">Register</h1>
 
         <div class="form-group">
           <label for="name">Full Name</label>
-          <input
+          <vee-field
             id="name"
             v-model.trim="editorObj.name"
+            name="name"
             type="text"
             class="form-input"
-            required
-            minlength="3"
           />
         </div>
 
         <div class="form-group">
           <label for="username">Username</label>
-          <input
+          <vee-field
             id="username"
             v-model.trim="editorObj.username"
+            name="username"
             type="text"
             class="form-input"
-            required
-            minlength="3"
           />
         </div>
 
         <div class="form-group">
           <label for="email">Email</label>
-          <input
+          <vee-field
             id="email"
             v-model.trim="editorObj.email"
+            name="email"
             type="email"
             class="form-input"
             required
@@ -88,9 +95,10 @@ commonStore.setReady();
 
         <div class="form-group">
           <label for="password">Password</label>
-          <input
+          <vee-field
             id="password"
             v-model.trim="editorObj.password"
+            name="password"
             type="password"
             class="form-input"
             required
@@ -107,7 +115,7 @@ commonStore.setReady();
             type="button"
             @click.prevent="toggleButtonAndPicker"
           >
-            Choose file
+            Choose
           </button>
 
           <template v-if="isPickerRevealed">
@@ -129,7 +137,8 @@ commonStore.setReady();
         <div class="form-actions">
           <button type="submit" class="btn-blue btn-block">Register</button>
         </div>
-      </form>
+      </vee-form>
+
       <div class="text-center push-top">
         <button class="btn-red btn-xsmall" @click="registerWithGoogle">
           <i class="fa fa-google fa-btn"></i>Sign up with Google
