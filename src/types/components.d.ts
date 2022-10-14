@@ -9,6 +9,7 @@ declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     AppAvatarImg: typeof import('./../components/AppAvatarImg.vue')['default']
     AppDate: typeof import('./../components/AppDate.vue')['default']
+    AppFormField: typeof import('./../components/AppFormField.vue')['default']
     AppInfiniteScroll: typeof import('./../components/AppInfiniteScroll.vue')['default']
     AppNotifications: typeof import('./../components/AppNotifications.vue')['default']
     AppSpinner: typeof import('./../components/AppSpinner.vue')['default']

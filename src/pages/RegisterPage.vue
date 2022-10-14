@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { type RuleExpression } from "vee-validate";
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import AvatarFilePicker from "../components/AvatarFilePicker.vue";
@@ -9,7 +10,30 @@ import { useUserStore } from "../stores/user-store";
 import type { IFileInfo } from "../types/avatar-utility-types";
 import type { UserVMRegWithEmailAndPassword } from "../types/userVm-types";
 import { nameUser } from "../types/userVm-types";
-import { getSentenceCase } from "../utils/string-helpers";
+
+const rulesMap = new Map<string, RuleExpression<unknown>>([
+  ["name", "required|min:4"],
+  [
+    "username",
+    {
+      required: true,
+      min: 3,
+      unique: {
+        col: FabCollection.users,
+        field: nameUser("username"),
+      },
+    },
+  ],
+  [
+    "email",
+    {
+      required: true,
+      email: true,
+      unique: [FabCollection.users, nameUser("email")],
+    },
+  ],
+  ["password", { required: true, min: [6] }],
+]);
 
 const commonStore = useCommonStore();
 const userStore = useUserStore();
@@ -54,101 +78,41 @@ commonStore.setReady();
       <vee-form class="card card-form" @submit.prevent="register">
         <h1 class="text-center">Register</h1>
 
-        <div class="form-group">
-          <label for="name">Full Name</label>
-          <vee-field
-            id="name"
-            v-model.trim="editorObj.name"
-            rules="required"
-            name="name"
-            type="text"
-            class="form-input"
-          />
+        <app-form-field
+          v-model="editorObj.name"
+          name="name"
+          type="text"
+          :rules="rulesMap.get('name')"
+          label="Full Name"
+        />
 
-          <vee-error-message
-            v-slot="{ message }"
-            name="name"
-            class="form-error"
-            as="span"
-          >
-            {{ getSentenceCase(message) }}
-          </vee-error-message>
-        </div>
+        <app-form-field
+          v-model="editorObj.username"
+          type="text"
+          name="username"
+          label="Username"
+          :rules="rulesMap.get('username')"
+        />
 
-        <div class="form-group">
-          <label for="username">Username</label>
-          <vee-field
-            id="username"
-            v-model.trim="editorObj.username"
-            name="username"
-            type="text"
-            class="form-input"
-            :rules="{
-              required: true,
-              min: 3,
-              unique: {
-                col: FabCollection.users,
-                field: nameUser('username'),
-              },
-            }"
-          />
+        <app-form-field
+          v-model="editorObj.email"
+          name="email"
+          type="email"
+          :rules="rulesMap.get('email')"
+          label="Email"
+        />
 
-          <vee-error-message
-            v-slot="{ message }"
-            name="username"
-            class="form-error"
-            as="span"
-          >
-            {{ getSentenceCase(message) }}
-          </vee-error-message>
-        </div>
-
-        <div class="form-group">
-          <label for="email">Email</label>
-          <vee-field
-            id="email"
-            v-model.trim="editorObj.email"
-            name="email"
-            type="email"
-            class="form-input"
-            :rules="`required|email|unique:${FabCollection.users},${nameUser(
-              'email'
-            )}`"
-          />
-
-          <vee-error-message
-            v-slot="{ message }"
-            name="email"
-            class="form-error"
-            as="span"
-          >
-            {{ getSentenceCase(message) }}
-          </vee-error-message>
-        </div>
-
-        <div class="form-group">
-          <label for="password">Password</label>
-          <vee-field
-            id="password"
-            v-model.trim="editorObj.password"
-            name="password"
-            type="password"
-            class="form-input"
-            rules="required|min:6"
-          />
-
-          <vee-error-message
-            v-slot="{ message }"
-            name="password"
-            class="form-error"
-            as="span"
-          >
-            {{ getSentenceCase(message) }}
-          </vee-error-message>
-        </div>
+        <app-form-field
+          v-model="editorObj.password"
+          name="password"
+          type="password"
+          :rules="rulesMap.get('password')"
+          label="Password"
+        />
 
         <div class="form-group">
           <label for="avatar">Avatar</label>
+
           <button
             v-show="!isPickerRevealed"
             id="avatar"
@@ -164,8 +128,7 @@ commonStore.setReady();
               :avatar-src="userSelectedAvatarFileData?.objUrl"
               @img-loaded="commonStore.setLoading(false)"
               @file-picked="storeFileDateToState"
-            >
-            </avatar-file-picker>
+            />
 
             <avatar-random-picker
               :disabled="commonStore.isLoading"
