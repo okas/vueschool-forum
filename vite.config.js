@@ -3,7 +3,10 @@ import { fileURLToPath, URL } from "node:url";
 import Components from "unplugin-vue-components/vite";
 import { defineConfig } from "vite";
 import eslintPlugin from "vite-plugin-eslint";
-import { VeeValidateResolver } from "./src/plugins/unplugin-vue-components";
+import {
+  VeeValidateResolver,
+  Vu3PaginationResolver,
+} from "./src/plugins/unplugin-vue-components";
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -12,7 +15,7 @@ export default defineConfig({
     eslintPlugin(),
     Components({
       dts: "src/types/components.d.ts",
-      resolvers: [VeeValidateResolver()],
+      resolvers: [VeeValidateResolver(), Vu3PaginationResolver()],
     }),
   ],
   resolve: {

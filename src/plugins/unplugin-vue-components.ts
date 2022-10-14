@@ -12,11 +12,18 @@ export function VeeValidateResolver(): ComponentResolver {
         requestedName.startsWith("Vee") &&
         ["Form", "Field", "ErrorMessage", "FieldArray"].includes(originalName)
       ) {
-        return {
-          name: originalName,
-          from: "vee-validate",
-        };
+        return { name: originalName, from: "vee-validate" };
       }
     },
+  };
+}
+
+export function Vu3PaginationResolver(): ComponentResolver {
+  return {
+    type: "component",
+    resolve: (requestedName): ComponentResolveResult =>
+      requestedName === "PaginationV"
+        ? { from: "@hennge/vue3-pagination" }
+        : undefined,
   };
 }

@@ -19,6 +19,7 @@ declare module '@vue/runtime-core' {
     CategoryListItem: typeof import('./../components/CategoryListItem.vue')['default']
     ForumList: typeof import('./../components/ForumList.vue')['default']
     ModalDialog: typeof import('./../components/ModalDialog.vue')['default']
+    PaginationV: typeof import('@hennge/vue3-pagination')['default']
     PostEditor: typeof import('./../components/PostEditor.vue')['default']
     PostList: typeof import('./../components/PostList.vue')['default']
     PostListItem: typeof import('./../components/PostListItem.vue')['default']

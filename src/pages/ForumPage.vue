@@ -92,7 +92,7 @@ async function fetchPagedViewModels(): Promise<void> {
 
     <div class="col-full push-top">
       <thread-list v-if="currentPageOfThreads" :threads="currentPageOfThreads">
-        <v-pagination
+        <pagination-v
           v-model="pageAtPaginator"
           class="pagination"
           :pages="pageCount"
