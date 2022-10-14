@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import type { RuleExpression } from "vee-validate";
 import { computed, reactive, ref, watch } from "vue";
+import { FabCollection } from "../firebase/firebase-collections-enum";
 import type { UserVM } from "../models/UserVM";
 import { useCommonStore } from "../stores/common-store";
 import type { IFileInfo } from "../types/avatar-utility-types";
-import type { UserVmEditForInput } from "../types/userVm-types";
+import { nameUser, type UserVmEditForInput } from "../types/userVm-types";
 import { getProfileTitle } from "../utils/misc";
 import AvatarFilePicker from "./AvatarFilePicker.vue";
 import AvatarRandomPicker from "./AvatarRandomPicker.vue";
@@ -18,20 +20,43 @@ const emits = defineEmits<{
   (e: "update:isDirty", state: boolean): void;
 }>();
 
+const rulesMap = new Map<string, RuleExpression<unknown>>([
+  [
+    "username",
+    {
+      required: true,
+      min: 2,
+      unique: {
+        coll: FabCollection.users,
+        field: nameUser("username"),
+        exclude: props.user.username,
+      },
+    },
+  ],
+  [
+    "email",
+    {
+      required: true,
+      email: true,
+      unique: [FabCollection.users, nameUser("email"), props.user.email],
+    },
+  ],
+]);
+
 const commonStore = useCommonStore();
 
 const userSelectedAvatarFileData = ref<IFileInfo | undefined>();
 
-const userEditorObj = reactive<UserVmEditForInput>(props.user);
+const editorObj = reactive<UserVmEditForInput>(props.user);
 
 const avatarToShow = computed<string | undefined>(
-  () => userSelectedAvatarFileData.value?.objUrl ?? userEditorObj.avatar
+  () => userSelectedAvatarFileData.value?.objUrl ?? editorObj.avatar
 );
 
-const avatarTitle = computed(() => getProfileTitle(userEditorObj.username));
+const avatarTitle = computed(() => getProfileTitle(editorObj.username));
 
 watch(
-  userEditorObj,
+  editorObj,
   ({ id, name, username, bio, email, website, location, avatar, twitter }) => {
     const result =
       (id ?? "") !== (props.user.id.trim() ?? "") ||
@@ -51,11 +76,11 @@ watch(
 function save() {
   emits("update:isDirty", false);
 
-  userEditorObj.avatarFile = userSelectedAvatarFileData?.value?.file;
+  editorObj.avatarFile = userSelectedAvatarFileData?.value?.file;
 
   commonStore.setLoading();
 
-  emits("save", userEditorObj);
+  emits("save", editorObj);
 }
 
 function cancel() {
@@ -69,7 +94,7 @@ function storeFileDateToState(dto: IFileInfo) {
 
 <template>
   <div class="profile-card">
-    <form @submit.prevent="save">
+    <vee-form @submit="save">
       <div class="form-group">
         <avatar-file-picker
           :avatar-src="avatarToShow"
@@ -85,87 +110,68 @@ function storeFileDateToState(dto: IFileInfo) {
         />
       </div>
 
-      <div class="form-group">
-        <input
-          v-model.trim="userEditorObj.username"
-          type="text"
-          placeholder="Username"
-          class="form-input text-lead text-bold"
-          required
-          minlength="3"
-        />
-      </div>
+      <app-form-field
+        v-model="editorObj.username"
+        name="username"
+        placeholder="Username"
+        :rules="rulesMap.get('username')"
+      />
 
-      <div class="form-group">
-        <input
-          v-model.trim="userEditorObj.name"
-          type="text"
-          placeholder="Full Name"
-          class="form-input text-lead"
-          required
-          minlength="3"
-        />
-      </div>
+      <app-form-field
+        v-model="editorObj.name"
+        name="name"
+        placeholder="Full Name"
+        rules="required|min:4"
+      />
 
-      <div class="form-group">
-        <label for="user_bio">Bio</label>
-        <textarea
-          id="user_bio"
-          v-model.trim="userEditorObj.bio"
-          class="form-input"
-          placeholder="Write a few words about yourself."
-        ></textarea>
-      </div>
+      <app-form-field
+        v-model="editorObj.bio"
+        as="textarea"
+        name="bio"
+        label="Bio"
+        rules="min:2"
+        placeholder="Write a few words about yourself"
+      />
 
       <hr />
 
-      <div class="form-group">
-        <label class="form-label" for="user_email">Email</label>
-        <input
-          id="user_email"
-          v-model.trim="userEditorObj.email"
-          autocomplete="off"
-          class="form-input"
-          required
-          type="email"
-        />
-      </div>
+      <app-form-field
+        v-model="editorObj.email"
+        name="email"
+        type="email"
+        :rules="rulesMap.get('email')"
+        label="Email"
+      />
 
-      <div class="form-group">
-        <label class="form-label" for="user_website">Website</label>
-        <input
-          id="user_website"
-          v-model.trim="userEditorObj.website"
-          autocomplete="off"
-          class="form-input"
-        />
-      </div>
+      <app-form-field
+        v-model="editorObj.website"
+        autocomplete="off"
+        name="website"
+        rules="url"
+        label="Website"
+      />
 
-      <div class="form-group">
-        <label class="form-label" for="user_email">Twitter</label>
-        <input
-          id="user_email"
-          v-model.trim="userEditorObj.twitter"
-          autocomplete="off"
-          class="form-input"
-          type="text"
-        />
-      </div>
+      <app-form-field
+        v-model="editorObj.twitter"
+        autocomplete="off"
+        rules="twitter"
+        label="Twitter"
+        name="twitter"
+      />
 
-      <div class="form-group">
-        <label class="form-label" for="user_location">Location</label>
-        <input
-          id="user_location"
-          v-model.trim="userEditorObj.location"
-          autocomplete="off"
-          class="form-input"
-        />
-      </div>
+      <app-form-field
+        v-model="editorObj.location"
+        autocomplete="off"
+        rules="min:2"
+        label="Location"
+        name="location"
+      />
 
       <div class="btn-group space-between">
         <button class="btn-ghost" @click.prevent="cancel">Cancel</button>
+
         <button type="submit" class="btn-blue">Save</button>
       </div>
-    </form>
+    </vee-form>
   </div>
 </template>

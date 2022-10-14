@@ -40,38 +40,39 @@ function cancel() {
 </script>
 
 <template>
-  <form @submit.prevent="save">
-    <div class="form-group">
-      <label for="thread_title">Title:</label>
-      <input
-        id="thread_title"
-        v-model.trim="editorObj.title"
-        type="text"
-        class="form-input"
-        name="title"
-      />
-    </div>
+  <vee-form @submit="save">
+    <app-form-field
+      v-model="editorObj.title"
+      type="text"
+      name="title"
+      label="Title"
+      rules="required|min:2"
+    />
 
-    <div class="form-group">
-      <label for="thread_content">Content:</label>
-      <textarea
-        id="thread_content"
-        v-model.trim="editorObj.text"
-        class="form-input"
-        name="content"
-        rows="8"
-        cols="140"
-      ></textarea>
-    </div>
+    <app-form-field
+      v-model="editorObj.text"
+      as="textarea"
+      name="text"
+      label="Content"
+      rules="required|min:2"
+      rows="8"
+      cols="140"
+    />
 
     <div class="btn-group">
-      <button class="btn btn-ghost" type="button" @click.prevent="cancel">Cancel</button>
+      <button
+        class="btn btn-ghost"
+        type="button"
+        @click.prevent="cancel"
+        v-text="`Cancel`"
+      />
+
       <button
         class="btn btn-blue"
         type="submit"
         name="Publish"
         v-text="submitButtonWord"
-      ></button>
+      />
     </div>
-  </form>
+  </vee-form>
 </template>

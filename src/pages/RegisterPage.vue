@@ -17,9 +17,9 @@ const rulesMap = new Map<string, RuleExpression<unknown>>([
     "username",
     {
       required: true,
-      min: 3,
+      min: 2,
       unique: {
-        col: FabCollection.users,
+        coll: FabCollection.users,
         field: nameUser("username"),
       },
     },

@@ -5,7 +5,6 @@ import useNotifications from "../composables/useNotifications";
 import { useCommonStore } from "../stores/common-store";
 import { useUserStore } from "../stores/user-store";
 import { getValOrFirst } from "../utils/misc";
-import { getSentenceCase } from "../utils/string-helpers";
 
 const commonStore = useCommonStore();
 const userStore = useUserStore();
@@ -23,9 +22,7 @@ async function signIn() {
   } catch (err) {
     addNotification(
       {
-        message: String(err).includes("auth/missing-email")
-          ? "Missing email"
-          : err,
+        message: String(err).includes("auth/missing-email") ? "Missing email" : err,
         type: "error",
       },
       5000
@@ -57,55 +54,28 @@ commonStore.setReady();
       <vee-form class="card card-form" @submit="signIn">
         <h1 class="text-center">Login</h1>
 
-        <div class="form-group">
-          <label for="email">Email</label>
-          <vee-field
-            id="email"
-            v-model.trim="email"
-            rules="required|email"
-            name="email"
-            type="text"
-            class="form-input"
-          />
+        <app-form-field
+          v-model="email"
+          name="email"
+          type="email"
+          rules="required|email"
+          label="Email"
+        />
 
-          <vee-error-message
-            v-slot="{ message }"
-            name="email"
-            class="form-error"
-            as="span"
-          >
-            {{ getSentenceCase(message) }}
-          </vee-error-message>
-        </div>
-        <div class="form-group">
-          <label for="password">Password</label>
-          <vee-field
-            id="password"
-            v-model.trim="password"
-            rules="required"
-            type="password"
-            class="form-input"
-            name="password"
-          />
-
-          <vee-error-message
-            v-slot="{ message }"
-            name="password"
-            class="form-error"
-            as="span"
-          >
-            {{ getSentenceCase(message) }}
-          </vee-error-message>
-        </div>
+        <app-form-field
+          v-model="password"
+          name="password"
+          type="password"
+          rules="required"
+          label="Password"
+        />
 
         <div class="push-top">
           <button type="submit" class="btn-blue btn-block">Log in</button>
         </div>
 
         <div class="form-actions text-right">
-          <router-link :to="{ name: 'Register' }"
-            >Create an account?</router-link
-          >
+          <router-link :to="{ name: 'Register' }">Create an account?</router-link>
         </div>
       </vee-form>
 

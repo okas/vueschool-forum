@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed, ref, watch } from "vue";
 import type { PostVMFormInput } from "../types/postVm-types";
+import { guidAsBase64 } from "../utils/misc";
 
 const props = defineProps<{
   text?: string;
+  validateOnBlur?: boolean;
 }>();
 
 const emits = defineEmits<{
@@ -12,7 +14,9 @@ const emits = defineEmits<{
   (e: "update:isDirty", state: boolean): void;
 }>();
 
-const editorText = ref<string>(props.text);
+const formKey = ref<string>(guidAsBase64());
+
+const editorText = ref<string | undefined>(props.text || "");
 
 const isDirty = computed(() => (editorText.value ?? "") !== (props.text?.trim() ?? ""));
 
@@ -24,12 +28,19 @@ function save() {
   unWatch?.();
   emits("update:isDirty", false);
   const dto = isDirty.value ? { text: editorText.value } : undefined;
-  editorText.value = "";
   emits("save", dto);
 }
 
 function cancel() {
   emits("cancel");
+  resetForm();
+}
+
+function resetForm() {
+  // Should use `resetForm` or `handleReset` slot props of the Form,
+  // but didn't work as expected.`
+  editorText.value = undefined;
+  formKey.value = guidAsBase64();
 }
 </script>
 
@@ -38,21 +49,22 @@ function cancel() {
     <h1 v-if="!text">
       Create new post in
       <i>
-        <slot>current thread</slot>
+        <slot> current thread </slot>
       </i>
     </h1>
-    <form @submit.prevent="save">
-      <div class="form-group">
-        <label v-if="!text" for="thread_content">Content:</label>
-        <textarea
-          id="thread_content"
-          v-model.trim="editorText"
-          class="form-input"
-          name="content"
-          rows="8"
-          cols="140"
-        />
-      </div>
+
+    <vee-form :key="formKey" @submit="save">
+      <app-form-field
+        v-model="editorText"
+        as="textarea"
+        name="text"
+        label="Content"
+        rules="required|min:2"
+        rows="8"
+        cols="140"
+        :validate-on-blur="validateOnBlur"
+      />
+
       <div class="btn-group">
         <button
           v-if="editorText"
@@ -62,6 +74,7 @@ function cancel() {
         >
           Cancel
         </button>
+
         <button
           class="btn btn-blue"
           type="submit"
@@ -69,6 +82,6 @@ function cancel() {
           v-text="submitBtnPhrase"
         />
       </div>
-    </form>
+    </vee-form>
   </div>
 </template>
