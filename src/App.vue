@@ -43,7 +43,7 @@ afterEach((to, from) => {
 
 <style lang="scss">
 @import "nprogress/nprogress.css";
-@import "assets/style.scss";
+@import "assets/style";
 
 #app {
   font-family: Avenir, Helvetica, Arial, sans-serif;
