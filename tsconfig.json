@@ -25,17 +25,23 @@
     "forceConsistentCasingInFileNames": true,
     "pretty": true,
     "typeRoots": ["node_modules/@types"],
-    "types": ["vite/client"]
+    "types": ["vite/client"],
+
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    }
   },
-  "enableAutoDiscovery": true,
   "typeAcquisition": {
     "enable": true
   },
-  "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
-  "paths": {
-    "@/*": ["src/*"]
-  },
-  "include": ["src/**/*.ts", "src/**/*.d.ts", "src/**/*.tsx", "src/**/*.jsx"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.d.ts",
+    "src/**/*.tsx",
+    "src/**/*.jsx",
+    "src/**/*.vue"
+  ],
   "exclude": ["node_modules"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
