@@ -122,19 +122,20 @@ async function tryFetchLimitedTimes(
   url: string,
   retries = 3
 ): Promise<Blob | undefined> {
-  let result: Blob | undefined;
+  let blob: Blob | undefined;
 
   while (retries--) {
-    const fetchResp = unref(useFetch(url).blob().data) ?? undefined;
+    const fetchResult = await useFetch(url).blob();
+    blob = unref(fetchResult.data) ?? undefined;
 
-    if (fetchResp) {
+    if (blob) {
       break;
     } else {
       await promiseTimeout(100);
     }
   }
 
-  return result;
+  return blob;
 }
 
 function getFileName({ id, webformatWidth, tags }: IHitData): string {
