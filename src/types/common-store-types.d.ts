@@ -1,5 +1,5 @@
+import type { StatsVM } from "@/models/StatsVM";
 import type { Ref } from "vue";
-import type { StatsVM } from "../models/StatsVM";
 
 export interface MainStoreState {
   stats: StatsVM;

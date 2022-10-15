@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { diffFromUnix, formatFromUnix } from "../utils/dateTimeDiffFormat";
+import { diffFromUnix, formatFromUnix } from "@/utils/dateTimeDiffFormat";
 
 defineProps<{
   timestamp: number;

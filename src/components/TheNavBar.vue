@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { useUserStore } from "@/stores/user-store";
+import { getProfileTitle } from "@/utils/misc";
 import { storeToRefs } from "pinia";
 import { computed, ref } from "vue";
 import { useRouter } from "vue-router";
-import { useUserStore } from "../stores/user-store";
-import { getProfileTitle } from "../utils/misc";
 
 const userStore = useUserStore();
 const router = useRouter();
@@ -50,7 +50,7 @@ async function signOut() {
     class="header"
   >
     <router-link class="logo" :to="{ name: 'Home' }">
-      <img src="/assets/svg/vueschool-logo.svg" alt="logo" title="Home" />
+      <img src="../assets/svg/vueschool-logo.svg" alt="logo" title="Home" />
     </router-link>
 
     <div class="btn-hamburger" @click.prevent="toggleMobNavMenu">
@@ -72,7 +72,7 @@ async function signOut() {
             />
             <span>
               {{ getAuthUser.name }}
-              <img class="icon-profile" src="/assets/svg/arrow-profile.svg" alt="" />
+              <img class="icon-profile" src="../assets/svg/arrow-profile.svg" alt="" />
             </span>
           </a>
 

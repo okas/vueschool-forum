@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import CategoryList from "@/components/CategoryList.vue";
+import { useCommonStore } from "@/stores/common-store";
+import { useForumStore } from "@/stores/forum-store";
+import { groupByToMap } from "@/utils/array-helpers";
 import { computed } from "vue";
-import CategoryList from "../components/CategoryList.vue";
-import { useCommonStore } from "../stores/common-store";
-import { useForumStore } from "../stores/forum-store";
-import { groupByToMap } from "../utils/array-helpers";
 
 const commonStore = useCommonStore();
 const forumStore = useForumStore();

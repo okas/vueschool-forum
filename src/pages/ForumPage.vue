@@ -1,14 +1,15 @@
 <script setup lang="ts">
+import ThreadList from "@/components/ThreadList.vue";
+import { useCommonStore } from "@/stores/common-store";
+import { useForumStore } from "@/stores/forum-store";
+import { useThreadStore } from "@/stores/thread-store";
+import { useUserStore } from "@/stores/user-store";
+import type { ThreadVMWithMeta } from "@/types/threadVm-types";
+import { findById } from "@/utils/array-helpers";
+import { getValOrFirst } from "@/utils/misc";
 import { useAsyncState } from "@vueuse/core";
 import { computed, nextTick, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import ThreadList from "../components/ThreadList.vue";
-import { useCommonStore } from "../stores/common-store";
-import { useForumStore } from "../stores/forum-store";
-import { useThreadStore } from "../stores/thread-store";
-import { useUserStore } from "../stores/user-store";
-import type { ThreadVMWithMeta } from "../types/threadVm-types";
-import { findById } from "../utils/array-helpers";
 
 const pageSize = 10;
 
@@ -30,7 +31,7 @@ useAsyncState(async () => {
 
 const pageAtUri = computed(() => {
   const { page } = route.query;
-  const result = parseInt(Array.isArray(page) ? page[0] : page);
+  const result = parseInt(getValOrFirst(page));
 
   return isNaN(result) ? 1 : result;
 });
@@ -45,7 +46,9 @@ const pageCount = computed(() =>
   Math.ceil((forum.value.threads?.length ?? 0) / pageSize)
 );
 
-watch(pageAtPaginator, () => router.push({ query: { page: pageAtPaginator.value } }));
+watch(pageAtPaginator, () =>
+  router.push({ query: { page: pageAtPaginator.value } })
+);
 
 watch(pageAtUri, (newPage) => {
   commonStore.setLoading();

@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import { getCountPhrase, getProfileTitle } from "@/utils/misc";
 import { computed } from "vue";
-import { getCountPhrase, getProfileTitle } from "../utils/misc";
 
 export interface IThreadListItem {
   title: string;

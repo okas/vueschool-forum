@@ -1,11 +1,11 @@
-import { defineStore } from "pinia";
-import { reactive, ref } from "vue";
-import type { StatsVM } from "../models/StatsVM";
+import type { StatsVM } from "@/models/StatsVM";
 import type {
   MainStoreActions,
   MainStoreState,
-} from "../types/common-store-types";
-import useAcceptHmr from "../utils/store-helpers";
+} from "@/types/common-store-types";
+import useAcceptHmr from "@/utils/store-helpers";
+import { defineStore } from "pinia";
+import { reactive, ref } from "vue";
 
 export const useCommonStore = defineStore(
   "common-store",

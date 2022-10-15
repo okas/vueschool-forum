@@ -1,6 +1,6 @@
 <script setup lang="ts">
+import type { ThreadVMFormInput } from "@/types/threadVm-types";
 import { computed, reactive, watch } from "vue";
-import type { ThreadVMFormInput } from "../types/threadVm-types";
 
 const props = defineProps<{
   title?: string;

@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import { useCommonStore } from "@/stores/common-store";
+import type { IFileInfo } from "@/types/avatar-utility-types";
 import { useFileDialog, type UseFileDialogOptions } from "@vueuse/core";
+import { title } from "process";
 import { computed, onUnmounted, reactive, ref, watch } from "vue";
-import { useCommonStore } from "../stores/common-store";
-import type { IFileInfo } from "../types/avatar-utility-types";
 
 const props = withDefaults(
   defineProps<{

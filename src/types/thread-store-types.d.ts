@@ -1,5 +1,5 @@
+import type { ThreadVM } from "@/models/ThreadVM";
 import type { ComputedRef } from "vue";
-import type { ThreadVM } from "../models/ThreadVM";
 import type { StoreBaseActions } from "./store-base-types";
 import type {
   ThreadVMEdit,

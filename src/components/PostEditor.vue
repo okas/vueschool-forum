@@ -1,7 +1,7 @@
 <script setup lang="ts">
+import type { PostVMFormInput } from "@/types/postVm-types";
+import { guidAsBase64 } from "@/utils/misc";
 import { computed, ref, watch } from "vue";
-import type { PostVMFormInput } from "../types/postVm-types";
-import { guidAsBase64 } from "../utils/misc";
 
 const props = defineProps<{
   text?: string;

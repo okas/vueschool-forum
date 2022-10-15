@@ -1,20 +1,20 @@
-import { defineStore } from "pinia";
-import { computed, reactive } from "vue";
-import { FabCollection } from "../firebase/firebase-collections-enum";
-import { hasIdVmConverter } from "../firebase/firebase-converters";
-import type { CategoryVM } from "../models/CategoryVM";
+import { FabCollection } from "@/firebase/firebase-collections-enum";
+import { hasIdVmConverter } from "@/firebase/firebase-converters";
+import type { CategoryVM } from "@/models/CategoryVM";
 import type {
   CategoryStoreActions,
   CategoryStoreGetters,
   CategoryStoreState,
-} from "../types/category-store-types";
-import { findById } from "../utils/array-helpers";
-import { FirebaseSubscriptionManager } from "../utils/FirebaseSubscriptionManager";
+} from "@/types/category-store-types";
+import { findById } from "@/utils/array-helpers";
+import { FirebaseSubscriptionManager } from "@/utils/FirebaseSubscriptionManager";
 import {
   makeFirebaseFetchMultiDocsFn,
   makeFirebaseFetchSingleDocFn,
-} from "../utils/store-firebase-action-sinks";
-import useAcceptHmr from "../utils/store-helpers";
+} from "@/utils/store-firebase-action-sinks";
+import useAcceptHmr from "@/utils/store-helpers";
+import { defineStore } from "pinia";
+import { computed, reactive } from "vue";
 
 export const useCategoryStore = defineStore(
   "category-store",

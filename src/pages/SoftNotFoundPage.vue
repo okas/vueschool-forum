@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useCommonStore } from "../stores/common-store";
+import { useCommonStore } from "@/stores/common-store";
 
 useCommonStore().setReady();
 </script>

@@ -1,7 +1,7 @@
+import type { PostVm } from "@/models/PostVm";
+import type { ThreadVM } from "@/models/ThreadVM";
+import type { UserVM } from "@/models/UserVM";
 import type { Timestamp } from "@firebase/firestore";
-import type { PostVm } from "../models/PostVm";
-import type { ThreadVM } from "../models/ThreadVM";
-import type { UserVM } from "../models/UserVM";
 
 export type UserVMWithActivity = UserVM & {
   posts: PostVm[];

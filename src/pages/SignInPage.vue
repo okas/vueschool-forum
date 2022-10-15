@@ -1,10 +1,10 @@
 <script setup lang="ts">
+import useNotifications from "@/composables/useNotifications";
+import { useCommonStore } from "@/stores/common-store";
+import { useUserStore } from "@/stores/user-store";
+import { getValOrFirst } from "@/utils/misc";
 import { ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
-import useNotifications from "../composables/useNotifications";
-import { useCommonStore } from "../stores/common-store";
-import { useUserStore } from "../stores/user-store";
-import { getValOrFirst } from "../utils/misc";
 
 const commonStore = useCommonStore();
 const userStore = useUserStore();

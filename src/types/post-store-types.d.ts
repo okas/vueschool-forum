@@ -1,5 +1,5 @@
+import type { PostVm } from "@/models/PostVm";
 import type { ComputedRef } from "vue";
-import type { PostVm } from "../models/PostVm";
 import type { PostVMEdit, PostVMNew } from "./postVm-types";
 import type { StoreBaseActions } from "./store-base-types";
 

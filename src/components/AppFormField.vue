@@ -5,10 +5,10 @@ export default {
 </script>
 
 <script setup lang="ts">
-import { type RuleExpression } from "vee-validate";
+import { guidAsBase64 } from "@/utils/misc";
+import { getSentenceCase } from "@/utils/string-helpers";
+import type { RuleExpression } from "vee-validate";
 import { computed, useAttrs } from "vue";
-import { guidAsBase64 } from "../utils/misc";
-import { getSentenceCase } from "../utils/string-helpers";
 
 const props = defineProps<{
   modelValue: unknown;

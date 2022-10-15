@@ -1,4 +1,4 @@
-import type { ForumVM } from "../models/ForumVM";
+import type { ForumVM } from "@/models/ForumVM";
 import type { StoreBaseActions } from "./store-base-types";
 
 export interface ForumStoreActions extends StoreBaseActions {

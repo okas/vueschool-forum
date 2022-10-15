@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import CategoryListItem from "@/components/CategoryListItem.vue";
+import { useCategoryStore } from "@/stores/category-store";
+import { useCommonStore } from "@/stores/common-store";
+import { useForumStore } from "@/stores/forum-store";
 import { computed } from "vue";
-import CategoryListItem from "../components/CategoryListItem.vue";
-import { useCategoryStore } from "../stores/category-store";
-import { useCommonStore } from "../stores/common-store";
-import { useForumStore } from "../stores/forum-store";
 
 const props = defineProps<{
   categoryId: string;

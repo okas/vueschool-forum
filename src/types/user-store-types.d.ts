@@ -1,5 +1,5 @@
 import type { ComputedRef, Ref } from "vue";
-import type { UserVM } from "./../models/UserVM";
+import type { UserVM } from "./@/models/UserVM";
 import type { StoreBaseActions, StoreBaseState } from "./store-base-types";
 import type {
   UserVMEditAvatarFile,

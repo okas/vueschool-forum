@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { ForumVM } from "../models/ForumVM";
+import type { ForumVM } from "@/models/ForumVM";
 
 defineProps<{
   forums: Array<ForumVM>;

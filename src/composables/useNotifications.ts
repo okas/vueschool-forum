@@ -1,5 +1,5 @@
+import { guidAsBase64 } from "@/utils/misc";
 import { reactive } from "vue";
-import { guidAsBase64 } from "../utils/misc";
 
 export interface INote {
   message: string;

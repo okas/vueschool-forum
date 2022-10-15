@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { type RuleExpression } from "vee-validate";
+import AvatarFilePicker from "@/components/AvatarFilePicker.vue";
+import AvatarRandomPicker from "@/components/AvatarRandomPicker.vue";
+import { FabCollection } from "@/firebase/firebase-collections-enum";
+import { useCommonStore } from "@/stores/common-store";
+import { useUserStore } from "@/stores/user-store";
+import type { IFileInfo } from "@/types/avatar-utility-types";
+import type { UserVMRegWithEmailAndPassword } from "@/types/userVm-types";
+import { nameUser } from "@/utils/model-member-name-helpers";
+import type { RuleExpression } from "vee-validate";
 import { reactive, ref } from "vue";
 import { useRouter } from "vue-router";
-import AvatarFilePicker from "../components/AvatarFilePicker.vue";
-import AvatarRandomPicker from "../components/AvatarRandomPicker.vue";
-import { FabCollection } from "../firebase/firebase-collections-enum";
-import { useCommonStore } from "../stores/common-store";
-import { useUserStore } from "../stores/user-store";
-import type { IFileInfo } from "../types/avatar-utility-types";
-import type { UserVMRegWithEmailAndPassword } from "../types/userVm-types";
-import { nameUser } from "../utils/model-member-name-helpers";
 
 const rulesMap = new Map<string, RuleExpression<unknown>>([
   ["name", "required|min:4"],

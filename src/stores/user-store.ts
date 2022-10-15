@@ -1,3 +1,28 @@
+import { fabAuth, fabDb } from "@/firebase";
+import { FabCollection } from "@/firebase/firebase-collections-enum";
+import { userVmConverter } from "@/firebase/firebase-converters";
+import { fabStor } from "@/firebase/index";
+import type { UserVM } from "@/models/UserVM";
+import type {
+  UserStoreActions,
+  UserStoreGetters,
+  UserStoreState,
+} from "@/types/user-store-types";
+import type {
+  UserVMEditAvatarFile,
+  UserVmEditForInput,
+  UserVMNewFormInput,
+  UserVMRegWithEmailAndPassword,
+  UserVMWithActivity,
+} from "@/types/userVm-types";
+import { findById } from "@/utils/array-helpers";
+import { ok } from "@/utils/assert-helpers";
+import { FirebaseSubscriptionManager } from "@/utils/FirebaseSubscriptionManager";
+import {
+  makeFirebaseFetchMultiDocsFn,
+  makeFirebaseFetchSingleDocFn,
+} from "@/utils/store-firebase-action-sinks";
+import useAcceptHmr from "@/utils/store-helpers";
 import {
   createUserWithEmailAndPassword,
   GoogleAuthProvider,
@@ -21,31 +46,6 @@ import {
 } from "firebase/storage";
 import { defineStore } from "pinia";
 import { computed, reactive, ref } from "vue";
-import { fabAuth, fabDb } from "../firebase";
-import { FabCollection } from "../firebase/firebase-collections-enum";
-import { userVmConverter } from "../firebase/firebase-converters";
-import type { UserVM } from "../models/UserVM";
-import type {
-  UserStoreActions,
-  UserStoreGetters,
-  UserStoreState,
-} from "../types/user-store-types";
-import type {
-  UserVMEditAvatarFile,
-  UserVmEditForInput,
-  UserVMNewFormInput,
-  UserVMRegWithEmailAndPassword,
-  UserVMWithActivity,
-} from "../types/userVm-types";
-import { findById } from "../utils/array-helpers";
-import { ok } from "../utils/assert-helpers";
-import { FirebaseSubscriptionManager } from "../utils/FirebaseSubscriptionManager";
-import {
-  makeFirebaseFetchMultiDocsFn,
-  makeFirebaseFetchSingleDocFn,
-} from "../utils/store-firebase-action-sinks";
-import useAcceptHmr from "../utils/store-helpers";
-import { fabStor } from "./../firebase/index";
 import { usePostStore } from "./post-store";
 import { useThreadStore } from "./thread-store";
 

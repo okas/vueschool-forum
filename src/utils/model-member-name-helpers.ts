@@ -1,8 +1,8 @@
-import type { ForumVM } from "../models/ForumVM";
-import type { PostVm } from "../models/PostVm";
-import type { ThreadVM } from "../models/ThreadVM";
-import type { UserVM } from "../models/UserVM";
-import { nameofFactory } from "../utils/nameof-helpers";
+import type { ForumVM } from "@/models/ForumVM";
+import type { PostVm } from "@/models/PostVm";
+import type { ThreadVM } from "@/models/ThreadVM";
+import type { UserVM } from "@/models/UserVM";
+import { nameofFactory } from "@/utils/nameof-helpers";
 
 export const nameUser = nameofFactory<UserVM>();
 

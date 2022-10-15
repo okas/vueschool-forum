@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { computed, ref, watch } from "vue";
-import AvatarFilePicker from "../components/AvatarFilePicker.vue";
-import useNotifications, { type INote } from "../composables/useNotifications";
-import { useCommonStore } from "../stores/common-store";
-import { useUserStore } from "../stores/user-store";
-import type { IFileInfo } from "../types/avatar-utility-types";
-import type { UserVMWithActivity } from "../types/userVm-types";
+import AvatarFilePicker from "@/components/AvatarFilePicker.vue";
+import useNotifications, { type INote } from "@/composables/useNotifications";
+import { useCommonStore } from "@/stores/common-store";
+import { useUserStore } from "@/stores/user-store";
+import type { IFileInfo } from "@/types/avatar-utility-types";
+import type { UserVMWithActivity } from "@/types/userVm-types";
 import {
   diffFromUnix,
   formatMonthYearFromUnix,
-} from "../utils/dateTimeDiffFormat";
-import { getCountPhrase, getProfileTitle } from "../utils/misc";
+} from "@/utils/dateTimeDiffFormat";
+import { getCountPhrase, getProfileTitle } from "@/utils/misc";
+import { computed, ref, watch } from "vue";
 
 const props = defineProps<{
   authUser: UserVMWithActivity;

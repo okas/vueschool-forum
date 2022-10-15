@@ -1,5 +1,5 @@
 import type { ComputedRef } from "vue";
-import type { CategoryVM } from "./../models/CategoryVM";
+import type { CategoryVM } from "./@/models/CategoryVM";
 import type { StoreBaseActions } from "./store-base-types";
 
 export interface CategoryStoreState {
