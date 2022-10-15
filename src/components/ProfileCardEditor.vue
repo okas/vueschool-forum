@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { RuleExpression } from "vee-validate";
+import { type RuleExpression } from "vee-validate";
 import { computed, reactive, ref, watch } from "vue";
 import { FabCollection } from "../firebase/firebase-collections-enum";
 import type { UserVM } from "../models/UserVM";
