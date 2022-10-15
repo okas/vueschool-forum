@@ -61,7 +61,7 @@ function goToProfileEdit() {
   router.push({ name: "ProfileEdit" });
 }
 
-function storeFileDateToState(dto: IFileInfo) {
+function storeFileDateToState(dto: IFileInfo | undefined) {
   userSelectedAvatarFileData.value = dto;
 }
 

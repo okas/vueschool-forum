@@ -54,7 +54,7 @@ const editorObj = reactive<UserVmEditForInput>(props.user);
 const locationOptions = reactive<Array<string>>([]);
 
 const avatarToShow = computed<string | undefined>(
-  () => userSelectedAvatarFileData.value?.objUrl ?? editorObj.avatar
+  () => userSelectedAvatarFileData.value?.objUrl ?? editorObj.avatar ?? undefined
 );
 
 const avatarTitle = computed(() => getProfileTitle(editorObj.username));
@@ -91,7 +91,7 @@ function cancel() {
   emits("cancel");
 }
 
-function storeFileDateToState(dto: IFileInfo) {
+function storeFileDateToState(dto: IFileInfo | undefined) {
   userSelectedAvatarFileData.value = dto;
 }
 

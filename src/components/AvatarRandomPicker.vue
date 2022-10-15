@@ -1,7 +1,12 @@
 <script setup lang="ts">
-import { createFetch, useFetch, type CreateFetchOptions } from "@vueuse/core";
-import { computed, onUnmounted, reactive, watch } from "vue";
-import type { IFileInfo } from "../types/avatar-utility-types";
+import type { IFileInfo } from "@/types/avatar-utility-types";
+import {
+  createFetch,
+  promiseTimeout,
+  useFetch,
+  type CreateFetchOptions,
+} from "@vueuse/core";
+import { computed, onUnmounted, reactive, unref, watch } from "vue";
 
 interface IWordsResp {
   word: string;
@@ -40,7 +45,7 @@ defineProps<{
 
 const emits = defineEmits<{
   (e: "start"): void;
-  (e: "filePicked", dto: IFileInfo): void;
+  (e: "filePicked", dto: IFileInfo | undefined): void;
 }>();
 
 const useWordsApi = createFetch(wordsApiConf);
@@ -69,15 +74,10 @@ const { data: imageInfo } = useImagesApi<IPixabayResp>(imageApiUrl, {
 }).json<IPixabayResp>();
 
 watch(imageInfo, async (updatedImageInfo) => {
-  if (!updatedImageInfo.total) {
+  if (!updatedImageInfo?.total) {
     execWordsReq();
   } else {
-    const file = await downloadFile(updatedImageInfo);
-    const objUrl = URL.createObjectURL(file);
-
-    createdObjectUrls.push(objUrl);
-
-    emits("filePicked", { file, objUrl });
+    emits("filePicked", await tryGetAvatarImage(updatedImageInfo));
   }
 });
 
@@ -88,19 +88,62 @@ function getRandomImage() {
   execWordsReq();
 }
 
-async function downloadFile({ hits: [firstHit] }: IPixabayResp): Promise<File> {
-  const { data: blob } = await useFetch(firstHit.webformatURL).blob();
+async function tryGetAvatarImage(
+  input: IPixabayResp
+): Promise<IFileInfo | undefined> {
+  const file = await downloadImage(input);
 
-  return new File([blob.value], getFileName(firstHit), {
-    type: "image/jpg",
+  if (!file) {
+    return;
+  }
+
+  const objUrl = URL.createObjectURL(file);
+
+  createdObjectUrls.push(objUrl);
+
+  return { file, objUrl };
+}
+
+async function downloadImage({
+  hits: [firstHit],
+}: IPixabayResp): Promise<File | undefined> {
+  const blob = await tryFetchLimitedTimes(firstHit.webformatURL);
+
+  if (!blob) {
+    return undefined;
+  }
+
+  return new File([blob], getFileName(firstHit), {
+    type: "image/jpg", // TODO: detect real type; or drop the extension?
   });
 }
 
+async function tryFetchLimitedTimes(
+  url: string,
+  retries = 3
+): Promise<Blob | undefined> {
+  let result: Blob | undefined;
+
+  while (retries--) {
+    const fetchResp = unref(useFetch(url).blob().data) ?? undefined;
+
+    if (fetchResp) {
+      break;
+    } else {
+      await promiseTimeout(100);
+    }
+  }
+
+  return result;
+}
+
 function getFileName({ id, webformatWidth, tags }: IHitData): string {
-  return `${id}_${tags
+  const tagsCombined = tags
     .split(",")
     .map((tag) => tag.trim().replace(" ", "-"))
-    .join("_")}_${webformatWidth}.jpg`;
+    .join("_");
+
+  return `${id}_${tagsCombined}_${webformatWidth}.jpg`;
 }
 </script>
 
