@@ -26,13 +26,19 @@ const unWatch = watch(isDirty, (newValue) => emits("update:isDirty", newValue));
 
 function save() {
   unWatch?.();
+
   emits("update:isDirty", false);
+
   const dto = isDirty.value ? { text: editorText.value } : undefined;
+
   emits("save", dto);
+
+  resetForm();
 }
 
 function cancel() {
   emits("cancel");
+
   resetForm();
 }
 
