@@ -13,19 +13,15 @@ const injectedConfirmCb: ((data: boolean) => void) | undefined = inject(confirmI
     <div class="modal-layout">
       <div class="modal">
         <h2>
-          Are you sure you want to leave?<br />Unsaved changes will be lost!
+          Are you sure you want to leave?
+          <br />
+          Unsaved changes will be lost!
         </h2>
         <div class="btn-group">
-          <button
-            class="btn btn-red"
-            @click.prevent="injectedConfirmCb?.(true)"
-          >
+          <button class="btn btn-red" @click.prevent="injectedConfirmCb?.(true)">
             Yes
           </button>
-          <button
-            class="btn btn-blue"
-            @click.prevent="injectedConfirmCb?.(false)"
-          >
+          <button class="btn btn-blue" @click.prevent="injectedConfirmCb?.(false)">
             No
           </button>
         </div>
