@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import type { PostVm } from "@/models/PostVm";
+import { useUserStore } from "@/stores/user-store";
+import type { PostVMEdit, PostVMFormInput } from "@/types/postVm-types";
 import { computed, ref } from "vue";
-import type { PostVm } from "../models/PostVm";
-import { useUserStore } from "../stores/user-store";
-import type { PostVMEdit, PostVMFormInput } from "../types/postVm-types";
-import PostListItem from "./PostListItem.vue";
+import PostListItem, { type IPostListItemProps } from "./PostListItem.vue";
 
 const props = defineProps<{
   posts: Array<PostVm>;
@@ -18,30 +18,44 @@ const userStore = useUserStore();
 
 const postToEdit = ref<string | undefined>();
 
-const renderData = computed(() =>
-  props.posts.map(({ id: postId, userId, text, publishedAt, edited }) => {
-    const {
-      name: userName,
-      avatar: userAvatar,
-      postsCount,
-      threadsCount,
-    } = userStore.getUserByIdFn(userId);
+const renderData = computed<Array<IPostListItemProps>>(() => [
+  ...props.posts.map(transform),
+]);
 
-    return {
-      postId,
-      text,
-      publishedAt,
-      userId,
-      userName,
-      userAvatar,
-      postsCount,
-      threadsCount,
-      edited,
-    };
-  })
-);
+function transform({
+  id: postId,
+  userId,
+  text,
+  publishedAt,
+  edited,
+}: PostVm): IPostListItemProps | undefined {
+  const userData = userStore.getUserByIdFn(userId);
 
-function savePost(dto: PostVMFormInput) {
+  if (!userData) {
+    return undefined;
+  }
+
+  const {
+    name: userName,
+    avatar: userAvatar,
+    postsCount,
+    threadsCount,
+  } = userData;
+
+  return {
+    postId,
+    text,
+    publishedAt,
+    userId,
+    userName,
+    userAvatar: userAvatar ?? undefined,
+    postsCount,
+    threadsCount,
+    edited: edited ?? undefined,
+  };
+}
+
+function savePost(dto: PostVMFormInput | undefined) {
   if (dto && postToEdit.value) {
     const post: PostVMEdit = {
       id: postToEdit.value,

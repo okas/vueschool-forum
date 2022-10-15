@@ -1,11 +1,11 @@
+<script lang="ts">
+export const confirmInjectKey = Symbol("model confirm cb");
+</script>
+
 <script setup lang="ts">
 import { inject } from "vue";
 
-const injectedConfirmCb: (data: boolean) => void = inject(confirmInjectKey);
-</script>
-
-<script lang="ts">
-export const confirmInjectKey = Symbol("model confirm cb");
+const injectedConfirmCb: ((data: boolean) => void) | undefined = inject(confirmInjectKey);
 </script>
 
 <template>

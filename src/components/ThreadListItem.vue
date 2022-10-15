@@ -2,14 +2,16 @@
 import { computed } from "vue";
 import { getCountPhrase, getProfileTitle } from "../utils/misc";
 
-const props = defineProps<{
+export interface IThreadListItem {
   title: string;
   threadId: string;
   userName: string;
   publishedAt: number;
   repliesCount: number;
   userAvatar?: string;
-}>();
+}
+
+const props = defineProps<IThreadListItem>();
 
 const repliesCountPhrase = computed(() => getCountPhrase(props.repliesCount, "reply"));
 

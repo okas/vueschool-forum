@@ -1,14 +1,10 @@
 <script setup lang="ts">
-import { storeToRefs } from "pinia";
-import type { ForumVM } from "../models/ForumVM";
-import { useCategoryStore } from "../stores/category-store";
+import type { ForumVM } from "@/models/ForumVM";
 import CategoryListItem from "./CategoryListItem.vue";
 
 defineProps<{
   groupedForums: Map<string, Array<ForumVM>>;
 }>();
-
-const { getCategoryNamedFn } = storeToRefs(useCategoryStore());
 </script>
 
 <template>
@@ -18,7 +14,6 @@ const { getCategoryNamedFn } = storeToRefs(useCategoryStore());
       :key="categoryId"
       v-bind="{
         categoryId,
-        name: getCategoryNamedFn(categoryId),
         forums,
       }"
     />

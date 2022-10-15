@@ -1,4 +1,13 @@
 <script setup lang="ts">
+import ModalDialog, { confirmInjectKey } from "@/components/ModalDialog.vue";
+import PostList from "@/components/PostList.vue";
+import ProfileCard from "@/components/ProfileCard.vue";
+import ProfileCardEditor from "@/components/ProfileCardEditor.vue";
+import type { PostVm } from "@/models/PostVm";
+import { useCommonStore } from "@/stores/common-store";
+import { usePostStore } from "@/stores/post-store";
+import { useUserStore } from "@/stores/user-store";
+import type { UserVmEditForInput } from "@/types/userVm-types";
 import { useAsyncState, useConfirmDialog } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { computed, onUpdated, provide, ref } from "vue";
@@ -7,14 +16,6 @@ import {
   useRouter,
   type RouteLocationRaw,
 } from "vue-router";
-import ModalDialog, { confirmInjectKey } from "../components/ModalDialog.vue";
-import PostList from "../components/PostList.vue";
-import ProfileCard from "../components/ProfileCard.vue";
-import ProfileCardEditor from "../components/ProfileCardEditor.vue";
-import { useCommonStore } from "../stores/common-store";
-import { usePostStore } from "../stores/post-store";
-import { useUserStore } from "../stores/user-store";
-import type { UserVmEditForInput } from "../types/userVm-types";
 
 const pageSize = 10;
 const routeToReturn: RouteLocationRaw = { name: "Profile" };
@@ -41,8 +42,8 @@ const { isReady } = useAsyncState(async () => {
 
 const hasDirtyForm = ref(false);
 
-const lastPostsDesc = computed(() =>
-  [...getAuthUser.value.posts].sort(
+const lastPostsDesc = computed<Array<PostVm>>(() =>
+  [...(getAuthUser.value?.posts ?? [])].sort(
     ({ publishedAt: a }, { publishedAt: b }) => b - a
   )
 );
@@ -50,11 +51,11 @@ const lastPostsDesc = computed(() =>
 const canReveal = computed(() => isReady.value && getAuthUser.value);
 
 const personalizedRecentActivity = computed(
-  () => `${getAuthUser.value.username}'s recent activity`
+  () => `${getAuthUser.value?.username}'s recent activity`
 );
 
 const hasNoMorePosts = computed(
-  () => getAuthUser.value.posts.length === getAuthUser.value.postsCount
+  () => getAuthUser.value?.posts.length === getAuthUser.value?.postsCount
 );
 
 provide(confirmInjectKey, confirm);
@@ -76,7 +77,7 @@ onBeforeRouteLeave(async () => {
 function fetchUserPosts(): Promise<void> {
   return postStore.fetchAllUserPosts(
     pageSize,
-    getAuthUser.value.posts.at(-1)?.id
+    getAuthUser.value?.posts.at(-1)?.id
   );
 }
 
@@ -98,12 +99,12 @@ function cancel() {
 <template>
   <div v-if="canReveal" class="flex-grid">
     <div class="col-3 push-top">
-      <profile-card v-if="!edit" :auth-user="getAuthUser" />
+      <profile-card v-if="!edit" :auth-user="getAuthUser!" />
 
       <profile-card-editor
         v-else
         v-model:is-dirty="hasDirtyForm"
-        :user="getAuthUser"
+        :user="getAuthUser!"
         @save="save"
         @cancel="cancel"
       />

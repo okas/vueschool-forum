@@ -1,8 +1,8 @@
 <script setup lang="ts">
+import { useUserStore } from "@/stores/user-store";
+import type { ThreadVMWithMeta } from "@/types/threadVm-types";
 import { computed } from "vue";
-import { useUserStore } from "../stores/user-store";
-import type { ThreadVMWithMeta } from "../types/threadVm-types";
-import ThreadListItem from "./ThreadListItem.vue";
+import ThreadListItem, { type IThreadListItem } from "./ThreadListItem.vue";
 
 const props = defineProps<{
   threads: Array<ThreadVMWithMeta>;
@@ -10,20 +10,34 @@ const props = defineProps<{
 
 const { getUserByIdFn } = useUserStore();
 
-const renderData = computed(() =>
-  props.threads.map(({ id, title, userId, publishedAt, repliesCount }) => {
-    const { name: userName, avatar: userAvatar } = getUserByIdFn(userId);
+const renderData = computed<Array<IThreadListItem>>(() => [
+  ...props.threads.map(transform),
+]);
 
-    return {
-      threadId: id,
-      title,
-      publishedAt,
-      repliesCount,
-      userName,
-      userAvatar,
-    };
-  })
-);
+function transform({
+  id,
+  title,
+  userId,
+  publishedAt,
+  repliesCount,
+}: ThreadVMWithMeta): IThreadListItem | undefined {
+  const userData = getUserByIdFn(userId);
+
+  if (!userData) {
+    return;
+  }
+
+  const { name: userName, avatar: userAvatar } = userData;
+
+  return {
+    threadId: id,
+    title,
+    publishedAt,
+    repliesCount,
+    userName,
+    userAvatar: userAvatar ?? undefined,
+  };
+}
 </script>
 
 <template>

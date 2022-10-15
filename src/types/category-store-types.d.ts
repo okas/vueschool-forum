@@ -7,7 +7,7 @@ export interface CategoryStoreState {
 }
 
 export interface CategoryStoreGetters {
-  getCategoryNamedFn: ComputedRef<(categoryId: string) => string | undefined>;
+  getCategoryNameFn: ComputedRef<(categoryId: string) => string | undefined>;
 }
 
 export interface CategoryStoreActions extends StoreBaseActions {

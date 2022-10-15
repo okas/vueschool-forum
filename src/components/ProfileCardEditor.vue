@@ -1,14 +1,14 @@
 <script setup lang="ts">
+import { FabCollection } from "@/firebase/firebase-collections-enum";
+import type { UserVM } from "@/models/UserVM";
+import { useCommonStore } from "@/stores/common-store";
+import type { IFileInfo } from "@/types/avatar-utility-types";
+import type { UserVmEditForInput } from "@/types/userVm-types";
+import { getProfileTitle } from "@/utils/misc";
+import { nameUser } from "@/utils/model-member-name-helpers";
 import { useFetch } from "@vueuse/core";
-import { type RuleExpression } from "vee-validate";
+import type { RuleExpression } from "vee-validate";
 import { computed, reactive, ref, watch } from "vue";
-import { FabCollection } from "../firebase/firebase-collections-enum";
-import type { UserVM } from "../models/UserVM";
-import { useCommonStore } from "../stores/common-store";
-import type { IFileInfo } from "../types/avatar-utility-types";
-import { UserVmEditForInput } from "../types/userVm-types";
-import { getProfileTitle } from "../utils/misc";
-import { nameUser } from "../utils/model-member-name-helpers";
 import AvatarFilePicker from "./AvatarFilePicker.vue";
 import AvatarRandomPicker from "./AvatarRandomPicker.vue";
 
@@ -96,11 +96,18 @@ function storeFileDateToState(dto: IFileInfo | undefined) {
 }
 
 async function loadLocationOptions() {
-  const { data } = await useFetch(
-    "https://restcountries.com/v3.1/all?fields=name"
-  ).json<Array<{ name: { common: string } }>>();
+  const { data } = await useFetch("https://restcountries.com/v3.1/all?fields=name").json<
+    Array<{ name: { common: string } }>
+  >();
 
-  locationOptions.push(...data.value.map(({ name: { common } }) => common));
+  const options = data.value?.map(({ name: { common } }) => common);
+
+  if (!options) {
+    console.warn("Load options error: no options retrieved from API.");
+    return;
+  }
+
+  locationOptions.push(...options);
 }
 </script>
 

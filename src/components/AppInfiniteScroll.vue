@@ -12,7 +12,7 @@ const emits = defineEmits<{
   (e: "reachedEnd"): void;
 }>();
 
-const refElem = ref<Element | undefined>();
+const refElem = ref<HTMLElement | undefined>();
 
 const observer = ref<IntersectionObserver | undefined>();
 

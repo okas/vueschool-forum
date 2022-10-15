@@ -131,7 +131,7 @@ export const useUserStore = defineStore(
           email: rest.email ?? "",
           name: rest.displayName ?? "",
           username: rest.email ?? "",
-          avatar: rest.photoURL,
+          avatar: rest.photoURL ?? undefined,
         });
       }
     }

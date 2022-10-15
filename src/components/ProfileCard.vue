@@ -37,24 +37,22 @@ const avatarToShow = computed<string | undefined>(
 
 const lasVisited = computed(() => diffFromUnix(props.authUser.lastVisitAt));
 
-watch(userSelectedAvatarFileData, async ({ file }) => {
-  if (!file) {
+watch(userSelectedAvatarFileData, async (fileInfo) => {
+  if (!fileInfo?.file) {
     return;
   }
 
   setLoadingState();
 
-  let note: INote;
-  let timeoutMs: number;
+  let note: INote = { message: "New avatar stored" };
+  let timeoutMs = 2500;
 
   try {
     await userStore.updateAvatar({
       id: props.authUser.id,
-      avatarFile: file,
+      avatarFile: fileInfo.file,
     });
-    note = { message: "New avatar stored" };
-    timeoutMs = 2500;
-  } catch (err) {
+  } catch {
     note = { message: "Avatar storing error", type: "error" };
     timeoutMs = 5000;
   } finally {

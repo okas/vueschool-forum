@@ -1,9 +1,9 @@
 <script setup lang="ts">
+import { useUserStore } from "@/stores/user-store";
+import { getCountPhrase, getProfileTitle } from "@/utils/misc";
 import { computed } from "vue";
-import { useUserStore } from "../stores/user-store";
-import { getCountPhrase, getProfileTitle } from "../utils/misc";
 
-const props = defineProps<{
+export interface IPostListItemProps {
   postId: string;
   userId: string;
   userName: string;
@@ -17,7 +17,9 @@ const props = defineProps<{
     by: string;
     moderated: boolean;
   };
-}>();
+}
+
+const props = defineProps<IPostListItemProps>();
 
 const emits = defineEmits<{
   (e: "clickEdit", postId: string): void;

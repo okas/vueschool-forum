@@ -14,8 +14,8 @@ const emits = defineEmits<{
 }>();
 
 const editorObj = reactive({
-  title: props.title,
-  text: props.text,
+  title: props.title ?? "",
+  text: props.text ?? "",
 });
 
 const isDirty = computed(

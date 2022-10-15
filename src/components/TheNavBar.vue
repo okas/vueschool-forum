@@ -14,7 +14,9 @@ const isUserDropDownOpen = ref(false);
 
 const isMobNavMenuVisible = ref(false);
 
-const avatarTitle = computed(() => getProfileTitle(getAuthUser.value.username));
+const avatarTitle = computed(
+  () => getAuthUser.value && getProfileTitle(getAuthUser.value.username)
+);
 
 router.beforeEach(() => closeMobNavMenu());
 
@@ -48,7 +50,7 @@ async function signOut() {
     class="header"
   >
     <router-link class="logo" :to="{ name: 'Home' }">
-      <img src="../assets/svg/vueschool-logo.svg" alt="logo" title="Home" />
+      <img src="/assets/svg/vueschool-logo.svg" alt="logo" title="Home" />
     </router-link>
 
     <div class="btn-hamburger" @click.prevent="toggleMobNavMenu">
@@ -70,7 +72,7 @@ async function signOut() {
             />
             <span>
               {{ getAuthUser.name }}
-              <img class="icon-profile" src="../assets/svg/arrow-profile.svg" alt="" />
+              <img class="icon-profile" src="/assets/svg/arrow-profile.svg" alt="" />
             </span>
           </a>
 

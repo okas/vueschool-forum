@@ -1,14 +1,15 @@
 <script setup lang="ts">
+import ModalDialog, { confirmInjectKey } from "@/components/ModalDialog.vue";
+import ThreadEditor from "@/components/ThreadEditor.vue";
+import type { ThreadVM } from "@/models/ThreadVM";
+import { useCommonStore } from "@/stores/common-store";
+import { usePostStore } from "@/stores/post-store";
+import { useThreadStore } from "@/stores/thread-store";
+import type { ThreadVMFormInput } from "@/types/threadVm-types";
+import { findById } from "@/utils/array-helpers";
 import { useConfirmDialog } from "@vueuse/core";
 import { computed, provide, ref } from "vue";
 import { onBeforeRouteLeave, useRouter } from "vue-router";
-import ModalDialog, { confirmInjectKey } from "../components/ModalDialog.vue";
-import ThreadEditor from "../components/ThreadEditor.vue";
-import { useCommonStore } from "../stores/common-store";
-import { usePostStore } from "../stores/post-store";
-import { useThreadStore } from "../stores/thread-store";
-import type { ThreadVMFormInput } from "../types/threadVm-types";
-import { findById } from "../utils/array-helpers";
 
 const props = defineProps<{
   threadId: string;
@@ -24,10 +25,12 @@ const { isRevealed, reveal, confirm } = useConfirmDialog();
 
 const hasDirtyForm = ref<boolean>(false);
 
-const thread = computed(() => findById(threadStore.items, props.threadId));
+const thread = computed<ThreadVM | undefined>(() =>
+  findById(threadStore.items, props.threadId)
+);
 
-const firstPostText = computed(
-  () => findById(postStore.items, thread.value.firstPostId)?.text
+const firstPostText = computed<string | undefined>(
+  () => findById(postStore.items, thread.value?.firstPostId)?.text
 );
 
 provide(confirmInjectKey, confirm);
@@ -62,11 +65,11 @@ commonStore.setReady();
 
 <template>
   <div v-if="commonStore.isReady" class="col-full push-top">
-    <h1>Editing <i v-text="thread.title" /></h1>
+    <h1>Editing <i v-text="thread?.title" /></h1>
 
     <thread-editor
       v-model:is-dirty="hasDirtyForm"
-      :title="thread.title"
+      :title="thread?.title"
       :text="firstPostText"
       @save="save"
       @cancel="cancel"

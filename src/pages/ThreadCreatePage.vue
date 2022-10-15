@@ -1,14 +1,15 @@
 <script setup lang="ts">
+import ModalDialog, { confirmInjectKey } from "@/components/ModalDialog.vue";
+import ThreadEditor from "@/components/ThreadEditor.vue";
+import type { ForumVM } from "@/models/ForumVM";
+import { useCommonStore } from "@/stores/common-store";
+import { useForumStore } from "@/stores/forum-store";
+import { useThreadStore } from "@/stores/thread-store";
+import type { ThreadVMFormInput } from "@/types/threadVm-types";
+import { findById } from "@/utils/array-helpers";
 import { useConfirmDialog } from "@vueuse/core";
 import { computed, provide, ref } from "vue";
 import { onBeforeRouteLeave, useRouter } from "vue-router";
-import ModalDialog, { confirmInjectKey } from "../components/ModalDialog.vue";
-import ThreadEditor from "../components/ThreadEditor.vue";
-import { useCommonStore } from "../stores/common-store";
-import { useForumStore } from "../stores/forum-store";
-import { useThreadStore } from "../stores/thread-store";
-import type { ThreadVMFormInput } from "../types/threadVm-types";
-import { findById } from "../utils/array-helpers";
 
 const props = defineProps<{
   forumId: string;
@@ -24,7 +25,9 @@ const { isRevealed, reveal, confirm } = useConfirmDialog();
 
 const hasDirtyForm = ref<boolean>(false);
 
-const forum = computed(() => findById(forumStore.items, props.forumId));
+const forum = computed<ForumVM | undefined>(() =>
+  findById(forumStore.items, props.forumId)
+);
 
 provide(confirmInjectKey, confirm);
 
@@ -34,11 +37,15 @@ onBeforeRouteLeave(async () => {
   }
 });
 
-async function save({ title, text }: ThreadVMFormInput) {
+async function save(dto?: ThreadVMFormInput) {
+  if (!dto) {
+    return;
+  }
+
   const threadId = await threadStore.createThread({
     forumId: props.forumId,
-    title,
-    text,
+    title: dto.text,
+    text: dto.text,
   });
 
   router.push({ name: "Thread", params: { threadId } });
@@ -55,7 +62,7 @@ commonStore.setReady();
   <div v-if="commonStore.isReady" class="col-full push-top">
     <h1>
       Create new thread in
-      <i v-text="forum.name" />
+      <i v-text="forum?.name" />
     </h1>
 
     <thread-editor v-model:is-dirty="hasDirtyForm" @save="save" @cancel="cancel" />

@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { reactiveComputed, useConfirmDialog, watchDebounced } from "@vueuse/core";
+import ModalDialog, { confirmInjectKey } from "@/components/ModalDialog.vue";
+import PostEditor from "@/components/PostEditor.vue";
+import PostList from "@/components/PostList.vue";
+import useNotifications from "@/composables/useNotifications";
+import type { PostVm } from "@/models/PostVm";
+import { useCommonStore } from "@/stores/common-store";
+import { usePostStore } from "@/stores/post-store";
+import { useThreadStore } from "@/stores/thread-store";
+import { useUserStore } from "@/stores/user-store";
+import type { PostVMEdit, PostVMFormInput, PostVMNew } from "@/types/postVm-types";
+import type { ThreadVMWithMeta } from "@/types/threadVm-types";
+import { getCountPhrase } from "@/utils/misc";
+import { useConfirmDialog, watchDebounced } from "@vueuse/core";
 import { computed, provide, ref } from "vue";
 import { onBeforeRouteLeave, useRoute } from "vue-router";
-import ModalDialog, { confirmInjectKey } from "../components/ModalDialog.vue";
-import PostEditor from "../components/PostEditor.vue";
-import PostList from "../components/PostList.vue";
-import useNotifications from "../composables/useNotifications";
-import type { PostVm } from "../models/PostVm";
-import { useCommonStore } from "../stores/common-store";
-import { usePostStore } from "../stores/post-store";
-import { useThreadStore } from "../stores/thread-store";
-import { useUserStore } from "../stores/user-store";
-import type { PostVMEdit, PostVMFormInput, PostVMNew } from "../types/postVm-types";
-import type { ThreadVMWithMeta } from "../types/threadVm-types";
-import { getCountPhrase } from "../utils/misc";
 
 interface IPageViewModel {
   thread: ThreadVMWithMeta;
@@ -43,32 +43,49 @@ const hasDirtyFormInPostList = ref(false);
 const postIdsInRefresh = ref<Array<string> | undefined>();
 const notificationTimeoutMs = ref(5000);
 
-const pageViewModel: IPageViewModel = reactiveComputed<IPageViewModel>(() => {
+const pageViewModel = computed<IPageViewModel | undefined>(() => {
   const thread = threadStore.getThreadMetaInfoFn(props.threadId);
+
+  if (!thread) {
+    return;
+  }
 
   const posts = postStore.items
     .filter(({ threadId }) => threadId === thread.id)
     .sort(({ publishedAt: a }, { publishedAt: b }) => a - b);
 
-  return { thread, posts };
+  return { thread, posts } as IPageViewModel;
 });
 
-const statsPhrase = computed(
-  () =>
-    `${getCountPhrase(pageViewModel.thread.repliesCount, "reply")} by ${getCountPhrase(
-      pageViewModel.thread.contributorsCount,
-      "contributor"
-    )}`
-);
+const statsPhrase = computed<string | undefined>(() => {
+  if (!pageViewModel.value) {
+    return;
+  }
 
-const isOwner = computed(() => pageViewModel.thread.userId === userStore.authUserId);
+  const part1 = getCountPhrase(pageViewModel.value.thread.repliesCount, "reply");
+  const part2 = getCountPhrase(
+    pageViewModel.value.thread.contributorsCount,
+    "contributor"
+  );
+
+  return `${part1} by ${part2}`;
+});
+
+const isOwner = computed<boolean>(
+  () => pageViewModel.value?.thread.userId === userStore.authUserId
+);
 
 provide(confirmInjectKey, confirm);
 
 const unWatch = watchDebounced(
   pageViewModel,
   async (undatedGraph) => {
+    if (!undatedGraph) {
+      return;
+    }
+
     conditionallyNotifyThreadGraphChange();
+
     (await getEditingCompletionCondition(undatedGraph)) && setEditing(false);
   },
   {
@@ -81,7 +98,7 @@ onBeforeRouteLeave(async () => {
   let isOK = true;
 
   if (hasDirtyForm.value || hasDirtyFormInPostList.value) {
-    isOK = (await reveal(false)).data;
+    isOK = !!(await reveal(false)).data;
   }
 
   isOK && unWatch();
@@ -148,7 +165,7 @@ commonStore.setReady();
 </script>
 
 <template>
-  <div v-if="commonStore.isReady" class="col-large push-top">
+  <div v-if="commonStore.isReady && pageViewModel" class="col-large push-top">
     <!-- <ul class="breadcrumbs"></ul>
       <li>
         <a href="#"><i class="fa fa-home fa-btn"></i>Home</a>

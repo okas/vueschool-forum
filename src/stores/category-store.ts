@@ -24,7 +24,7 @@ export const useCategoryStore = defineStore(
 
     const items = reactive<Array<CategoryVM>>([]);
 
-    const getCategoryNamedFn = computed(
+    const getCategoryNameFn = computed(
       () => (categoryId: string) => findById(items, categoryId)?.name
     );
 
@@ -46,7 +46,7 @@ export const useCategoryStore = defineStore(
 
     return {
       items,
-      getCategoryNamedFn,
+      getCategoryNameFn,
       fetchCategory,
       fetchAllCategories,
       clearDbSubscriptions: () => fabSbscrMngr.clearDbSubscriptions(),

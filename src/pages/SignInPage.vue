@@ -13,16 +13,23 @@ const route = useRoute();
 
 const { addNotification } = useNotifications();
 
-const email = ref<string>(null);
-const password = ref<string>(null);
+const email = ref<string | undefined>();
+const password = ref<string | undefined>();
 
 async function signIn() {
+  if (!email.value || !password.value) {
+    addNotification({ message: "Incomplete credentials", type: "error" }, 5000);
+
+    return;
+  }
+
   try {
     await userStore.signInWithEmailAndPassword(email.value, password.value);
   } catch (err) {
+    const errStr = String(err);
     addNotification(
       {
-        message: String(err).includes("auth/missing-email") ? "Missing email" : err,
+        message: errStr.includes("auth/missing-email") ? "Missing email" : errStr,
         type: "error",
       },
       5000
