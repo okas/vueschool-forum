@@ -29,7 +29,7 @@ service cloud.firestore {
     }
 
     function canUpdateThread() {
-      return hasUserOwnDocPreReqMet()
+      return userIsLoggedIn()
         && request.resource.data.diff(resource.data).affectedKeys().hasOnly(
             ["lastPostAt", "lastPostId", "title", "contributors", "posts", "firstPostId"]
           )
