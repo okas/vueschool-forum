@@ -13,7 +13,6 @@ import { fabDb } from "../firebase";
 import { FabCollection } from "../firebase/firebase-collections-enum";
 import { threadVmConverter } from "../firebase/firebase-converters";
 import type { ThreadVM } from "../models/ThreadVM";
-import { namePost } from "../types/postVm-types";
 import type { StoreBaseState } from "../types/store-base-types";
 import type {
   ThreadStoreActions,
@@ -27,6 +26,7 @@ import type {
 import { countBy, findById } from "../utils/array-helpers";
 import { ok } from "../utils/assert-helpers";
 import { FirebaseSubscriptionManager } from "../utils/FirebaseSubscriptionManager";
+import { namePost } from "../utils/model-member-name-helpers";
 import {
   makeFirebaseFetchMultiDocsFn,
   makeFirebaseFetchSingleDocFn,

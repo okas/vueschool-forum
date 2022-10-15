@@ -1,4 +1,4 @@
-import { HasId } from "../types/HasId";
+import { HasId } from "./HasId";
 
 export class PostVm extends HasId {
   userId!: string;

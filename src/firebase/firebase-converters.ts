@@ -1,8 +1,8 @@
 import type { FirestoreDataConverter } from "firebase/firestore";
+import type { HasId } from "../models/HasId";
 import type { PostVm } from "../models/PostVm";
 import type { ThreadVM } from "../models/ThreadVM";
 import type { UserVM } from "../models/UserVM";
-import type { HasId } from "../types/HasId";
 import type { PostVmFireBase } from "../types/postVm-types";
 import type { ThreadVmFireBase } from "../types/threadVm-types";
 import { tryGetSeconds } from "../utils/firebase-helpers";

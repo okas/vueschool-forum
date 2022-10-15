@@ -6,8 +6,9 @@ import { FabCollection } from "../firebase/firebase-collections-enum";
 import type { UserVM } from "../models/UserVM";
 import { useCommonStore } from "../stores/common-store";
 import type { IFileInfo } from "../types/avatar-utility-types";
-import { nameUser, type UserVmEditForInput } from "../types/userVm-types";
+import { UserVmEditForInput } from "../types/userVm-types";
 import { getProfileTitle } from "../utils/misc";
+import { nameUser } from "../utils/model-member-name-helpers";
 import AvatarFilePicker from "./AvatarFilePicker.vue";
 import AvatarRandomPicker from "./AvatarRandomPicker.vue";
 

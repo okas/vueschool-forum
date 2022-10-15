@@ -6,8 +6,8 @@ import {
 } from "@firebase/firestore";
 import { fabDb } from "../../firebase";
 import { FabCollection } from "../../firebase/firebase-collections-enum";
-import { nameUser } from "../../types/userVm-types";
 import { ok } from "../../utils/assert-helpers";
+import { nameUser } from "../../utils/model-member-name-helpers";
 
 export interface IUniqueArgs {
   coll: string;

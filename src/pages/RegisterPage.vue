@@ -9,7 +9,7 @@ import { useCommonStore } from "../stores/common-store";
 import { useUserStore } from "../stores/user-store";
 import type { IFileInfo } from "../types/avatar-utility-types";
 import type { UserVMRegWithEmailAndPassword } from "../types/userVm-types";
-import { nameUser } from "../types/userVm-types";
+import { nameUser } from "../utils/model-member-name-helpers";
 
 const rulesMap = new Map<string, RuleExpression<unknown>>([
   ["name", "required|min:4"],

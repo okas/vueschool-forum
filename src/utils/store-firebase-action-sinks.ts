@@ -16,7 +16,7 @@ import {
   type Unsubscribe,
 } from "firebase/firestore";
 import { fabDb } from "../firebase/index";
-import type { HasId } from "../types/HasId";
+import type { HasId } from "../models/HasId";
 import { ok } from "../utils/assert-helpers";
 import { remove, toBuckets, upsert } from "./array-helpers";
 import { isFulFilled } from "./promise-helpers";

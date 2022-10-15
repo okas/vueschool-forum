@@ -1,4 +1,4 @@
-import { HasId } from "../types/HasId";
+import { HasId } from "./HasId";
 
 export class ForumVM extends HasId {
   name!: string;

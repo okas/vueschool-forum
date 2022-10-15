@@ -21,22 +21,21 @@ import { fabDb } from "../firebase";
 import { FabCollection } from "../firebase/firebase-collections-enum";
 import { postVmConverter } from "../firebase/firebase-converters";
 import type { PostVm } from "../models/PostVm";
-import { nameForum } from "../types/forumVm-types";
 import type {
   PostStoreActions,
   PostStoreGetters,
 } from "../types/post-store-types";
-import {
-  namePost,
-  type PostVMEdit,
-  type PostVMNew,
-} from "../types/postVm-types";
+import type { PostVMEdit, PostVMNew } from "../types/postVm-types";
 import type { StoreBaseState } from "../types/store-base-types";
-import { nameThread } from "../types/threadVm-types";
-import { nameUser } from "../types/userVm-types";
 import { countBy, findById } from "../utils/array-helpers";
 import { ok } from "../utils/assert-helpers";
 import { FirebaseSubscriptionManager } from "../utils/FirebaseSubscriptionManager";
+import {
+  nameForum,
+  namePost,
+  nameThread,
+  nameUser,
+} from "../utils/model-member-name-helpers";
 import {
   makeFirebaseFetchMultiDocsFn,
   makeFirebaseFetchSingleDocFn,
