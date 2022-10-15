@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useFetch } from "@vueuse/core";
 import { type RuleExpression } from "vee-validate";
 import { computed, reactive, ref, watch } from "vue";
 import { FabCollection } from "../firebase/firebase-collections-enum";
@@ -49,6 +50,8 @@ const userSelectedAvatarFileData = ref<IFileInfo | undefined>();
 
 const editorObj = reactive<UserVmEditForInput>(props.user);
 
+const locationOptions = reactive<Array<string>>([]);
+
 const avatarToShow = computed<string | undefined>(
   () => userSelectedAvatarFileData.value?.objUrl ?? editorObj.avatar
 );
@@ -89,6 +92,14 @@ function cancel() {
 
 function storeFileDateToState(dto: IFileInfo) {
   userSelectedAvatarFileData.value = dto;
+}
+
+async function loadLocationOptions() {
+  const { data } = await useFetch(
+    "https://restcountries.com/v3.1/all?fields=name"
+  ).json<Array<{ name: { common: string } }>>();
+
+  locationOptions.push(...data.value.map(({ name: { common } }) => common));
 }
 </script>
 
@@ -165,7 +176,13 @@ function storeFileDateToState(dto: IFileInfo) {
         rules="min:2"
         label="Location"
         name="location"
+        list="locations_list"
+        @mouseenter.once="loadLocationOptions"
       />
+
+      <datalist id="locations_list">
+        <option v-for="loc of locationOptions" :key="loc" :value="loc" />
+      </datalist>
 
       <div class="btn-group space-between">
         <button class="btn-ghost" @click.prevent="cancel">Cancel</button>

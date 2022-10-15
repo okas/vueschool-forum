@@ -1,3 +1,9 @@
+<script lang="ts">
+export default {
+  inheritAttrs: false,
+};
+</script>
+
 <script setup lang="ts">
 import { type RuleExpression } from "vee-validate";
 import { computed, useAttrs } from "vue";
