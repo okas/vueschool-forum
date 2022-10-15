@@ -8,7 +8,7 @@ const props = withDefaults(
   defineProps<{
     title?: string;
     fileDialogOptions?: UseFileDialogOptions;
-    avatarSrc?: string | undefined | null;
+    avatarSrc?: string | undefined;
   }>(),
   {
     title: "Avatar",
@@ -33,7 +33,9 @@ const avatarPreviewImgDataUrl = ref<string | undefined>();
 
 const createdObjectUrls = reactive<Array<string>>([]);
 
-const singleFile = computed<File | undefined>(() => files.value?.item(0));
+const singleFile = computed<File | undefined>(
+  () => files.value?.item(0) ?? undefined
+);
 
 watch(singleFile, async (newFile) => {
   if (!newFile) {
