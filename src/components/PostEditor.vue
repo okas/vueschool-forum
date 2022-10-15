@@ -9,14 +9,14 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits<{
-  (e: "save", dto?: PostVMFormInput): void;
+  (e: "save", dto?: PostVMFormInput | undefined): void;
   (e: "cancel"): void;
   (e: "update:isDirty", state: boolean): void;
 }>();
 
 const formKey = ref<string>(guidAsBase64());
 
-const editorText = ref<string | undefined>(props.text || "");
+const editorText = ref<string>(props.text ?? "");
 
 const isDirty = computed(() => (editorText.value ?? "") !== (props.text?.trim() ?? ""));
 
@@ -39,7 +39,7 @@ function cancel() {
 function resetForm() {
   // Should use `resetForm` or `handleReset` slot props of the Form,
   // but didn't work as expected.`
-  editorText.value = undefined;
+  editorText.value = "";
   formKey.value = guidAsBase64();
 }
 </script>

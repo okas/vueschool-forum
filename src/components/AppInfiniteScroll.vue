@@ -12,15 +12,13 @@ const emits = defineEmits<{
   (e: "reachedEnd"): void;
 }>();
 
-const elem = ref<Element>();
+const refElem = ref<Element | undefined>();
 
-const observer = ref<IntersectionObserver>(null);
+const observer = ref<IntersectionObserver | undefined>();
 
 onMounted(() => {
   const callback = (entries: IntersectionObserverEntry[]) =>
-    entries.forEach(
-      ({ isIntersecting }) => isIntersecting && emits("reachedEnd")
-    );
+    entries.forEach(({ isIntersecting }) => isIntersecting && emits("reachedEnd"));
 
   observer.value = new IntersectionObserver(callback, {
     root: null,
@@ -28,7 +26,7 @@ onMounted(() => {
     threshold: 0.9,
   });
 
-  observer.value.observe(elem.value);
+  refElem.value && observer.value.observe(refElem.value);
 });
 
 onBeforeUnmount(unobserve);
@@ -39,12 +37,12 @@ watch(
 );
 
 function unobserve() {
-  observer.value.unobserve(elem.value);
+  refElem.value && observer.value?.unobserve(refElem.value);
 }
 </script>
 
 <template>
-  <div ref="elem" class="intersection-observer" />
+  <div ref="refElem" class="intersection-observer" />
 </template>
 
 <style scoped lang="scss">
