@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ThreadList from "@/components/ThreadList.vue";
+import type { ForumVM } from "@/models/ForumVM";
 import { useCommonStore } from "@/stores/common-store";
 import { useForumStore } from "@/stores/forum-store";
 import { useThreadStore } from "@/stores/thread-store";
@@ -7,7 +8,7 @@ import { useUserStore } from "@/stores/user-store";
 import type { ThreadVMWithMeta } from "@/types/threadVm-types";
 import { findById } from "@/utils/array-helpers";
 import { getValOrFirst } from "@/utils/misc";
-import { useAsyncState } from "@vueuse/core";
+import { until, useAsyncState } from "@vueuse/core";
 import { computed, nextTick, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
@@ -31,7 +32,7 @@ useAsyncState(async () => {
 
 const pageAtUri = computed(() => {
   const { page } = route.query;
-  const result = parseInt(getValOrFirst(page));
+  const result = parseInt(getValOrFirst(page) ?? "");
 
   return isNaN(result) ? 1 : result;
 });
@@ -40,15 +41,15 @@ const pageAtPaginator = ref<number>(pageAtUri.value);
 
 const currentPageOfThreads = ref<Array<ThreadVMWithMeta>>([]);
 
-const forum = computed(() => findById(forumStore.items, props.forumId));
+const forum = computed<ForumVM | undefined>(() =>
+  findById(forumStore.items, props.forumId)
+);
 
 const pageCount = computed(() =>
-  Math.ceil((forum.value.threads?.length ?? 0) / pageSize)
+  Math.ceil((forum.value?.threads?.length ?? 0) / pageSize)
 );
 
-watch(pageAtPaginator, () =>
-  router.push({ query: { page: pageAtPaginator.value } })
-);
+watch(pageAtPaginator, () => router.push({ query: { page: pageAtPaginator.value } }));
 
 watch(pageAtUri, (newPage) => {
   commonStore.setLoading();
@@ -59,18 +60,27 @@ watch(pageAtUri, (newPage) => {
 async function fetchPagedViewModels(): Promise<void> {
   await nextTick();
 
+  await until(forum.value).not.toBeUndefined({
+    timeout: 5000,
+    throwOnTimeout: true,
+  });
+
   const threads = await threadStore.fetchThreadsByPage(
     pageAtUri.value,
     pageSize,
-    forum.value.threads
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    forum.value!.threads
   );
 
   await userStore.fetchUsers(threads.map(({ userId }) => userId));
 
-  currentPageOfThreads.value =
-    threads
+  const renderData = [
+    ...threads
       .filter(({ forumId }) => forumId === props.forumId)
-      .map(({ id }) => threadStore.getThreadMetaInfoFn(id)) ?? [];
+      .map(({ id }) => threadStore.getThreadMetaInfoFn(id)),
+  ];
+
+  currentPageOfThreads.value = renderData;
 
   commonStore.setReady();
 }
