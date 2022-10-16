@@ -2,11 +2,13 @@
 import type { IFileInfo } from "@/types/avatar-utility-types";
 import {
   createFetch,
+  get,
   promiseTimeout,
   useFetch,
   type CreateFetchOptions,
+  type UseFetchReturn,
 } from "@vueuse/core";
-import { computed, onUnmounted, reactive, unref, watch } from "vue";
+import { computed, onUnmounted, reactive, watch } from "vue";
 
 interface IWordsResp {
   word: string;
@@ -107,44 +109,57 @@ async function tryGetAvatarImage(
 async function downloadImage({
   hits: [firstHit],
 }: IPixabayResp): Promise<File | undefined> {
-  const blob = await tryFetchLimitedTimes(firstHit.webformatURL);
+  const blobFetchResult = await tryFetchLimitedTimes(firstHit.webformatURL);
 
-  if (!blob) {
+  if (!blobFetchResult?.data.value || !blobFetchResult.response.value) {
     return undefined;
   }
 
-  return new File([blob], getFileName(firstHit), {
-    type: "image/jpg", // TODO: detect real type; or drop the extension?
+  const { data, response } = blobFetchResult;
+
+  const blob = get(data);
+  const headers = get(response)!.headers;
+  const rawLastModified = headers.get("last-modified");
+  const fileName = getFileName(firstHit, blob!.type);
+
+  return new File([blob!], fileName, {
+    lastModified: rawLastModified
+      ? new Date(rawLastModified).getTime()
+      : undefined,
   });
 }
 
 async function tryFetchLimitedTimes(
   url: string,
   retries = 3
-): Promise<Blob | undefined> {
-  let blob: Blob | undefined;
+): Promise<UseFetchReturn<Blob> | undefined> {
+  let fetchResult: UseFetchReturn<Blob> | undefined;
 
   while (retries--) {
-    const fetchResult = await useFetch(url).blob();
-    blob = unref(fetchResult.data) ?? undefined;
+    fetchResult = await useFetch(url).blob();
 
-    if (blob) {
+    if (fetchResult.data.value) {
       break;
     } else {
-      await promiseTimeout(100);
+      await promiseTimeout(1000);
     }
   }
 
-  return blob;
+  return fetchResult;
 }
 
-function getFileName({ id, webformatWidth, tags }: IHitData): string {
+function getFileName(
+  { id, webformatWidth, tags }: IHitData,
+  contentType: string
+): string {
   const tagsCombined = tags
     .split(",")
     .map((tag) => tag.trim().replace(" ", "-"))
     .join("_");
 
-  return `${id}_${tagsCombined}_${webformatWidth}.jpg`;
+  const ext = contentType.split("/").at(-1);
+
+  return `${id}_${tagsCombined}_${webformatWidth}.${ext}`;
 }
 </script>
 
