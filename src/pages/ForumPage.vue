@@ -26,8 +26,10 @@ const threadStore = useThreadStore();
 const router = useRouter();
 const route = useRoute();
 
-useAsyncState(async () => {
+const { isReady } = useAsyncState(async () => {
+  await nextTick();
   await fetchPagedViewModels();
+  commonStore.setReady();
 }, undefined);
 
 const pageAtUri = computed(() => {
@@ -51,15 +53,14 @@ const pageCount = computed(() =>
 
 watch(pageAtPaginator, () => router.push({ query: { page: pageAtPaginator.value } }));
 
-watch(pageAtUri, (newPage) => {
+watch(pageAtUri, async (newPage) => {
   commonStore.setLoading();
   pageAtPaginator.value = newPage;
-  fetchPagedViewModels();
+  await fetchPagedViewModels();
+  commonStore.setLoading(false);
 });
 
 async function fetchPagedViewModels(): Promise<void> {
-  await nextTick();
-
   await until(forum.value).not.toBeUndefined({
     timeout: 5000,
     throwOnTimeout: true,
@@ -81,13 +82,11 @@ async function fetchPagedViewModels(): Promise<void> {
   ];
 
   currentPageOfThreads.value = renderData;
-
-  commonStore.setReady();
 }
 </script>
 
 <template>
-  <template v-if="commonStore.isReady">
+  <template v-if="isReady">
     <div class="col-full push-top">
       <div class="forum-header">
         <div v-if="forum" class="forum-details">
@@ -105,14 +104,17 @@ async function fetchPagedViewModels(): Promise<void> {
 
     <div class="col-full push-top">
       <thread-list v-if="currentPageOfThreads" :threads="currentPageOfThreads">
-        <pagination-v
-          v-model="pageAtPaginator"
-          class="pagination"
-          :pages="pageCount"
-          :range-size="1"
-          active-color="#57ad8d"
-        />
+        <template #paginator>
+          <pagination-v
+            v-model="pageAtPaginator"
+            class="pagination"
+            :pages="pageCount"
+            :range-size="1"
+            active-color="#57ad8d"
+          />
+        </template>
       </thread-list>
+
       <div v-else>No threads</div>
     </div>
   </template>

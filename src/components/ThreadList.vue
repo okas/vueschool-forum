@@ -44,12 +44,14 @@ function transform({
   <div class="thread-list">
     <h2 class="list-title">Threads</h2>
 
-    <thread-list-item
-      v-for="thread of renderData"
-      :key="thread.threadId"
-      v-bind="thread"
-    />
+    <slot v-bind="renderData">
+      <thread-list-item
+        v-for="thread of renderData"
+        :key="thread.threadId"
+        v-bind="thread"
+      />
+    </slot>
   </div>
 
-  <slot></slot>
+  <slot name="paginator"></slot>
 </template>

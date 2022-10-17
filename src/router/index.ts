@@ -63,7 +63,14 @@ router.beforeEach(async (to, from): Promise<RouteLocationRaw | undefined> => {
   return await verifyGuardedRoute(userStore, to);
 });
 
-router.afterEach(() => useCommonStore().setReady(true));
+router.afterEach(() => {
+  const commonStore = useCommonStore();
+
+  // If any component of current rout is still loading,
+  // then the component must set state by itself.
+  // This allows to prolonged loading indicators action.
+  commonStore.isLoading || commonStore.setReady(true);
+});
 
 async function verifyGuardedRoute(
   store: UserStoreActions,
