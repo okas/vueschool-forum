@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ModalDialog, { confirmInjectKey } from "@/components/ModalDialog.vue";
+import ModalDialog from "@/components/ModalDialog.vue";
 import PostList from "@/components/PostList.vue";
 import ProfileCard from "@/components/ProfileCard.vue";
 import ProfileCardEditor from "@/components/ProfileCardEditor.vue";
@@ -9,21 +9,17 @@ import { useCommonStore } from "@/stores/common-store";
 import { usePostStore } from "@/stores/post-store";
 import { useUserStore } from "@/stores/user-store";
 import type { UserVmEditForInput } from "@/types/userVm-types";
-import { useAsyncState, useConfirmDialog } from "@vueuse/core";
+import { useAsyncState } from "@vueuse/core";
 import { storeToRefs } from "pinia";
-import { computed, onUpdated, provide, ref } from "vue";
-import {
-  onBeforeRouteLeave,
-  useRouter,
-  type RouteLocationRaw,
-} from "vue-router";
+import { computed, onUpdated, ref } from "vue";
+import { useRouter, type RouteLocationRaw } from "vue-router";
 
 const pageSize = 10;
 const routeToReturn: RouteLocationRaw = { name: "Profile" };
 
 // TODO: refactor activity to component and migrate page to separate page
 
-const props = defineProps<{
+defineProps<{
   edit?: boolean;
 }>();
 
@@ -31,8 +27,6 @@ const commonStore = useCommonStore();
 const userStore = useUserStore();
 const postStore = usePostStore();
 const router = useRouter();
-
-const { isRevealed, reveal, confirm } = useConfirmDialog();
 
 const { addNotification } = useNotifications();
 
@@ -61,19 +55,11 @@ const hasNoMorePosts = computed(
   () => getAuthUser.value?.posts.length === getAuthUser.value?.postsCount
 );
 
-provide(confirmInjectKey, confirm);
-
 onUpdated(() => {
   if (getAuthUser.value) {
     commonStore.setReady();
   } else {
     goToHome();
-  }
-});
-
-onBeforeRouteLeave(async () => {
-  if (props.edit && hasDirtyForm.value) {
-    return (await reveal()).data;
   }
 });
 
@@ -177,5 +163,5 @@ function cancel() {
     </div>
   </div>
 
-  <modal-dialog v-if="isRevealed" />
+  <modal-dialog v-if="edit" :reveal-condition="hasDirtyForm" />
 </template>

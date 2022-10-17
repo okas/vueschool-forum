@@ -11,9 +11,9 @@ import { useUserStore } from "@/stores/user-store";
 import type { PostVMEdit, PostVMFormInput, PostVMNew } from "@/types/postVm-types";
 import type { ThreadVMWithMeta } from "@/types/threadVm-types";
 import { getCountPhrase } from "@/utils/misc";
-import { useConfirmDialog, watchDebounced } from "@vueuse/core";
+import { watchDebounced } from "@vueuse/core";
 import { computed, provide, ref } from "vue";
-import { onBeforeRouteLeave, useRoute } from "vue-router";
+import { useRoute } from "vue-router";
 
 interface IPageViewModel {
   thread: ThreadVMWithMeta;
@@ -35,7 +35,6 @@ const signInRoute = { name: "SignIn", query };
 const registerRoute = { name: "Register", query };
 
 const { addNotification } = useNotifications();
-const { isRevealed, reveal, confirm } = useConfirmDialog<boolean, boolean, boolean>();
 
 const isEditing = ref(false);
 const hasDirtyForm = ref(false);
@@ -75,7 +74,9 @@ const isOwner = computed<boolean>(
   () => pageViewModel.value?.thread.userId === userStore.authUserId
 );
 
-provide(confirmInjectKey, confirm);
+const confirmationRevealCondition = computed(
+  () => hasDirtyForm.value || hasDirtyFormInPostList.value
+);
 
 const unWatch = watchDebounced(
   pageViewModel,
@@ -94,17 +95,7 @@ const unWatch = watchDebounced(
   }
 );
 
-onBeforeRouteLeave(async () => {
-  let isOK = true;
-
-  if (hasDirtyForm.value || hasDirtyFormInPostList.value) {
-    isOK = !!(await reveal(false)).data;
-  }
-
-  isOK && unWatch();
-
-  return isOK;
-});
+provide(confirmInjectKey, (userAnswer) => userAnswer && unWatch());
 
 function addPost(dto?: PostVMFormInput) {
   if (!dto) {
@@ -221,5 +212,5 @@ commonStore.setReady();
     </div>
   </div>
 
-  <modal-dialog v-if="isRevealed" />
+  <modal-dialog :reveal-condition="confirmationRevealCondition" />
 </template>

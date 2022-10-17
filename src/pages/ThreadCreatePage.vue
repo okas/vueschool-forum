@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import ModalDialog, { confirmInjectKey } from "@/components/ModalDialog.vue";
+import ModalDialog from "@/components/ModalDialog.vue";
 import ThreadEditor from "@/components/ThreadEditor.vue";
 import type { ForumVM } from "@/models/ForumVM";
 import { useCommonStore } from "@/stores/common-store";
@@ -7,9 +7,8 @@ import { useForumStore } from "@/stores/forum-store";
 import { useThreadStore } from "@/stores/thread-store";
 import type { ThreadVMFormInput } from "@/types/threadVm-types";
 import { findById } from "@/utils/array-helpers";
-import { useConfirmDialog } from "@vueuse/core";
-import { computed, provide, ref } from "vue";
-import { onBeforeRouteLeave, useRouter } from "vue-router";
+import { computed, ref } from "vue";
+import { useRouter } from "vue-router";
 
 const props = defineProps<{
   forumId: string;
@@ -21,21 +20,11 @@ const threadStore = useThreadStore();
 
 const router = useRouter();
 
-const { isRevealed, reveal, confirm } = useConfirmDialog();
-
 const hasDirtyForm = ref<boolean>(false);
 
 const forum = computed<ForumVM | undefined>(() =>
   findById(forumStore.items, props.forumId)
 );
-
-provide(confirmInjectKey, confirm);
-
-onBeforeRouteLeave(async () => {
-  if (hasDirtyForm.value) {
-    return (await reveal()).data;
-  }
-});
 
 async function save(dto?: ThreadVMFormInput) {
   if (!dto) {
@@ -68,5 +57,5 @@ commonStore.setReady();
     <thread-editor v-model:is-dirty="hasDirtyForm" @save="save" @cancel="cancel" />
   </div>
 
-  <modal-dialog v-if="isRevealed" />
+  <modal-dialog :reveal-condition="hasDirtyForm" />
 </template>
