@@ -9,8 +9,8 @@ import { nameUser } from "@/utils/model-member-name-helpers";
 import { useFetch } from "@vueuse/core";
 import type { RuleExpression } from "vee-validate";
 import { computed, reactive, ref, toRaw, watch } from "vue";
-import AvatarFilePicker from "./AvatarFilePicker.vue";
-import AvatarRandomPicker from "./AvatarRandomPicker.vue";
+import AppAvatarFilePicker from "./AppAvatarFilePicker.vue";
+import AppAvatarRandomPicker from "./AppAvatarRandomPicker.vue";
 
 const props = defineProps<{
   user: UserVM;
@@ -127,14 +127,14 @@ async function loadLocationOptions() {
   <div class="profile-card">
     <vee-form @submit="save">
       <div class="form-group">
-        <avatar-file-picker
+        <app-avatar-file-picker
           :avatar-src="avatarToShow"
           :title="avatarTitle"
           @img-loaded="commonStore.setLoading(false)"
           @file-picked="storeFileDateToState"
         />
 
-        <avatar-random-picker
+        <app-avatar-random-picker
           :disabled="commonStore.isLoading"
           @file-picked="storeFileDateToState"
           @start="commonStore.setLoading"

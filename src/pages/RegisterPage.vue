@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import AvatarFilePicker from "@/components/AvatarFilePicker.vue";
-import AvatarRandomPicker from "@/components/AvatarRandomPicker.vue";
+import AppAvatarFilePicker from "@/components/AppAvatarFilePicker.vue";
+import AppAvatarRandomPicker from "@/components/AppAvatarRandomPicker.vue";
 import { FabCollection } from "@/firebase/firebase-collections-enum";
 import { useCommonStore } from "@/stores/common-store";
 import { useUserStore } from "@/stores/user-store";
@@ -124,13 +124,13 @@ commonStore.setReady();
           </button>
 
           <template v-if="isPickerRevealed">
-            <avatar-file-picker
+            <app-avatar-file-picker
               :avatar-src="userSelectedAvatarFileData?.objUrl"
               @img-loaded="commonStore.setLoading(false)"
               @file-picked="storeFileDateToState"
             />
 
-            <avatar-random-picker
+            <app-avatar-random-picker
               :disabled="commonStore.isLoading"
               @file-picked="storeFileDateToState"
               @start="commonStore.setLoading"

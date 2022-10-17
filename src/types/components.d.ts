@@ -7,15 +7,15 @@ export {}
 
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
+    AppAvatarFilePicker: typeof import('./../components/AppAvatarFilePicker.vue')['default']
     AppAvatarImg: typeof import('./../components/AppAvatarImg.vue')['default']
+    AppAvatarRandomPicker: typeof import('./../components/AppAvatarRandomPicker.vue')['default']
     AppDate: typeof import('./../components/AppDate.vue')['default']
     AppFormField: typeof import('./../components/AppFormField.vue')['default']
     AppInfiniteScroll: typeof import('./../components/AppInfiniteScroll.vue')['default']
     AppNavConfirmationModal: typeof import('./../components/AppNavConfirmationModal.vue')['default']
     AppNotifications: typeof import('./../components/AppNotifications.vue')['default']
     AppSpinner: typeof import('./../components/AppSpinner.vue')['default']
-    AvatarFilePicker: typeof import('./../components/AvatarFilePicker.vue')['default']
-    AvatarRandomPicker: typeof import('./../components/AvatarRandomPicker.vue')['default']
     CategoryList: typeof import('./../components/CategoryList.vue')['default']
     CategoryListItem: typeof import('./../components/CategoryListItem.vue')['default']
     ForumList: typeof import('./../components/ForumList.vue')['default']

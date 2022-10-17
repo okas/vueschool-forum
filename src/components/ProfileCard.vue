@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import AvatarFilePicker from "@/components/AvatarFilePicker.vue";
+import AppAvatarFilePicker from "@/components/AppAvatarFilePicker.vue";
 import useNotifications, { type INote } from "@/composables/useNotifications";
 import { useCommonStore } from "@/stores/common-store";
 import { useUserStore } from "@/stores/user-store";
@@ -80,7 +80,7 @@ function storeFileDateToState(dto: IFileInfo) {
   <div class="profile-card">
     <div class="form-group">
       <div class="avatar-edit">
-        <avatar-file-picker
+        <app-avatar-file-picker
           :title="avatarTitle"
           :avatar-src="avatarToShow"
           @img-loaded="commonStore.setLoading(false)"
@@ -88,7 +88,7 @@ function storeFileDateToState(dto: IFileInfo) {
         >
           <fa v-if="!isLoading" icon="camera" size="3x" inverse />
           <app-spinner v-else inverse />
-        </avatar-file-picker>
+        </app-avatar-file-picker>
       </div>
     </div>
 
