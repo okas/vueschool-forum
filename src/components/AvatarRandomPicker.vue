@@ -117,16 +117,20 @@ async function downloadImage({
 
   const { data, response } = blobFetchResult;
 
-  const blob = get(data);
-  const headers = get(response)!.headers;
-  const rawLastModified = headers.get("last-modified");
-  const fileName = getFileName(firstHit, blob!.type);
+  const file = createFileObj(get(data)!, get(response)!.headers, firstHit);
 
-  return new File([blob!], fileName, {
-    lastModified: rawLastModified
-      ? new Date(rawLastModified).getTime()
-      : undefined,
-  });
+  return file;
+}
+
+function createFileObj(blob: Blob, headers: Headers, firstHit: IHitData) {
+  const rawLastModified = headers.get("last-modified");
+  const lastModified = rawLastModified
+    ? new Date(rawLastModified).getTime()
+    : undefined;
+  const type = blob.type;
+  const fileName = getFileName(firstHit, type);
+
+  return new File([blob], fileName, { lastModified, type });
 }
 
 async function tryFetchLimitedTimes(
