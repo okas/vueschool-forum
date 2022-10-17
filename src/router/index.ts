@@ -1,4 +1,5 @@
 import { useCategoryStore } from "@/stores/category-store";
+import { useCommonStore } from "@/stores/common-store";
 import { useForumStore } from "@/stores/forum-store";
 import { usePostStore } from "@/stores/post-store";
 import { useThreadStore } from "@/stores/thread-store";
@@ -47,6 +48,10 @@ const router = createRouter({
 router.beforeEach(async (to, from): Promise<RouteLocationRaw | undefined> => {
   const userStore = useUserStore();
 
+  if (from.name !== to.name) {
+    useCommonStore().setLoading();
+  }
+
   if (from !== START_LOCATION) {
     userStore.clearDbSubscriptions();
     usePostStore().clearDbSubscriptions();
@@ -57,6 +62,8 @@ router.beforeEach(async (to, from): Promise<RouteLocationRaw | undefined> => {
 
   return await verifyGuardedRoute(userStore, to);
 });
+
+router.afterEach(() => useCommonStore().setReady(true));
 
 async function verifyGuardedRoute(
   store: UserStoreActions,

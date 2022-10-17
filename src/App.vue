@@ -1,13 +1,10 @@
 <script setup lang="ts">
 import { useNProgress } from "@vueuse/integrations/useNProgress";
 import { watchEffect } from "vue";
-import { useRouter } from "vue-router";
 import TheNavBar from "./components/TheNavBar.vue";
 import { useCommonStore } from "./stores/common-store";
 
 const commonStore = useCommonStore();
-
-const { beforeEach, afterEach } = useRouter();
 
 const { isLoading } = useNProgress(undefined, {
   speed: 200,
@@ -15,18 +12,6 @@ const { isLoading } = useNProgress(undefined, {
 });
 
 watchEffect(() => (isLoading.value = commonStore.isLoading));
-
-beforeEach((to, from) => {
-  if (from.name !== to.name) {
-    commonStore.setLoading();
-  }
-});
-
-afterEach((to, from) => {
-  if (from.name !== to.name) {
-    commonStore.setReady(false);
-  }
-});
 </script>
 
 <template>
