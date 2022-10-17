@@ -8,7 +8,7 @@ import { getProfileTitle } from "@/utils/misc";
 import { nameUser } from "@/utils/model-member-name-helpers";
 import { useFetch } from "@vueuse/core";
 import type { RuleExpression } from "vee-validate";
-import { computed, reactive, ref, watch } from "vue";
+import { computed, reactive, ref, toRaw, watch } from "vue";
 import AvatarFilePicker from "./AvatarFilePicker.vue";
 import AvatarRandomPicker from "./AvatarRandomPicker.vue";
 
@@ -49,7 +49,21 @@ const commonStore = useCommonStore();
 
 const userSelectedAvatarFileData = ref<IFileInfo | undefined>();
 
-const editorObj = reactive<UserVmEditForInput>(props.user);
+const { id, name, username, bio, email, website, location, avatar, twitter } = toRaw(
+  props.user
+);
+
+const editorObj = reactive<UserVmEditForInput>({
+  id,
+  name,
+  username,
+  bio,
+  email,
+  website,
+  location,
+  avatar,
+  twitter,
+});
 
 const locationOptions = reactive<Array<string>>([]);
 
