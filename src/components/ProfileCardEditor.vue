@@ -82,8 +82,6 @@ function save() {
 
   editorObj.avatarFile = userSelectedAvatarFileData?.value?.file;
 
-  commonStore.setLoading();
-
   emits("save", editorObj);
 }
 

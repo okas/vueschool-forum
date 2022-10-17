@@ -3,6 +3,7 @@ import ModalDialog, { confirmInjectKey } from "@/components/ModalDialog.vue";
 import PostList from "@/components/PostList.vue";
 import ProfileCard from "@/components/ProfileCard.vue";
 import ProfileCardEditor from "@/components/ProfileCardEditor.vue";
+import useNotifications from "@/composables/useNotifications";
 import type { PostVm } from "@/models/PostVm";
 import { useCommonStore } from "@/stores/common-store";
 import { usePostStore } from "@/stores/post-store";
@@ -32,6 +33,8 @@ const postStore = usePostStore();
 const router = useRouter();
 
 const { isRevealed, reveal, confirm } = useConfirmDialog();
+
+const { addNotification } = useNotifications();
 
 const { getAuthUser } = storeToRefs(userStore);
 
@@ -86,7 +89,27 @@ async function goToHome() {
 }
 
 async function save(dto: UserVmEditForInput) {
-  await userStore.editUser(dto);
+  commonStore.setLoading();
+
+  try {
+    await userStore.editUser(dto);
+  } catch (err) {
+    const errStr = String(err);
+
+    addNotification(
+      {
+        message: errStr.includes("storage/unauthorized")
+          ? "Avatar file cannot be uploaded (permission problem)."
+          : errStr,
+        type: "error",
+      },
+      5000
+    );
+
+    commonStore.setLoading(false);
+
+    return;
+  }
 
   router.push(routeToReturn);
 }
