@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import ModalDialog, { confirmInjectKey } from "@/components/ModalDialog.vue";
+import AppNavConfirmationModal, {
+  confirmInjectKey,
+} from "@/components/AppNavConfirmationModal.vue";
 import PostEditor from "@/components/PostEditor.vue";
 import PostList from "@/components/PostList.vue";
 import useNotifications from "@/composables/useNotifications";
@@ -212,5 +214,5 @@ commonStore.setReady();
     </div>
   </div>
 
-  <modal-dialog :reveal-condition="confirmationRevealCondition" />
+  <app-nav-confirmation-modal :reveal-condition="confirmationRevealCondition" />
 </template>

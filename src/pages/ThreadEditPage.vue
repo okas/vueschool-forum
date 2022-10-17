@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import ModalDialog from "@/components/ModalDialog.vue";
 import ThreadEditor from "@/components/ThreadEditor.vue";
 import type { ThreadVM } from "@/models/ThreadVM";
 import { useCommonStore } from "@/stores/common-store";
@@ -65,5 +64,5 @@ commonStore.setReady();
     />
   </div>
 
-  <modal-dialog :reveal-condition="hasDirtyForm" />
+  <app-nav-confirmation-modal :reveal-condition="hasDirtyForm" />
 </template>

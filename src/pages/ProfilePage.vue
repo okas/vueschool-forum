@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import ModalDialog from "@/components/ModalDialog.vue";
 import PostList from "@/components/PostList.vue";
 import ProfileCard from "@/components/ProfileCard.vue";
 import ProfileCardEditor from "@/components/ProfileCardEditor.vue";
@@ -163,5 +162,5 @@ function cancel() {
     </div>
   </div>
 
-  <modal-dialog v-if="edit" :reveal-condition="hasDirtyForm" />
+  <app-nav-confirmation-modal v-if="edit" :reveal-condition="hasDirtyForm" />
 </template>
