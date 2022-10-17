@@ -117,6 +117,7 @@ async function downloadImage({
 
   const { data, response } = blobFetchResult;
 
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const file = createFileObj(get(data)!, get(response)!.headers, firstHit);
 
   return file;
