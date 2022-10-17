@@ -1,7 +1,11 @@
-import { fabAuth, fabDb } from "@/firebase";
+import { fabAuth, fabDb, fabStor } from "@/firebase";
 import { FabCollection } from "@/firebase/firebase-collections-enum";
 import { userVmConverter } from "@/firebase/firebase-converters";
-import { fabStor } from "@/firebase/index";
+import { FirebaseSubscriptionManager } from "@/firebase/FirebaseSubscriptionManager";
+import {
+  makeFirebaseFetchMultiDocsFn,
+  makeFirebaseFetchSingleDocFn,
+} from "@/firebase/store-firebase-action-sinks";
 import type { UserVM } from "@/models/UserVM";
 import type {
   UserStoreActions,
@@ -17,11 +21,6 @@ import type {
 } from "@/types/userVm-types";
 import { findById } from "@/utils/array-helpers";
 import { ok } from "@/utils/assert-helpers";
-import { FirebaseSubscriptionManager } from "@/utils/FirebaseSubscriptionManager";
-import {
-  makeFirebaseFetchMultiDocsFn,
-  makeFirebaseFetchSingleDocFn,
-} from "@/utils/store-firebase-action-sinks";
 import useAcceptHmr from "@/utils/store-helpers";
 import {
   createUserWithEmailAndPassword,

@@ -1,5 +1,10 @@
 import { FabCollection } from "@/firebase/firebase-collections-enum";
 import { hasIdVmConverter } from "@/firebase/firebase-converters";
+import { FirebaseSubscriptionManager } from "@/firebase/FirebaseSubscriptionManager";
+import {
+  makeFirebaseFetchMultiDocsFn,
+  makeFirebaseFetchSingleDocFn,
+} from "@/firebase/store-firebase-action-sinks";
 import type { CategoryVM } from "@/models/CategoryVM";
 import type {
   CategoryStoreActions,
@@ -7,11 +12,6 @@ import type {
   CategoryStoreState,
 } from "@/types/category-store-types";
 import { findById } from "@/utils/array-helpers";
-import { FirebaseSubscriptionManager } from "@/utils/FirebaseSubscriptionManager";
-import {
-  makeFirebaseFetchMultiDocsFn,
-  makeFirebaseFetchSingleDocFn,
-} from "@/utils/store-firebase-action-sinks";
 import useAcceptHmr from "@/utils/store-helpers";
 import { defineStore } from "pinia";
 import { computed, reactive } from "vue";

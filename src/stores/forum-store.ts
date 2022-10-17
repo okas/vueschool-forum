@@ -1,13 +1,13 @@
 import { FabCollection } from "@/firebase/firebase-collections-enum";
 import { hasIdVmConverter } from "@/firebase/firebase-converters";
-import type { ForumVM } from "@/models/ForumVM";
-import type { ForumStoreActions } from "@/types/forum-store-types";
-import type { StoreBaseState } from "@/types/store-base-types";
-import { FirebaseSubscriptionManager } from "@/utils/FirebaseSubscriptionManager";
+import { FirebaseSubscriptionManager } from "@/firebase/FirebaseSubscriptionManager";
 import {
   makeFirebaseFetchMultiDocsFn,
   makeFirebaseFetchSingleDocFn,
-} from "@/utils/store-firebase-action-sinks";
+} from "@/firebase/store-firebase-action-sinks";
+import type { ForumVM } from "@/models/ForumVM";
+import type { ForumStoreActions } from "@/types/forum-store-types";
+import type { StoreBaseState } from "@/types/store-base-types";
 import useAcceptHmr from "@/utils/store-helpers";
 import { defineStore } from "pinia";
 import { reactive } from "vue";

@@ -1,6 +1,6 @@
-import firebaseConfig from "@/app-config/firebase.js";
 import type { IAppConfiguration } from "@/types/app-configuration";
 import { reactive, readonly } from "vue";
+import firebaseConfig from "./firebase";
 
 export default function useAppConfig(): IAppConfiguration {
   return appConfig;

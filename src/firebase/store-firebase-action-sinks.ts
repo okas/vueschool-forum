@@ -1,4 +1,4 @@
-import { fabDb } from "@/firebase/index";
+import { fabDb } from "@/firebase";
 import type { HasId } from "@/models/HasId";
 import { ok } from "@/utils/assert-helpers";
 import {
@@ -18,8 +18,8 @@ import {
   type SnapshotListenOptions,
   type Unsubscribe,
 } from "firebase/firestore";
-import { remove, toBuckets, upsert } from "./array-helpers";
-import { isFulFilled } from "./promise-helpers";
+import { remove, toBuckets, upsert } from "../utils/array-helpers";
+import { isFulFilled } from "../utils/promise-helpers";
 
 const { warn, error } = console;
 
