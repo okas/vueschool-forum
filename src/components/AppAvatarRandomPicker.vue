@@ -1,11 +1,11 @@
 <script setup lang="ts">
+import useAppConfig from "@/app-config";
 import type { IFileInfo } from "@/types/avatar-utility-types";
 import {
   createFetch,
   get,
   promiseTimeout,
   useFetch,
-  type CreateFetchOptions,
   type UseFetchReturn,
 } from "@vueuse/core";
 import { computed, onUnmounted, reactive, watch } from "vue";
@@ -26,21 +26,6 @@ interface IPixabayResp {
   hits: Array<IHitData>;
 }
 
-//TODO: externalize API keys!
-
-const wordsApiConf: CreateFetchOptions = {
-  baseUrl: "https://api.api-ninjas.com/v1",
-  fetchOptions: {
-    headers: { "X-Api-Key": "uWV4CK7zOR8VZJk46MtyQA==CHDdcNoSOsj5GZgN" },
-  },
-};
-
-const imagesApiConf: CreateFetchOptions = {
-  baseUrl: "https://pixabay.com/api",
-};
-
-const imagesApiKey = "30503892-e453399cd8db88ca76c1b7ec6";
-
 defineProps<{
   disabled?: boolean;
 }>();
@@ -50,8 +35,19 @@ const emits = defineEmits<{
   (e: "filePicked", dto: IFileInfo | undefined): void;
 }>();
 
-const useWordsApi = createFetch(wordsApiConf);
-const useImagesApi = createFetch(imagesApiConf);
+const {
+  avatarRandomPicker: { wordsApi, imagesApi },
+} = useAppConfig();
+
+const useWordsApi = createFetch({
+  baseUrl: wordsApi.baseUrl,
+  fetchOptions: {
+    headers: { [wordsApi.headers.apiKey]: wordsApi.apiKey },
+  },
+});
+const useImagesApi = createFetch({
+  baseUrl: imagesApi.baseUrl,
+});
 
 const createdObjectUrls = reactive<Array<string>>([]);
 
@@ -65,7 +61,7 @@ const { execute: execWordsReq, data: wordData } = useWordsApi<IWordsResp>(
 
 const imageApiUrl = computed(
   () =>
-    `?key=${imagesApiKey}&per_page=${3}&safesearch=true&q=${
+    `?key=${imagesApi.apiKey}&per_page=${3}&safesearch=true&q=${
       wordData.value?.word ?? "alpha"
     }`
 );
