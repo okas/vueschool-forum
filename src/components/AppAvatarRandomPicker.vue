@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import useAppConfig from "@/app-config";
+import useAppConfig from "@/configuration";
 import type { IFileInfo } from "@/types/avatar-utility-types";
 import {
   createFetch,
