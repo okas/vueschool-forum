@@ -19,12 +19,30 @@ watchEffect(() => (isLoading.value = commonStore.isLoading));
 
   <app-spinner v-if="!commonStore.isReady" transform="down-16" />
 
-  <main class="container">
-    <router-view />
-  </main>
+  <router-view v-slot="{ Component, route: { path, meta } }">
+    <transition :name="meta.transitionName" mode="out-in">
+      <main :key="path" class="container">
+        <component :is="Component" />
+      </main>
+    </transition>
+  </router-view>
 
   <app-notifications />
 </template>
+
+<style scoped lang="scss">
+.fade {
+  &-enter-active,
+  &-leave-active {
+    transition: opacity 0.2s ease;
+  }
+
+  &-enter-from,
+  &-leave-active {
+    opacity: 0;
+  }
+}
+</style>
 
 <style lang="scss">
 @import "nprogress/nprogress.css";

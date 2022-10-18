@@ -11,6 +11,7 @@ import {
   START_LOCATION,
   type RouteLocationNormalized,
   type RouteLocationRaw,
+  type RouteMeta,
   type RouteRecordRaw,
 } from "vue-router";
 import { rawRoutes } from "./raw-routes";
@@ -18,14 +19,16 @@ import { rawRoutes } from "./raw-routes";
 function getRouteRecords(
   input: Readonly<RouteRecordRaw[]>
 ): Readonly<RouteRecordRaw[]> {
-  return input.map(({ meta = {}, ...rest }) => {
-    Object.assign(meta, {
-      toTop: true,
-      smoothScroll: true,
-    });
+  const defaultMeta: RouteMeta = {
+    toTop: true,
+    smoothScroll: true,
+    transitionName: "fade",
+  };
 
-    return { ...rest, meta };
-  });
+  return input.map(({ meta, ...restRoute }) => ({
+    ...restRoute,
+    meta: Object.assign({}, defaultMeta, meta),
+  }));
 }
 
 function scrollBehavior(to: RouteLocationNormalized): Promise<ScrollToOptions> {
