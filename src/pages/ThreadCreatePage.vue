@@ -6,8 +6,9 @@ import { useForumStore } from "@/stores/forum-store";
 import { useThreadStore } from "@/stores/thread-store";
 import type { ThreadVMFormInput } from "@/types/threadVm-types";
 import { findById } from "@/utils/array-helpers";
+import { getValOrFirst } from "@/utils/misc";
 import { computed, ref } from "vue";
-import { useRouter } from "vue-router";
+import { useRoute, useRouter, type RouteLocationRaw } from "vue-router";
 
 const props = defineProps<{
   forumId: string;
@@ -18,6 +19,7 @@ const forumStore = useForumStore();
 const threadStore = useThreadStore();
 
 const router = useRouter();
+const route = useRoute();
 
 const hasDirtyForm = ref<boolean>(false);
 
@@ -40,7 +42,14 @@ async function save(dto?: ThreadVMFormInput) {
 }
 
 function cancel() {
-  router.push({ name: "Forum", params: { forumId: props.forumId } });
+  const goToRoute: RouteLocationRaw = getValOrFirst(
+    route.query.returnOnCancel
+  ) ?? {
+    name: "Forum",
+    params: { forumId: props.forumId },
+  };
+
+  router.push(goToRoute);
 }
 
 commonStore.setReady();

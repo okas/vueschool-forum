@@ -8,8 +8,8 @@ import { useUserStore } from "@/stores/user-store";
 import type { ThreadVMWithMeta } from "@/types/threadVm-types";
 import { findById } from "@/utils/array-helpers";
 import { getValOrFirst } from "@/utils/misc";
-import { until, useAsyncState } from "@vueuse/core";
-import { computed, nextTick, ref, watch } from "vue";
+import { computedEager, until, useAsyncState } from "@vueuse/core";
+import { computed, nextTick, ref, watch, watchPostEffect } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
 const pageSize = 5;
@@ -32,12 +32,20 @@ const { isReady } = useAsyncState(async () => {
   commonStore.setReady();
 }, undefined);
 
-const pageAtUri = computed(() => {
+const pageAtUri = computedEager(() => {
   const { page } = route.query;
   const result = parseInt(getValOrFirst(page) ?? "");
 
   return isNaN(result) ? 1 : result;
 });
+
+const routeThreadCreate = computedEager(() => ({
+  name: "ThreadCreate",
+  params: { forumId: props.forumId },
+  query: {
+    returnOnCancel: route.fullPath,
+  },
+}));
 
 const pageAtPaginator = ref<number>(pageAtUri.value);
 
@@ -51,7 +59,7 @@ const pageCount = computed(() =>
   Math.ceil((forum.value?.threads?.length ?? 0) / pageSize)
 );
 
-watch(pageAtPaginator, () => router.push({ query: { page: pageAtPaginator.value } }));
+watchPostEffect(() => router.push({ query: { page: pageAtPaginator.value } }));
 
 watch(pageAtUri, async (newPage) => {
   commonStore.setLoading();
@@ -93,10 +101,7 @@ async function fetchPagedViewModels(): Promise<void> {
           <h1 v-text="forum.name" />
           <p class="text-lead" v-text="forum.description" />
         </div>
-        <router-link
-          :to="{ name: 'ThreadCreate', params: { forumId } }"
-          class="btn-green btn-small"
-        >
+        <router-link :to="routeThreadCreate" class="btn-green btn-small">
           Start a thread
         </router-link>
       </div>
