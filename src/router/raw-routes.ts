@@ -1,7 +1,7 @@
-import type { RouteRecordRaw } from "vue-router";
-import { routeBeforeEnterGuards } from "./route-guards";
+import type { RouteMeta, RouteRecordRaw } from "vue-router";
+import { routeBeforeEnterGuards } from "./per-route-guards";
 
-export const rawRoutes: Readonly<RouteRecordRaw[]> = [
+const rawRoutes: Readonly<RouteRecordRaw[]> = [
   {
     path: "/",
     name: "Home",
@@ -93,3 +93,16 @@ export const rawRoutes: Readonly<RouteRecordRaw[]> = [
     component: () => import("@/pages/SoftNotFoundPage.vue"),
   },
 ];
+
+const defaultMeta: RouteMeta = {
+  toTop: true,
+  smoothScroll: true,
+  transitionName: "fade",
+};
+
+const routes = rawRoutes.map(({ meta, ...restRoute }: RouteRecordRaw) => ({
+  ...restRoute,
+  meta: Object.assign({}, defaultMeta, meta),
+}));
+
+export default routes;
