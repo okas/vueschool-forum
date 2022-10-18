@@ -11,7 +11,7 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits<{
-  (e: "update:modelValue", val: number): void;
+  (e: "update:modelValue", val?: number): void;
 }>();
 
 const { getUserByIdFn } = useUserStore();
@@ -58,14 +58,17 @@ function transform({
 <template>
   <div class="thread-list">
     <h2 class="list-title">Threads</h2>
-
-    <slot v-bind="renderData">
-      <thread-list-item
-        v-for="thread of renderData"
-        :key="thread.threadId"
-        v-bind="thread"
-      />
-    </slot>
+    <div class="wrapper">
+      <transition name="slide-fade" mode="out-in">
+        <ul :key="pageAtPaginator">
+          <thread-list-item
+            v-for="thread of renderData"
+            v-bind="thread"
+            :key="thread.threadId"
+          />
+        </ul>
+      </transition>
+    </div>
   </div>
 
   <slot v-if="pageAtPaginator" name="paginator">
@@ -73,8 +76,30 @@ function transform({
       v-model="pageAtPaginator"
       class="pagination"
       :pages="pageCount"
-      :range-size="1"
+      :range-size="2"
       active-color="#57ad8d"
     />
   </slot>
 </template>
+
+<style scoped lang="scss">
+/*
+  Enter and leave animations can use different
+  durations and timing functions.
+*/
+.slide-fade {
+  &-enter-active {
+    transition: all 0.1s cubic-bezier(1, 0.5, 0.8, 1);
+  }
+
+  &-leave-active {
+    transition: all 0.25s cubic-bezier(1, 0.5, 0.8, 1);
+  }
+
+  &-enter-from,
+  &-leave-to {
+    transform: translateX(20px);
+    opacity: 0;
+  }
+}
+</style>

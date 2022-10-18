@@ -9,9 +9,13 @@ export interface IThreadListItem {
   publishedAt: number;
   repliesCount: number;
   userAvatar?: string;
+  tag?: string;
 }
 
-const props = defineProps<IThreadListItem>();
+const props = withDefaults(defineProps<IThreadListItem>(), {
+  userAvatar: undefined,
+  tag: "li",
+});
 
 const repliesCountPhrase = computed(() => getCountPhrase(props.repliesCount, "reply"));
 
@@ -19,7 +23,7 @@ const profileTitlePhrase = computed(() => getProfileTitle(props.userName));
 </script>
 
 <template>
-  <div class="thread">
+  <component :is="tag" class="thread">
     <div>
       <p>
         <router-link :to="{ name: `Thread`, params: { threadId } }">
@@ -49,5 +53,5 @@ const profileTitlePhrase = computed(() => getProfileTitle(props.userName));
         </p>
       </div>
     </div>
-  </div>
+  </component>
 </template>

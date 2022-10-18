@@ -12,7 +12,7 @@ import { until, useAsyncState } from "@vueuse/core";
 import { computed, nextTick, ref, watch } from "vue";
 import { useRoute, useRouter } from "vue-router";
 
-const pageSize = 10;
+const pageSize = 5;
 
 const props = defineProps<{
   forumId: string;
