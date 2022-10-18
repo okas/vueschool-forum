@@ -32,26 +32,36 @@ function confirmHandler(userResponse: boolean) {
 
 <template>
   <teleport to="body">
-    <div v-if="isRevealed" class="modal-layout">
-      <div class="modal">
-        <h2>
-          Are you sure you want to leave?
-          <br />
-          Unsaved changes will be lost!
-        </h2>
+    <div class="model-container">
+      <transition name="fade" mode="out-in">
+        <div v-if="isRevealed" class="modal-overlay" />
+      </transition>
 
-        <div class="btn-group">
-          <button class="btn btn-red" @click.prevent="confirmHandler(true)">Yes</button>
+      <transition name="scale" mode="out-in">
+        <div v-if="isRevealed" class="modal-dialog">
+          <section class="model-content">
+            <h2>
+              Are you sure you want to leave?
+              <br />
+              Unsaved changes will be lost!
+            </h2>
+          </section>
 
-          <button class="btn btn-blue" @click.prevent="confirmHandler(false)">No</button>
+          <div class="modal-action btn-group">
+            <button class="btn btn-red" @click.prevent="confirmHandler(true)">Yes</button>
+
+            <button class="btn btn-blue" @click.prevent="confirmHandler(false)">
+              No
+            </button>
+          </div>
         </div>
-      </div>
+      </transition>
     </div>
   </teleport>
 </template>
 
 <style scoped lang="scss">
-.modal-layout {
+.modal-overlay {
   z-index: 20;
   left: 0;
   top: 0;
@@ -59,22 +69,43 @@ function confirmHandler(userResponse: boolean) {
   background-color: #7c7c7c7a;
   width: 100%;
   height: 100%;
+}
 
-  .modal {
-    padding: 2rem;
-    background-color: blanchedalmond;
-    border-radius: 1.25rem;
-    position: fixed;
-    left: 50%;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 500px;
-    max-width: 100%;
-    z-index: 10;
+.modal-dialog {
+  padding: 2rem;
+  background-color: blanchedalmond;
+  border-radius: 1.25rem;
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  width: 500px;
+  max-width: 100%;
+  z-index: 30;
+  transform: translate(-50%, -50%);
+}
+
+.fade {
+  &-enter-active,
+  &-leave-active {
+    transition: opacity 0.15s ease;
   }
 
-  .button:focus {
-    outline: rgb(91 91 255) solid 3px;
+  &-enter-from,
+  &-leave-active {
+    opacity: 0;
+  }
+}
+
+.scale {
+  &-enter-active,
+  &-leave-active {
+    transition: all 0.15s ease;
+  }
+
+  &-enter-from,
+  &-leave-to {
+    opacity: 0;
+    transform: translate(-51%, -51%) scale(0.9);
   }
 }
 </style>
