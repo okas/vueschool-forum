@@ -103,17 +103,12 @@ async function fetchPagedViewModels(): Promise<void> {
     </div>
 
     <div class="col-full push-top">
-      <thread-list v-if="currentPageOfThreads" :threads="currentPageOfThreads">
-        <template #paginator>
-          <pagination-v
-            v-model="pageAtPaginator"
-            class="pagination"
-            :pages="pageCount"
-            :range-size="1"
-            active-color="#57ad8d"
-          />
-        </template>
-      </thread-list>
+      <thread-list
+        v-if="currentPageOfThreads"
+        v-model="pageAtPaginator"
+        :threads="currentPageOfThreads"
+        :page-count="pageCount"
+      />
 
       <div v-else>No threads</div>
     </div>

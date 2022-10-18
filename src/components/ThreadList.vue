@@ -6,6 +6,12 @@ import ThreadListItem, { type IThreadListItem } from "./ThreadListItem.vue";
 
 const props = defineProps<{
   threads: Array<ThreadVMWithMeta>;
+  pageCount: number;
+  modelValue?: number;
+}>();
+
+const emits = defineEmits<{
+  (e: "update:modelValue", val: number): void;
 }>();
 
 const { getUserByIdFn } = useUserStore();
@@ -13,6 +19,15 @@ const { getUserByIdFn } = useUserStore();
 const renderData = computed<Array<IThreadListItem>>(() => [
   ...props.threads.map(transform),
 ]);
+
+const pageAtPaginator = computed({
+  get() {
+    return props.modelValue;
+  },
+  set(val) {
+    emits("update:modelValue", val);
+  },
+});
 
 function transform({
   id,
@@ -53,5 +68,13 @@ function transform({
     </slot>
   </div>
 
-  <slot name="paginator"></slot>
+  <slot v-if="pageAtPaginator" name="paginator">
+    <pagination-v
+      v-model="pageAtPaginator"
+      class="pagination"
+      :pages="pageCount"
+      :range-size="1"
+      active-color="#57ad8d"
+    />
+  </slot>
 </template>
