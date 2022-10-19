@@ -57,7 +57,10 @@ function clickEdit() {
 
       <p class="desktop-only text-small" v-text="threadsCountPhrase" />
 
-      <span class="online desktop-only">online</span>
+      <p class="online desktop-only">
+        <fa style="color: #57ad8d" icon="circle-user" />
+        <span v-text="`&nbsp;online`" />
+      </p>
     </div>
 
     <div class="post-content">

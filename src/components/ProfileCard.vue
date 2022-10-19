@@ -87,6 +87,7 @@ function storeFileDateToState(dto: IFileInfo) {
           @file-picked="storeFileDateToState"
         >
           <fa v-if="!isLoading" icon="camera" size="3x" inverse />
+
           <app-spinner v-else inverse />
         </app-avatar-file-picker>
       </div>
@@ -99,8 +100,8 @@ function storeFileDateToState(dto: IFileInfo) {
     <p class="text-justify" v-text="authUser.bio ?? 'No bio specified'" />
 
     <p>
-      <fa style="color: #57ad8d" icon="circle-user" />&nbsp;
-      <span v-text="`${authUser.username} is online`" />
+      <fa style="color: #57ad8d" icon="circle-user" />
+      <span v-text="`&nbsp;${authUser.username} is online`" />
     </p>
 
     <div class="stats">
@@ -111,23 +112,26 @@ function storeFileDateToState(dto: IFileInfo) {
     <hr />
 
     <p v-if="authUser.email" class="text-large text-center">
-      <fa icon="paper-plane" />&nbsp;
-      <a :href="`mailto:${authUser.email}`" v-text="authUser.email" />
+      <fa icon="paper-plane" />
+      <a :href="`mailto:${authUser.email}`" v-text="`&nbsp;${authUser.email}`" />
     </p>
 
     <p v-if="authUser.website" class="text-large text-center">
-      <fa icon="globe" />&nbsp;
-      <a :href="authUser.website" v-text="authUser.website" />
+      <fa icon="globe" />
+      <a :href="authUser.website" v-text="`&nbsp;${authUser.website}`" />
     </p>
 
     <p v-if="authUser.twitter" class="text-large text-center">
-      <fa :icon="['fab', 'twitter']" />&nbsp;
-      <a :href="`https://twitter.com/${authUser.twitter}`" v-text="authUser.twitter" />
+      <fa :icon="['fab', 'twitter']" />
+      <a
+        :href="`https://twitter.com/${authUser.twitter}`"
+        v-text="`&nbsp;${authUser.twitter}`"
+      />
     </p>
 
     <p v-if="authUser.location" class="text-large text-center">
-      <fa icon="location-dot" />&nbsp;
-      <span v-text="authUser.location" />
+      <fa icon="location-dot" />
+      <span v-text="`&nbsp;${authUser.location}`" />
     </p>
   </div>
 
@@ -136,8 +140,9 @@ function storeFileDateToState(dto: IFileInfo) {
     <span v-text="`last visited ${lasVisited}`" />
   </p>
 
+  <hr />
+
   <div class="text-center">
-    <hr />
     <router-link :to="{ name: 'ProfileEdit' }" class="btn-green btn-small">
       Edit Profile
     </router-link>

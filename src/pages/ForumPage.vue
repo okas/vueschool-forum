@@ -99,8 +99,10 @@ async function fetchPagedViewModels(): Promise<void> {
       <div class="forum-header">
         <div v-if="forum" class="forum-details">
           <h1 v-text="forum.name" />
+
           <p class="text-lead" v-text="forum.description" />
         </div>
+
         <router-link :to="routeThreadCreate" class="btn-green btn-small">
           Start a thread
         </router-link>
