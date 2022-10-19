@@ -1,3 +1,4 @@
+import useNotifications from "@/composables/useNotifications";
 import type { HasId } from "@/models/HasId";
 import { useCategoryStore } from "@/stores/category-store";
 import { useForumStore } from "@/stores/forum-store";
@@ -11,6 +12,8 @@ import type {
   RouteLocationNamedRaw,
   RouteLocationRaw,
 } from "vue-router";
+
+const { addNotification } = useNotifications();
 
 export const routeBeforeEnterGuards: ReadonlyMap<
   string,
@@ -100,6 +103,12 @@ export const routeBeforeEnterGuards: ReadonlyMap<
         throw getMissingParamError("threadId");
       }
 
+      if (!thread.firstPostId) {
+        const err = getMissingFirstPostIdError();
+        addNotification({ message: err.message, type: "error" }, 5000);
+        throw err;
+      }
+
       await usePostStore().fetchPost(thread.firstPostId);
 
       return navigateToOrNotFound(routeObj, threadStore.items, "threadId");
@@ -161,4 +170,10 @@ function getRouteSoft404({
 
 function getMissingParamError(paramName: string): Error {
   return new Error(`Required param '${paramName}' is empty or not found.`);
+}
+
+function getMissingFirstPostIdError(): Error {
+  return new Error(
+    `Required property "firstPostId" don't have a value. It is broken data problem, please report to support.`
+  );
 }
