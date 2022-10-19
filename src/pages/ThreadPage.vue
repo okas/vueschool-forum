@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import AppNavConfirmationModal, {
-  confirmInjectKey,
-} from "@/components/AppNavConfirmationModal.vue";
 import PostEditor from "@/components/PostEditor.vue";
 import PostList from "@/components/PostList.vue";
 import useNotifications from "@/composables/useNotifications";
@@ -14,8 +11,8 @@ import type { PostVMEdit, PostVMFormInput, PostVMNew } from "@/types/postVm-type
 import type { ThreadVMWithMeta } from "@/types/threadVm-types";
 import { getCountPhrase } from "@/utils/misc";
 import { watchDebounced } from "@vueuse/core";
-import { computed, provide, ref } from "vue";
-import { useRoute } from "vue-router";
+import { computed, ref } from "vue";
+import { onBeforeRouteLeave, useRoute } from "vue-router";
 
 interface IPageViewModel {
   thread: ThreadVMWithMeta;
@@ -97,7 +94,7 @@ const unWatch = watchDebounced(
   }
 );
 
-provide(confirmInjectKey, (userAnswer) => userAnswer && unWatch());
+onBeforeRouteLeave(unWatch);
 
 function addPost(dto?: PostVMFormInput) {
   if (!dto) {
