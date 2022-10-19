@@ -1,21 +1,10 @@
 //= ================
-// clear && dotenv_config_path=.env.local node -r dotenv/config firestore-fix-auth-user.js <oldUserId> <newUserId>
+// clear && node firestore-fix-auth-user.js <oldUserId> <newUserId>
 //= ================
 
-import { initializeApp } from "firebase/app";
-import {
-  arrayRemove,
-  arrayUnion,
-  collection,
-  doc,
-  getDoc,
-  getDocs,
-  getFirestore,
-  query,
-  runTransaction,
-  where,
-} from "firebase/firestore";
-import firebaseConfig from "./src/config/firebase.js";
+import { cert, initializeApp } from "firebase-admin/app";
+import { FieldValue, getFirestore } from "firebase-admin/firestore";
+import serviceAccount from "./service-account.json" assert { type: "json" };
 
 const { log, warn, error } = console;
 
@@ -26,15 +15,21 @@ if (process.argv.length < 4 || !process.argv[2] || !process.argv[3]) {
 
 const oldUserId = process.argv[2];
 const newUserId = process.argv[3];
-const app = initializeApp(firebaseConfig);
+
+const app = initializeApp({
+  credential: cert(serviceAccount),
+});
+
 const db = getFirestore(app);
 
-log("- transaction start");
+log("- ➡️  transaction start");
 
-const oldUserDocRef = doc(db, "users", oldUserId);
-const oldUsersDocSnap = await getDoc(oldUserDocRef);
+const userCollRef = db.collection("users");
 
-if (oldUsersDocSnap.exists()) {
+const oldUserDocRef = userCollRef.doc(oldUserId);
+const oldUserDocSnap = await oldUserDocRef.get();
+
+if (oldUserDocSnap.exists()) {
   log(`- 📌 found user doc to work with: '${oldUserId}'`);
   log(`- 📌 new user is going to have an id: '${newUserId}'`);
 } else {
@@ -43,18 +38,15 @@ if (oldUsersDocSnap.exists()) {
   );
 }
 
-const postsCollRef = collection(db, "posts");
-const threadsCollRef = collection(db, "threads");
+const postsCollRef = db.collection("posts");
+const threadsCollRef = db.collection("threads");
 
 const hasUserOrContributorQueries = [
-  getDocs(
-    query(
-      threadsCollRef,
-      where("contributors", "array-contains", oldUsersDocSnap.id)
-    )
-  ),
-  getDocs(query(threadsCollRef, where("userId", "==", oldUsersDocSnap.id))),
-  getDocs(query(postsCollRef, where("userId", "==", oldUsersDocSnap.id))),
+  threadsCollRef
+    .where("contributors", "array-contains", oldUserDocSnap.id)
+    .get(),
+  threadsCollRef.where("userId", "==", oldUserDocSnap.id).get(),
+  postsCollRef.where("userId", "==", oldUserDocSnap.id).get(),
 ];
 
 const [threadContributorsDocSnaps, threadUserIdDocSnaps, postUserIdDocSnaps] =
@@ -70,10 +62,10 @@ function updateThreadContributorsPromises(transaction, docSnaps) {
     new Promise(() => {
       transaction
         .update(qryDocSnap.ref, {
-          contributors: arrayRemove(oldUserId),
+          contributors: FieldValue.arrayRemove(oldUserId),
         })
         .update(qryDocSnap.ref, {
-          contributors: arrayUnion(newUserId),
+          contributors: FieldValue.arrayUnion(newUserId),
         });
       log(`-  ✔️  updated thread ${qryDocSnap.id} contributors`);
     }).catch(handleTransactionOpFailure)
@@ -104,8 +96,8 @@ function updateDependentUserPromises(transaction, docSnaps, docTypeName) {
 async function reCreateUserDocument(transaction) {
   try {
     return await new Promise(() => {
-      const newUserDocRef = doc(db, "users", newUserId);
-      const newUserDocData = oldUsersDocSnap.data();
+      const newUserDocRef = userCollRef.doc(newUserId);
+      const newUserDocData = oldUserDocSnap.data();
       transaction.delete(oldUserDocRef).set(newUserDocRef, newUserDocData);
       log(`-  ✔️  recreated user document with id ${newUserId}`);
     });
@@ -119,9 +111,8 @@ function handleTransactionOpFailure(reason) {
   error(reason);
 }
 
-runTransaction(
-  db,
-  (transaction) => {
+db.runTransaction(
+  async (transaction) => {
     Promise.all([
       ...updateThreadContributorsPromises(
         transaction,
