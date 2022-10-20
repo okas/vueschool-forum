@@ -7,6 +7,22 @@
         { "fieldPath": "userId", "order": "ASCENDING" },
         { "fieldPath": "publishedAt", "order": "DESCENDING" }
       ]
+    },
+    {
+      "collectionGroup": "threads",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "forumId", "order": "ASCENDING" },
+        { "fieldPath": "lastPostAt", "order": "ASCENDING" }
+      ]
+    },
+    {
+      "collectionGroup": "threads",
+      "queryScope": "COLLECTION",
+      "fields": [
+        { "fieldPath": "forumId", "order": "ASCENDING" },
+        { "fieldPath": "lastPostAt", "order": "DESCENDING" }
+      ]
     }
   ],
   "fieldOverrides": []

@@ -29,15 +29,15 @@ await db
         (userSnap) =>
           new Promise((resolve) => {
             const docCountQueries = [
-              postsCollRef.where("userId", "==", userSnap.id).get(),
-              threadsCollRef.where("userId", "==", userSnap.id).get(),
+              postsCollRef.where("userId", "==", userSnap.id).count().get(),
+              threadsCollRef.where("userId", "==", userSnap.id).count().get(),
             ];
 
             resolve(
               Promise.all(docCountQueries).then(([postsSnap, threadsSnap]) => {
                 const dto = {
-                  postsCount: postsSnap.size,
-                  threadsCount: threadsSnap.size,
+                  postsCount: postsSnap.data().count,
+                  threadsCount: threadsSnap.data().count,
                 };
 
                 tran.update(userSnap.ref, dto);
