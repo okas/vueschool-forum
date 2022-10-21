@@ -1,7 +1,9 @@
+import { Timestamp } from "firebase/firestore";
+
 export function tryGetSeconds<
-  THasSeconds extends { seconds: number } | undefined | null
->(fbTimeStampOrAsIs: THasSeconds | number): number {
-  return typeof fbTimeStampOrAsIs === "number"
-    ? fbTimeStampOrAsIs
-    : fbTimeStampOrAsIs?.seconds ?? 0;
+  TInput extends Timestamp | undefined | null | number
+>(fbTimeStampOrAsIs: TInput): number {
+  return fbTimeStampOrAsIs instanceof Timestamp
+    ? fbTimeStampOrAsIs.seconds
+    : Number(fbTimeStampOrAsIs);
 }
