@@ -1,5 +1,6 @@
-import type { RouteMeta, RouteRecordRaw } from "vue-router";
+import type { RouteRecordRaw } from "vue-router";
 import { routeBeforeEnterGuards } from "./per-route-guards";
+import type { ExtendedMeta } from "./scroll-behavior";
 
 const rawRoutes: Readonly<RouteRecordRaw[]> = [
   {
@@ -94,9 +95,12 @@ const rawRoutes: Readonly<RouteRecordRaw[]> = [
   },
 ];
 
-const defaultMeta: RouteMeta = {
-  toTop: true,
-  smoothScroll: true,
+const defaultMeta: ExtendedMeta = {
+  scroll: {
+    top: 0,
+    behavior: "smooth",
+  },
+
   transitionName: "fade",
 };
 
