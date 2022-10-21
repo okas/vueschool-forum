@@ -28,6 +28,7 @@ function imageLoaded(state = true) {
     class="avatar"
     :class="{ show: isImgLoaded }"
     loading="lazy"
+    referrerPolicy="no-referrer"
     @load="imageLoaded()"
   />
 </template>
