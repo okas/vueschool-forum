@@ -20,3 +20,7 @@ export function getValOrFirst<TValue>(
 export function getProfileTitle(name: string) {
   return `${name || "## n/a ##"}'s profile picture`;
 }
+
+export function truncate(text: string, length: number, suffix = "..."): string {
+  return text.length > length ? text.substring(0, length) + suffix : text;
+}

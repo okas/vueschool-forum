@@ -23,8 +23,19 @@ export const routeBeforeEnterGuards: ReadonlyMap<
     "Home",
     async () => {
       const categories = await useCategoryStore().fetchAllCategories();
-      const forumIds = categories.flatMap(({ forums }) => forums);
-      await useForumStore().fetchForums(forumIds);
+
+      const forums = await useForumStore().fetchForums(
+        categories.flatMap(({ forums }) => forums)
+      );
+
+      const posts = await usePostStore().fetchPosts(
+        forums.map(({ lastPostId }) => lastPostId)
+      );
+
+      await Promise.all([
+        useUserStore().fetchUsers(posts.map(({ userId }) => userId)),
+        useThreadStore().fetchThreads(posts.map(({ threadId }) => threadId)),
+      ]);
 
       return undefined;
     },

@@ -1,9 +1,57 @@
 <script setup lang="ts">
 import type { ForumVM } from "@/models/ForumVM";
+import type { UserVM } from "@/models/UserVM";
+import { usePostStore } from "@/stores/post-store";
+import { useThreadStore } from "@/stores/thread-store";
+import { useUserStore } from "@/stores/user-store";
+import { getProfileTitle, truncate } from "@/utils/misc";
+import { computed } from "vue";
 
-defineProps<{
+const props = defineProps<{
   forums: Array<ForumVM>;
 }>();
+
+const userStore = useUserStore();
+const postStore = usePostStore();
+const threadStore = useThreadStore();
+
+const renderData = computed(() =>
+  props.forums.map(
+    ({
+      id: forumId,
+      name,
+      description,
+      threads: { length: threadsCount } = [],
+      lastPostId,
+    }) => {
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const { userId, publishedAt, threadId } = postStore.items.find(
+        ({ id }) => id === lastPostId
+      )!;
+
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const { title: threadTitle } = threadStore.items.find(({ id }) => id === threadId)!;
+
+      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+      const { name: userFullName, username, avatar }: UserVM = userStore.items.find(
+        ({ id }) => id === userId
+      )!;
+
+      return {
+        forumId,
+        name,
+        description,
+        threadsCount,
+        username,
+        threadId,
+        threadTitle,
+        avatar: avatar ?? undefined,
+        publishedAt: Number(publishedAt),
+        userFullName,
+      };
+    }
+  )
+);
 
 function countPhrase(length: number) {
   return length === 1 ? "thread" : length ? "threads" : "no threads";
@@ -12,7 +60,18 @@ function countPhrase(length: number) {
 
 <template>
   <div
-    v-for="{ id: forumId, name, description, threads: { length } = [] } of forums"
+    v-for="{
+      forumId,
+      name,
+      description,
+      threadsCount,
+      username,
+      threadId,
+      threadTitle,
+      avatar,
+      publishedAt,
+      userFullName,
+    } of renderData"
     :key="forumId"
     class="forum-listing"
   >
@@ -31,23 +90,38 @@ function countPhrase(length: number) {
 
     <div class="threads-count">
       <p>
-        <span v-if="length" class="count" v-text="length" />
-        <span v-text="countPhrase(length)" />
+        <span v-if="threadsCount" class="count" v-text="threadsCount" />
+        <span v-text="countPhrase(threadsCount)" />
       </p>
     </div>
 
     <div class="last-thread">
-      <!-- <img
-          class="avatar"
-          src="https://pbs.twimg.com/profile_images/719242842598699008/Nu43rQz1_400x400.jpg"
-          alt=""
-        />
-        <div class="last-thread-details">
-          <a href="thread.html">Post Reactions</a>
-          <p class="text-xsmall">
-            By <a href="profile.html">Rolf Haug</a>, a month ago
-          </p>
-        </div> -->
+      <app-avatar-img
+        :src="avatar"
+        class="avatar-forum-list"
+        :title="getProfileTitle(userFullName)"
+      />
+      <div class="last-thread-details">
+        <router-link
+          :to="{
+            name: 'Thread',
+            params: { threadId },
+          }"
+          :title="threadTitle"
+        >
+          {{ truncate(threadTitle, 30) }}
+        </router-link>
+        <p class="text-xsmall">
+          By <a href="#">{{ username }}</a
+          >, <app-date :timestamp="publishedAt" />
+        </p>
+      </div>
     </div>
   </div>
 </template>
+
+<style scoped>
+.avatar-forum-list {
+  transform: scale(1.2);
+}
+</style>
