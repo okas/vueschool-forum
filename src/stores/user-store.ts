@@ -117,7 +117,7 @@ export const useUserStore = defineStore(
     }
 
     async function signInWithGoogle() {
-      const provider = new GoogleAuthProvider();
+      const provider = getAppGoogleProvider();
 
       const {
         user: { uid, ...rest },
@@ -320,3 +320,14 @@ export const useUserStore = defineStore(
 );
 
 useAcceptHmr(useUserStore);
+
+function getAppGoogleProvider() {
+  const provider = new GoogleAuthProvider();
+  provider.addScope("profile");
+  provider.addScope("email");
+  provider.setCustomParameters({
+    prompt: "select_account",
+  });
+
+  return provider;
+}
