@@ -45,6 +45,7 @@ const renderData = computed(() =>
         username,
         threadId,
         threadTitle,
+        lastPostId,
         avatar: avatar ?? undefined,
         publishedAt: Number(publishedAt),
         userFullName,
@@ -68,6 +69,7 @@ function countPhrase(length: number) {
       username,
       threadId,
       threadTitle,
+      lastPostId,
       avatar,
       publishedAt,
       userFullName,
@@ -103,10 +105,7 @@ function countPhrase(length: number) {
       />
       <div class="last-thread-details">
         <router-link
-          :to="{
-            name: 'Thread',
-            params: { threadId },
-          }"
+          :to="{ name: 'Thread', params: { threadId }, hash: `#${lastPostId}` }"
           :title="threadTitle"
         >
           {{ truncate(threadTitle, 30) }}

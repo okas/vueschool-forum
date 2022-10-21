@@ -41,7 +41,7 @@ function clickEdit() {
 </script>
 
 <template>
-  <div class="post">
+  <div :id="postId" class="post">
     <div class="user-info">
       <a href="#" class="user-name" v-text="userName" />
 
