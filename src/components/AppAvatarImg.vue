@@ -3,6 +3,8 @@ const defaultSrc = "/user-placeholder.png";
 </script>
 
 <script setup lang="ts">
+import { ref } from "vue";
+
 withDefaults(
   defineProps<{
     src?: string | undefined;
@@ -11,14 +13,33 @@ withDefaults(
     src: defaultSrc,
   }
 );
+
+const isImgLoaded = ref(false);
+
+function imageLoaded(state = true) {
+  isImgLoaded.value = true;
+}
 </script>
 
 <template>
-  <img :src="src" class="app-avatar-img" />
+  <img
+    :key="src"
+    :src="src"
+    class="avatar"
+    :class="{ show: isImgLoaded }"
+    loading="lazy"
+    @load="imageLoaded()"
+  />
 </template>
 
-<style scoped>
-.app-avatar-img {
+<style scoped lang="scss">
+.avatar {
   object-fit: cover;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.avatar.show {
+  opacity: 1;
 }
 </style>
