@@ -61,6 +61,12 @@ const { notifications, removeNotification } = useNotifications();
       border-color: rgb(146, 5, 5);
       box-shadow: 2px 2px 3px 2px rgba(146, 5, 5, 0.5);
     }
+
+    &-warn,
+    &-warning {
+      border-color: rgb(211, 162, 3);
+      box-shadow: 2px 2px 3px 2px rgba(211, 162, 3, 0.5);
+    }
   }
 }
 </style>
