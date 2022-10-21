@@ -11,6 +11,7 @@ declare module '@vue/runtime-core' {
     AppAvatarImg: typeof import('./../components/AppAvatarImg.vue')['default']
     AppAvatarRandomPicker: typeof import('./../components/AppAvatarRandomPicker.vue')['default']
     AppDate: typeof import('./../components/AppDate.vue')['default']
+    AppFooter: typeof import('./../components/AppFooter.vue')['default']
     AppFormField: typeof import('./../components/AppFormField.vue')['default']
     AppInfiniteScroll: typeof import('./../components/AppInfiniteScroll.vue')['default']
     AppNavConfirmationModal: typeof import('./../components/AppNavConfirmationModal.vue')['default']

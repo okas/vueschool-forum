@@ -32,6 +32,10 @@ async function getIconDefinitions(): Promise<IconDefinition[]> {
         m.faXmark,
         m.faCamera,
         m.faImagePortrait,
+        m.faUserCircle,
+        m.faUser,
+        m.faComments,
+        m.faComment,
       ];
     }
   );

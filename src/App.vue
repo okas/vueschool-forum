@@ -27,6 +27,10 @@ watchEffect(() => (isLoading.value = commonStore.isLoading));
     </transition>
   </router-view>
 
+  <router-view name="footer">
+    <app-footer />
+  </router-view>
+
   <app-notifications />
 </template>
 
