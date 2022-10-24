@@ -50,6 +50,10 @@ service cloud.firestore {
       allow read: if true
     }
 
+    match /common/stats {
+      allow create, update: if userIsLoggedIn()
+    }
+
     match /forums/{forum} {
       // TODO: Functionality not yet implemented.
       // allow create: if canWriteResx()

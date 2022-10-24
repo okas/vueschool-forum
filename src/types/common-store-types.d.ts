@@ -1,13 +1,13 @@
 import type { StatsVM } from "@/models/StatsVM";
 import type { Ref } from "vue";
 
-export interface MainStoreState {
-  stats: StatsVM;
+export interface CommonStoreState {
   isReady: Ref<boolean>;
   isLoading: Ref<boolean>;
+  stats: Ref<StatsVM | undefined>;
 }
 
-export interface MainStoreActions {
+export interface CommonStoreActions {
   setReady(state?: boolean): void;
   setLoading(state?: boolean): void;
 }

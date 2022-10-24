@@ -1,23 +1,32 @@
+import { getStatsRef } from "@/firebase/firebase-get-refs";
 import type { StatsVM } from "@/models/StatsVM";
 import type {
-  MainStoreActions,
-  MainStoreState,
+  CommonStoreActions,
+  CommonStoreState,
 } from "@/types/common-store-types";
 import useAcceptHmr from "@/utils/store-helpers";
+import { onSnapshot } from "@firebase/firestore";
+import { computedAsync } from "@vueuse/core";
 import { defineStore } from "pinia";
-import { reactive, ref } from "vue";
+import { ref } from "vue";
 
 export const useCommonStore = defineStore(
   "common-store",
-  (): MainStoreState & MainStoreActions => {
-    const stats = reactive<StatsVM>({
-      postsCount: 0,
-      threadsCount: 0,
-      usersCount: 0,
-      usersOnline: 0,
-    });
+  (): CommonStoreState & CommonStoreActions => {
     const isReady = ref(false);
     const isLoading = ref(true);
+
+    const _stats = ref<StatsVM | undefined>();
+
+    const stats = computedAsync(async () => {
+      onSnapshot(getStatsRef(), (docSnap) => {
+        _stats.value = docSnap.exists()
+          ? (docSnap.data() as StatsVM)
+          : undefined;
+      });
+
+      return _stats.value;
+    });
 
     function setReady(state = true) {
       isReady.value = state;
@@ -29,9 +38,9 @@ export const useCommonStore = defineStore(
     }
 
     return {
-      stats,
       isReady,
       isLoading,
+      stats,
       setReady,
       setLoading,
     };

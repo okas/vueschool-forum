@@ -1,11 +1,25 @@
+<script setup lang="ts">
+import { useCommonStore } from "@/stores/common-store";
+import { storeToRefs } from "pinia";
+
+const { stats } = storeToRefs(useCommonStore());
+</script>
+
 <template>
   <footer class="app-footer desktop-only">
     <div class="forum-stats">
       <ul>
-        <li><fa class="fa" icon="user-circle"></fa>47 users online</li>
-        <li><fa class="fa" icon="user"></fa>497 users registered</li>
-        <li><fa class="fa" icon="comments"></fa>49 threads</li>
-        <li><fa class="fa" icon="comment"></fa>763 posts</li>
+        <li>
+          <fa class="fa" icon="user-circle"></fa>{{ stats?.usersOnline ?? "no" }} users
+          online
+        </li>
+        <li>
+          <fa class="fa" icon="user"></fa>{{ stats?.usersCount ?? "no" }} users registered
+        </li>
+        <li>
+          <fa class="fa" icon="comments"></fa>{{ stats?.threadsCount ?? "no" }} threads
+        </li>
+        <li><fa class="fa" icon="comment"></fa>{{ stats?.postsCount ?? "no" }} posts</li>
       </ul>
     </div>
   </footer>

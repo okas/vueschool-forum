@@ -1,6 +1,7 @@
 import { fabDb } from "@/firebase";
 import { FabCollection } from "@/firebase/firebase-collections-enum";
 import { postVmConverter } from "@/firebase/firebase-converters";
+import { getStatsRef } from "@/firebase/firebase-get-refs";
 import { FirebaseSubscriptionManager } from "@/firebase/FirebaseSubscriptionManager";
 import {
   makeFirebaseFetchMultiDocsFn,
@@ -18,6 +19,7 @@ import { ok } from "@/utils/assert-helpers";
 import {
   nameForum,
   namePost,
+  nameStats,
   nameThread,
   nameUser,
 } from "@/utils/model-member-name-helpers";
@@ -73,6 +75,7 @@ export const usePostStore = defineStore(
       const threadRef = doc(fabDb, FabCollection.threads, threadId);
       const forumRef = doc(fabDb, FabCollection.forums, thread.forumId);
       const userRef = doc(fabDb, FabCollection.users, userStore.authUserId);
+      const statsRef = getStatsRef();
 
       const postDto: Omit<PostVm, "id" | "publishedAt"> & {
         publishedAt: FieldValue;
@@ -94,12 +97,9 @@ export const usePostStore = defineStore(
             [nameThread("firstPostId")]: postRef.id,
           }),
         })
-        .update(forumRef, {
-          [nameForum("lastPostId")]: postRef.id,
-        })
-        .update(userRef, {
-          [nameUser("postsCount")]: increment(1),
-        })
+        .update(forumRef, { [nameForum("lastPostId")]: postRef.id })
+        .update(userRef, { [nameUser("postsCount")]: increment(1) })
+        .update(statsRef, { [nameStats("postsCount")]: increment(1) })
         .commit();
 
       await fetchPost(postRef.id);

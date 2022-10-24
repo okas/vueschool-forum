@@ -1,6 +1,7 @@
 import { fabDb } from "@/firebase";
 import { FabCollection } from "@/firebase/firebase-collections-enum";
 import { threadVmConverter } from "@/firebase/firebase-converters";
+import { getStatsRef } from "@/firebase/firebase-get-refs";
 import { FirebaseSubscriptionManager } from "@/firebase/FirebaseSubscriptionManager";
 import {
   makeFirebaseFetchMultiDocsFn,
@@ -19,7 +20,12 @@ import type {
 } from "@/types/threadVm-types";
 import { countBy, findById } from "@/utils/array-helpers";
 import { ok } from "@/utils/assert-helpers";
-import { namePost } from "@/utils/model-member-name-helpers";
+import {
+  nameForum,
+  namePost,
+  nameStats,
+  nameUser,
+} from "@/utils/model-member-name-helpers";
 import useAcceptHmr from "@/utils/store-helpers";
 import {
   arrayUnion,
@@ -100,15 +106,13 @@ export const useThreadStore = defineStore(
       const threadRef = doc(collection(fabDb, FabCollection.threads));
       const forumRef = doc(fabDb, FabCollection.forums, forumId);
       const userRef = doc(fabDb, FabCollection.users, userStore.authUserId);
+      const statsRef = getStatsRef();
 
       await writeBatch(fabDb)
         .set(threadRef, threadDto)
-        .update(forumRef, {
-          threads: arrayUnion(threadRef.id),
-        })
-        .update(userRef, {
-          threadsCount: increment(1),
-        })
+        .update(forumRef, { [nameForum("threads")]: arrayUnion(threadRef.id) })
+        .update(userRef, { [nameUser("threadsCount")]: increment(1) })
+        .update(statsRef, { [nameStats("threadsCount")]: increment(1) })
         .commit();
 
       // Guarantees, that next step, createPost has required data for it's job.
