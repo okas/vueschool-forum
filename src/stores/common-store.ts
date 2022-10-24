@@ -1,4 +1,4 @@
-import { getStatsRef } from "@/firebase/firebase-get-refs";
+import { getStatsDocRef } from "@/firebase/firebase-get-refs";
 import type { StatsVM } from "@/models/StatsVM";
 import type {
   CommonStoreActions,
@@ -19,7 +19,7 @@ export const useCommonStore = defineStore(
     const _stats = ref<StatsVM | undefined>();
 
     const stats = computedAsync(async () => {
-      onSnapshot(getStatsRef(), (docSnap) => {
+      onSnapshot(getStatsDocRef(), (docSnap) => {
         _stats.value = docSnap.exists()
           ? (docSnap.data() as StatsVM)
           : undefined;

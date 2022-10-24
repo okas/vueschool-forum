@@ -1,7 +1,14 @@
 import { fabDb } from "@/firebase";
 import { FabCollection } from "@/firebase/firebase-collections-enum";
 import { postVmConverter } from "@/firebase/firebase-converters";
-import { getStatsRef } from "@/firebase/firebase-get-refs";
+import {
+  getForumDocRef,
+  getPostColRef,
+  getPostDocRef,
+  getStatsDocRef,
+  getThreadDocRef,
+  getUserDocRef,
+} from "@/firebase/firebase-get-refs";
 import { FirebaseSubscriptionManager } from "@/firebase/FirebaseSubscriptionManager";
 import {
   makeFirebaseFetchMultiDocsFn,
@@ -26,7 +33,6 @@ import {
 import useAcceptHmr from "@/utils/store-helpers";
 import {
   arrayUnion,
-  collection,
   doc,
   getDoc,
   getDocs,
@@ -71,11 +77,11 @@ export const usePostStore = defineStore(
 
       ok(thread, `Cannot get thread by id "${threadId}".`);
 
-      const postRef = doc(collection(fabDb, FabCollection.posts));
-      const threadRef = doc(fabDb, FabCollection.threads, threadId);
-      const forumRef = doc(fabDb, FabCollection.forums, thread.forumId);
-      const userRef = doc(fabDb, FabCollection.users, userStore.authUserId);
-      const statsRef = getStatsRef();
+      const postRef = doc(getPostColRef());
+      const threadRef = getThreadDocRef(threadId);
+      const forumRef = getForumDocRef(thread.forumId);
+      const userRef = getUserDocRef(userStore.authUserId);
+      const statsRef = getStatsDocRef();
 
       const postDto: Omit<PostVm, "id" | "publishedAt"> & {
         publishedAt: FieldValue;
@@ -108,7 +114,7 @@ export const usePostStore = defineStore(
     }
 
     async function editPost({ id, text }: PostVMEdit) {
-      const postRef = doc(fabDb, FabCollection.posts, id);
+      const postRef = getPostDocRef(id);
 
       return updateDoc(postRef, {
         text,
@@ -146,16 +152,13 @@ export const usePostStore = defineStore(
 
       if (lastFetchedPostId) {
         const startAfterDocSnap = await getDoc(
-          doc(fabDb, FabCollection.posts, lastFetchedPostId)
+          getPostDocRef(lastFetchedPostId)
         );
         constraints.splice(-1, 0, startAfter(startAfterDocSnap));
       }
 
       const docs = await getDocs(
-        query(
-          collection(fabDb, FabCollection.posts),
-          ...constraints
-        ).withConverter(postVmConverter)
+        query(getPostColRef(), ...constraints).withConverter(postVmConverter)
       );
 
       docs.forEach((qryDocSnap) => {

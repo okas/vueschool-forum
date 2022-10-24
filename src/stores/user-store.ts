@@ -1,6 +1,7 @@
-import { fabAuth, fabDb, fabStor } from "@/firebase";
+import { fabAuth, fabStor } from "@/firebase";
 import { FabCollection } from "@/firebase/firebase-collections-enum";
 import { userVmConverter } from "@/firebase/firebase-converters";
+import { getUserDocRef } from "@/firebase/firebase-get-refs";
 import { FirebaseSubscriptionManager } from "@/firebase/FirebaseSubscriptionManager";
 import {
   makeFirebaseFetchMultiDocsFn,
@@ -30,7 +31,6 @@ import {
   signOut as faBSignOut,
 } from "@firebase/auth";
 import {
-  doc,
   FieldValue,
   getDoc,
   serverTimestamp,
@@ -123,7 +123,7 @@ export const useUserStore = defineStore(
         user: { uid, ...rest },
       } = await signInWithPopup(fabAuth, provider);
 
-      const userDoc = await getDoc(doc(fabDb, FabCollection.users, uid));
+      const userDoc = await getDoc(getUserDocRef(uid));
 
       if (!userDoc.exists()) {
         await createUser(uid, {
@@ -172,7 +172,7 @@ export const useUserStore = defineStore(
         threadsCount: 0,
       };
 
-      await setDoc(_getRef(id), userDto);
+      await setDoc(getUserDocRef(id), userDto);
 
       return id;
     }
@@ -211,7 +211,7 @@ export const useUserStore = defineStore(
         website,
       };
 
-      const userRef = _getRef(id);
+      const userRef = getUserDocRef(id);
 
       await updateDoc(userRef, editDto);
 
@@ -226,7 +226,7 @@ export const useUserStore = defineStore(
 
       const avatar = await _uploadAvatar(avatarFile, id);
 
-      const userRef = _getRef(id);
+      const userRef = getUserDocRef(id);
 
       await updateDoc(userRef, { avatar });
 
@@ -281,10 +281,6 @@ export const useUserStore = defineStore(
     function clearDbSubscriptionAuthUser() {
       _dbUnsubscribeAuthUser?.();
       _dbUnsubscribeAuthUser = null;
-    }
-
-    function _getRef(id: string) {
-      return doc(fabDb, FabCollection.users, id);
     }
 
     async function _uploadAvatar(fileObj: File, uid: string): Promise<string> {

@@ -1,7 +1,14 @@
 import { fabDb } from "@/firebase";
 import { FabCollection } from "@/firebase/firebase-collections-enum";
 import { threadVmConverter } from "@/firebase/firebase-converters";
-import { getStatsRef } from "@/firebase/firebase-get-refs";
+import {
+  getForumDocRef,
+  getPostDocRef,
+  getStatsDocRef,
+  getThreadColRef,
+  getThreadDocRef,
+  getUserDocRef,
+} from "@/firebase/firebase-get-refs";
 import { FirebaseSubscriptionManager } from "@/firebase/FirebaseSubscriptionManager";
 import {
   makeFirebaseFetchMultiDocsFn,
@@ -29,7 +36,6 @@ import {
 import useAcceptHmr from "@/utils/store-helpers";
 import {
   arrayUnion,
-  collection,
   doc,
   increment,
   serverTimestamp,
@@ -103,10 +109,10 @@ export const useThreadStore = defineStore(
         slug: "",
       };
 
-      const threadRef = doc(collection(fabDb, FabCollection.threads));
-      const forumRef = doc(fabDb, FabCollection.forums, forumId);
-      const userRef = doc(fabDb, FabCollection.users, userStore.authUserId);
-      const statsRef = getStatsRef();
+      const threadRef = doc(getThreadColRef());
+      const forumRef = getForumDocRef(forumId);
+      const userRef = getUserDocRef(userStore.authUserId);
+      const statsRef = getStatsDocRef();
 
       await writeBatch(fabDb)
         .set(threadRef, threadDto)
@@ -133,8 +139,8 @@ export const useThreadStore = defineStore(
         `Edit thread error: thread: "${threadId}" is missing "firstPostId".`
       );
 
-      const postRef = doc(fabDb, FabCollection.posts, thread.firstPostId);
-      const threadRef = doc(fabDb, FabCollection.threads, threadId);
+      const postRef = getPostDocRef(thread.firstPostId);
+      const threadRef = getThreadDocRef(threadId);
 
       await writeBatch(fabDb)
         .update(threadRef, { title })
