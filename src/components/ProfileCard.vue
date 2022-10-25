@@ -32,7 +32,10 @@ const memberSince = computed(() =>
 const avatarTitle = computed(() => getProfileTitle(props.authUser.username));
 
 const avatarToShow = computed<string | undefined>(
-  () => userSelectedAvatarFileData.value?.objUrl ?? props.authUser.avatar
+  () =>
+    userSelectedAvatarFileData.value?.objUrl ??
+    props.authUser.avatar ??
+    undefined
 );
 
 const lasVisited = computed(() => diffFromUnix(props.authUser.lastVisitAt));
@@ -97,7 +100,7 @@ function storeFileDateToState(dto: IFileInfo) {
 
     <p class="text-lead" v-text="authUser.name" />
 
-    <p class="text-justify" v-text="authUser.bio ?? 'No bio specified'" />
+    <p class="text-center" v-text="authUser.bio ?? 'No bio specified'" />
 
     <p>
       <fa style="color: #57ad8d" icon="circle-user" />
@@ -135,7 +138,7 @@ function storeFileDateToState(dto: IFileInfo) {
     </p>
   </div>
 
-  <p class="text-xsmall text-faded text-center">
+  <p class="text-xsmall text-faded text-center text-warning" style="color: red">
     <span v-text="`Member since ${memberSince}, `" />
     <span v-text="`last visited ${lasVisited}`" />
   </p>
