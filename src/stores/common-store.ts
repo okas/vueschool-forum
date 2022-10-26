@@ -6,7 +6,6 @@ import type {
 } from "@/types/common-store-types";
 import useAcceptHmr from "@/utils/store-helpers";
 import { onSnapshot } from "@firebase/firestore";
-import { computedAsync } from "@vueuse/core";
 import { defineStore } from "pinia";
 import { ref } from "vue";
 
@@ -16,17 +15,7 @@ export const useCommonStore = defineStore(
     const isReady = ref(false);
     const isLoading = ref(true);
 
-    const _stats = ref<StatsVM | undefined>();
-
-    const stats = computedAsync(async () => {
-      onSnapshot(getStatsDocRef(), (docSnap) => {
-        _stats.value = docSnap.exists()
-          ? (docSnap.data() as StatsVM)
-          : undefined;
-      });
-
-      return _stats.value;
-    });
+    const stats = ref<StatsVM | undefined>();
 
     function setReady(state = true) {
       isReady.value = state;
@@ -36,6 +25,10 @@ export const useCommonStore = defineStore(
     function setLoading(state = true) {
       isLoading.value = state;
     }
+
+    onSnapshot(getStatsDocRef(), (docSnap) => {
+      stats.value = docSnap.exists() ? (docSnap.data() as StatsVM) : undefined;
+    });
 
     return {
       isReady,
