@@ -73,7 +73,7 @@ const avatarToShow = computed<string | undefined>(
 
 const avatarTitle = computed(() => getProfileTitle(editorObj.username));
 
-watch(
+const unWatchDirty = watch(
   editorObj,
   ({ id, name, username, bio, email, website, location, avatar, twitter }) => {
     const result =
@@ -92,6 +92,8 @@ watch(
 );
 
 function save() {
+  unWatchDirty?.();
+
   emits("update:isDirty", false);
 
   editorObj.avatarFile = userSelectedAvatarFileData?.value?.file;
@@ -100,6 +102,8 @@ function save() {
 }
 
 function cancel() {
+  unWatchDirty?.();
+
   emits("cancel");
 }
 
