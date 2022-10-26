@@ -7,8 +7,8 @@ export const confirmInjectKey = Symbol("model confirm cb") as InjectionKey<
 </script>
 
 <script setup lang="ts">
-import { useConfirmDialog } from "@vueuse/core";
-import { inject } from "vue";
+import { useConfirmDialog, useScrollLock } from "@vueuse/core";
+import { inject, watch } from "vue";
 import { onBeforeRouteLeave } from "vue-router";
 
 const props = defineProps<{
@@ -16,6 +16,10 @@ const props = defineProps<{
 }>();
 
 const { isRevealed, reveal, confirm } = useConfirmDialog<boolean, boolean, boolean>();
+
+const isLocked = useScrollLock(window.document.body);
+
+watch(isRevealed, (newVal) => (isLocked.value = newVal), { immediate: true });
 
 // Allows optional callback injection from consumer, to notify confirmation answer.
 const injectedConfirmCb = inject(confirmInjectKey, undefined);
