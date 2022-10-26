@@ -8,6 +8,7 @@ import { useCommonStore } from "@/stores/common-store";
 import { usePostStore } from "@/stores/post-store";
 import { useUserStore } from "@/stores/user-store";
 import type { UserVmEditForInput } from "@/types/userVm-types";
+import { ok } from "@/utils/assert-helpers";
 import { useAsyncState } from "@vueuse/core";
 import { storeToRefs } from "pinia";
 import { computed, onUpdated, ref } from "vue";
@@ -36,7 +37,13 @@ const { isReady } = useAsyncState(async () => {
   commonStore.setReady();
 }, undefined);
 
+let tempEditorContent = ref<UserVmEditForInput | undefined>();
+
 const hasDirtyForm = ref(false);
+const isEmailChanged = ref(false);
+const isReAuthNeeded = ref(false);
+const isReAuthVisible = ref(false);
+const isReAuthenticating = ref(false);
 
 const lastPostsDesc = computed<Array<PostVm>>(() =>
   [...(getAuthUser.value?.posts ?? [])].sort(
@@ -76,9 +83,18 @@ async function goToHome() {
 async function save(dto: UserVmEditForInput) {
   commonStore.setLoading();
 
+  if (isEmailChanged.value) {
+    await initiateReAuth(dto);
+  } else {
+    await saveUserData(dto);
+  }
+}
+
+async function saveUserData(dto: UserVmEditForInput) {
   try {
     await userStore.editUser(dto);
   } catch (err) {
+    console.error(err);
     const errStr = String(err);
 
     addNotification(
@@ -96,11 +112,70 @@ async function save(dto: UserVmEditForInput) {
     return;
   }
 
+  addNotification({ message: "User successfully updated" }, 2500);
+
   router.push(routeToReturn);
 }
 
 function cancel() {
   router.push(routeToReturn);
+}
+
+async function initiateReAuth(dto: UserVmEditForInput) {
+  tempEditorContent.value = dto;
+  isReAuthNeeded.value = true;
+  isReAuthVisible.value = true;
+}
+
+function setReAuthingStatus(state = true) {
+  isReAuthenticating.value = state;
+  commonStore.setLoading();
+}
+
+async function doReAuth(email: string, password: string) {
+  setReAuthingStatus();
+
+  try {
+    await userStore.reAuthenticate(email, password);
+  } catch (err) {
+    console.error(err);
+    const errStr = String(err);
+
+    addNotification(
+      {
+        message: errStr.includes("auth/user-mismatch")
+          ? "Incorrect username or password."
+          : errStr,
+        type: "error",
+      },
+      5000
+    );
+
+    tempEditorContent.value = undefined;
+
+    return;
+  } finally {
+    reAuthEnded();
+  }
+
+  ok(
+    tempEditorContent.value,
+    "Developer error: on reauth, user data is missing."
+  );
+
+  await saveUserData(tempEditorContent.value);
+}
+
+function reAuthCancelled() {
+  tempEditorContent.value = undefined;
+  hasDirtyForm.value = true;
+  reAuthEnded();
+}
+
+function reAuthEnded() {
+  isReAuthVisible.value = false;
+  setReAuthingStatus(false);
+  commonStore.setLoading(false);
 }
 </script>
 
@@ -112,6 +187,7 @@ function cancel() {
       <profile-card-editor
         v-else
         v-model:is-dirty="hasDirtyForm"
+        v-model:is-email-changed="isEmailChanged"
         :user="getAuthUser!"
         @save="save"
         @cancel="cancel"
@@ -132,6 +208,13 @@ function cancel() {
       <app-infinite-scroll :done="hasNoMorePosts" @reached-end="fetchUserPosts" />
     </div>
   </div>
+
+  <profile-card-editor-reauth-modal
+    :is-waiting="isReAuthenticating"
+    :reveal-condition="isReAuthVisible"
+    @cancel="reAuthCancelled"
+    @submit="doReAuth"
+  />
 
   <app-nav-confirmation-modal v-if="edit" :reveal-condition="hasDirtyForm" />
 </template>

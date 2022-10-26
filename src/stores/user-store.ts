@@ -27,10 +27,13 @@ import { nameUser } from "@/utils/model-member-name-helpers";
 import useAcceptHmr from "@/utils/store-helpers";
 import {
   createUserWithEmailAndPassword,
+  EmailAuthProvider,
   GoogleAuthProvider,
+  reauthenticateWithCredential,
   signInWithEmailAndPassword as faBSingInWithEmailAndPassword,
   signInWithPopup,
   signOut as faBSignOut,
+  updateEmail as faBUpdateEmail,
   type UserMetadata,
 } from "@firebase/auth";
 import { getDoc, setDoc, updateDoc } from "@firebase/firestore";
@@ -156,6 +159,20 @@ export const useUserStore = defineStore(
       await faBSignOut(fabAuth);
     }
 
+    async function reAuthenticate(
+      email: string,
+      password: string
+    ): Promise<void> {
+      const credential = EmailAuthProvider.credential(email, password);
+
+      ok(
+        fabAuth.currentUser,
+        "Error re-authenticating: no authenticated user!"
+      );
+
+      await reauthenticateWithCredential(fabAuth.currentUser, credential);
+    }
+
     async function registerUserWithEmailAndPassword({
       email,
       password,
@@ -234,11 +251,19 @@ export const useUserStore = defineStore(
         website,
       };
 
+      await updateEmail(email);
+
       const userRef = getUserDocRef(id);
 
       await updateDoc(userRef, editDto);
 
       fetchAfter && (await fetchUser(id));
+    }
+
+    async function updateEmail(email: string): Promise<void> {
+      ok(fabAuth.currentUser, "Error updating email: no authenticated user!");
+
+      return faBUpdateEmail(fabAuth.currentUser, email);
     }
 
     async function updateAvatar({
@@ -335,9 +360,11 @@ export const useUserStore = defineStore(
       signInWithEmailAndPassword,
       signInWithGoogle,
       signOut,
+      reAuthenticate,
       registerUserWithEmailAndPassword,
       createUser,
       editUser,
+      updateEmail,
       updateAvatar,
       fetchUser,
       fetchUsers,

@@ -31,6 +31,7 @@ export interface UserStoreActions extends StoreBaseActions {
   signInWithEmailAndPassword(email: string, password: string): Promise<void>;
   signInWithGoogle(): Promise<void>;
   signOut(): Promise<void>;
+  reAuthenticate(email: string, password: string): Promise<void>;
   /**
    * Registers user using Firebase Auth `password` method.
    * @param dto
@@ -58,6 +59,7 @@ export interface UserStoreActions extends StoreBaseActions {
    * @returns URL of the uploaded avatar image file.
    */
   updateAvatar(dto: UserVMEditAvatarFile): Promise<string>;
+  updateEmail(email: string): Promise<void>;
   fetchUser(id: string): Promise<UserVM | undefined>;
   fetchUsers(ids?: Array<string>): Promise<Array<UserVM>>;
   /**

@@ -20,6 +20,7 @@ const emits = defineEmits<{
   (e: "save", dto: UserVmEditForInput): void;
   (e: "cancel"): void;
   (e: "update:isDirty", state: boolean): void;
+  (e: "update:isEmailChanged", state: boolean): void;
 }>();
 
 const rulesMap = new Map<string, RuleExpression<unknown>>([
@@ -91,8 +92,16 @@ const unWatchDirty = watch(
   }
 );
 
+const unWatchEmail = watch(
+  () => editorObj.email,
+  (newVal) => {
+    emits("update:isEmailChanged", (newVal ?? "") !== (props.user.email.trim() ?? ""));
+  }
+);
+
 function save() {
   unWatchDirty?.();
+  unWatchEmail?.();
 
   emits("update:isDirty", false);
 
@@ -103,6 +112,7 @@ function save() {
 
 function cancel() {
   unWatchDirty?.();
+  unWatchEmail?.();
 
   emits("cancel");
 }
