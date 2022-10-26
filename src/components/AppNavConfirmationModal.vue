@@ -36,20 +36,20 @@ function confirmHandler(userResponse: boolean) {
 
 <template>
   <teleport to="body">
-    <div class="model-container">
+    <section class="modal">
       <transition name="fade" mode="out-in">
-        <div v-if="isRevealed" class="modal-overlay" />
+        <div v-if="isRevealed" class="modal-container" />
       </transition>
 
       <transition name="scale" mode="out-in">
         <div v-if="isRevealed" class="modal-dialog">
-          <section class="model-content">
+          <header class="model-content">
             <h2>
               Are you sure you want to leave?
               <br />
               Unsaved changes will be lost!
             </h2>
-          </section>
+          </header>
 
           <div class="modal-action btn-group">
             <button class="btn btn-red" @click.prevent="confirmHandler(true)">Yes</button>
@@ -60,21 +60,11 @@ function confirmHandler(userResponse: boolean) {
           </div>
         </div>
       </transition>
-    </div>
+    </section>
   </teleport>
 </template>
 
 <style scoped lang="scss">
-.modal-overlay {
-  z-index: 20;
-  left: 0;
-  top: 0;
-  position: fixed;
-  background-color: #7c7c7c7a;
-  width: 100%;
-  height: 100%;
-}
-
 .modal-dialog {
   padding: 2rem;
   background-color: blanchedalmond;
@@ -84,7 +74,7 @@ function confirmHandler(userResponse: boolean) {
   top: 50%;
   width: 500px;
   max-width: 100%;
-  z-index: 30;
+  z-index: 300;
   transform: translate(-50%, -50%);
 }
 
