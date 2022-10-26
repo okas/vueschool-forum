@@ -1,5 +1,5 @@
 //= ================
-// clear && node firestore-fix-user.js
+// clear && node firestore-fix-users.js
 //= ================
 
 import { cert, initializeApp } from "firebase-admin/app";

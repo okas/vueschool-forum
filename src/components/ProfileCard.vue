@@ -138,8 +138,8 @@ function storeFileDateToState(dto: IFileInfo) {
     </p>
   </div>
 
-  <p class="text-xsmall text-faded text-center text-warning" style="color: red">
-    <span v-text="`Member since ${memberSince}, `" />
+  <p class="text-xsmall text-faded text-center">
+    <span v-text="`ember since ${memberSince}, `" />
     <span v-text="`last visited ${lasVisited}`" />
   </p>
 

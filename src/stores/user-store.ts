@@ -12,6 +12,7 @@ import type {
   UserStoreActions,
   UserStoreGetters,
   UserStoreState,
+  UserVMCreateLoginStats,
 } from "@/types/user-store-types";
 import type {
   UserVMEditAvatarFile,
@@ -22,6 +23,7 @@ import type {
 } from "@/types/userVm-types";
 import { findById } from "@/utils/array-helpers";
 import { ok } from "@/utils/assert-helpers";
+import { nameUser } from "@/utils/model-member-name-helpers";
 import useAcceptHmr from "@/utils/store-helpers";
 import {
   createUserWithEmailAndPassword,
@@ -29,14 +31,9 @@ import {
   signInWithEmailAndPassword as faBSingInWithEmailAndPassword,
   signInWithPopup,
   signOut as faBSignOut,
+  type UserMetadata,
 } from "@firebase/auth";
-import {
-  FieldValue,
-  getDoc,
-  serverTimestamp,
-  setDoc,
-  updateDoc,
-} from "@firebase/firestore";
+import { getDoc, setDoc, updateDoc } from "@firebase/firestore";
 import type { Unsubscribe } from "@firebase/util";
 import {
   getDownloadURL,
@@ -113,25 +110,45 @@ export const useUserStore = defineStore(
     }
 
     async function signInWithEmailAndPassword(email: string, password: string) {
-      await faBSingInWithEmailAndPassword(fabAuth, email, password);
+      const {
+        user: {
+          uid,
+          metadata: { lastSignInTime },
+        },
+      } = await faBSingInWithEmailAndPassword(fabAuth, email, password);
+
+      if (!lastSignInTime) {
+        warn(`Warning: user login metadata is missing, cannot set "lastlogin"`);
+        return;
+      }
+
+      await updateDoc(getUserDocRef(uid), {
+        [nameUser("lastVisitAt")]: new Date(lastSignInTime),
+      });
     }
 
     async function signInWithGoogle() {
       const provider = getAppGoogleProvider();
 
       const {
-        user: { uid, ...rest },
+        user: { uid, email, displayName, photoURL, metadata },
       } = await signInWithPopup(fabAuth, provider);
 
       const userDoc = await getDoc(getUserDocRef(uid));
 
+      const loginStatsDto = _getLoginStats(metadata);
+
       if (!userDoc.exists()) {
-        await createUser(uid, {
-          email: rest.email ?? "",
-          name: rest.displayName ?? "",
-          username: rest.email ?? "",
-          avatar: rest.photoURL ?? undefined,
-        });
+        await createUser(
+          uid,
+          {
+            email: email ?? "",
+            name: displayName ?? "",
+            username: email ?? "",
+            avatar: photoURL ?? undefined,
+          },
+          loginStatsDto
+        );
       }
     }
 
@@ -145,31 +162,37 @@ export const useUserStore = defineStore(
       ...rest
     }: UserVMRegWithEmailAndPassword) {
       const {
-        user: { uid },
+        user: { uid, metadata },
       } = await createUserWithEmailAndPassword(fabAuth, email, password);
 
-      return await createUser(uid, {
-        email,
-        ...rest,
-      });
+      const loginStatsDto = _getLoginStats(metadata);
+
+      return await createUser(
+        uid,
+        {
+          email,
+          ...rest,
+        },
+        loginStatsDto
+      );
     }
 
     async function createUser(
       id: string,
-      { email, avatar = null, avatarFile, ...rest }: UserVMNewFormInput
+      { email, avatar = null, avatarFile, ...rest }: UserVMNewFormInput,
+      loginStatsDto?: UserVMCreateLoginStats
     ): Promise<string> {
       avatarFile && (avatar = await _uploadAvatar(avatarFile, id));
 
-      const userDto: UserVMNewFormInput & {
-        registeredAt: FieldValue;
-      } & Pick<UserVM, "usernameLower" | "postsCount" | "threadsCount"> = {
+      const userDto: UserVMNewFormInput &
+        Pick<UserVM, "usernameLower" | "postsCount" | "threadsCount"> = {
         ...rest,
         email: email.toLowerCase(),
         avatar,
         usernameLower: rest.username.toLowerCase(),
-        registeredAt: serverTimestamp(),
         postsCount: 0,
         threadsCount: 0,
+        ...loginStatsDto,
       };
 
       await setDoc(getUserDocRef(id), userDto);
@@ -291,6 +314,16 @@ export const useUserStore = defineStore(
       const { ref } = await uploadBytes(storageRef, fileObj);
 
       return getDownloadURL(ref);
+    }
+
+    function _getLoginStats({
+      lastSignInTime,
+      creationTime,
+    }: UserMetadata): UserVMCreateLoginStats {
+      return {
+        lastVisitAt: lastSignInTime ? new Date(lastSignInTime) : undefined,
+        registeredAt: creationTime ? new Date(creationTime) : undefined,
+      };
     }
 
     return {

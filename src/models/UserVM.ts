@@ -4,9 +4,9 @@ export class UserVM extends HasId {
   name!: string;
   avatar?: string | null;
   email!: string;
-  lastVisitAt!: number;
+  lastVisitAt!: number | Date;
   isModerator?: boolean;
-  registeredAt!: number;
+  registeredAt!: number | Date;
   username!: string;
   usernameLower!: string;
   bio?: string | null;

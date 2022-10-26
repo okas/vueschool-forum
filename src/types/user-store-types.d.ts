@@ -49,6 +49,7 @@ export interface UserStoreActions extends StoreBaseActions {
   createUser(
     id: string,
     dto: UserVMNewFormInput,
+    loginStatsDto?: UserVMCreateLoginStats,
     fetchAfter?: boolean
   ): Promise<string>;
   editUser(dto: UserVmEditForInput, fetchAfter?: boolean): Promise<void>;
@@ -65,4 +66,9 @@ export interface UserStoreActions extends StoreBaseActions {
    */
   fetchAuthUser(): Promise<UserVM | undefined>;
   clearDbSubscriptionAuthUser(): void;
+}
+
+export interface UserVMCreateLoginStats {
+  lastVisitAt: Date | undefined;
+  registeredAt: Date | undefined;
 }
