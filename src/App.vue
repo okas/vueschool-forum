@@ -63,4 +63,8 @@ watchEffect(() => (isLoading.value = commonStore.isLoading));
 #nprogress .bar {
   background-color: rgb(0 247 255) !important ;
 }
+
+html {
+  padding-right: calc(17px - (100vw - 100%));
+}
 </style>
