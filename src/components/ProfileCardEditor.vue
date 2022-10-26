@@ -17,10 +17,10 @@ const props = defineProps<{
 }>();
 
 const emits = defineEmits<{
-  (e: "save", dto: UserVmEditForInput): void;
+  (e: "save", dto: UserVmEditForInput, password?: string): void;
   (e: "cancel"): void;
   (e: "update:isDirty", state: boolean): void;
-  (e: "update:isEmailChanged", state: boolean): void;
+  (e: "update:isCredentialChanged", state: boolean): void;
 }>();
 
 const rulesMap = new Map<string, RuleExpression<unknown>>([
@@ -49,6 +49,8 @@ const rulesMap = new Map<string, RuleExpression<unknown>>([
 const commonStore = useCommonStore();
 
 const userSelectedAvatarFileData = ref<IFileInfo | undefined>();
+
+const password = ref<string | undefined>();
 
 const { id, name, username, bio, email, website, location, avatar, twitter } = toRaw(
   props.user
@@ -92,29 +94,36 @@ const unWatchDirty = watch(
   }
 );
 
-const unWatchEmail = watch(
-  () => editorObj.email,
-  (newVal) => {
-    emits("update:isEmailChanged", (newVal ?? "") !== (props.user.email.trim() ?? ""));
+const unWatchCredential = watch(
+  [() => editorObj.email, () => password.value],
+  ([newEmail, newPswd]) => {
+    emits(
+      "update:isCredentialChanged",
+      (newEmail ?? "") !== (props.user.email.trim() ?? "") ||
+        (newPswd?.trim() ?? "") !== ""
+    );
   }
 );
 
 function save() {
-  unWatchDirty?.();
-  unWatchEmail?.();
+  unWatchAll();
 
   emits("update:isDirty", false);
 
   editorObj.avatarFile = userSelectedAvatarFileData?.value?.file;
 
-  emits("save", editorObj);
+  emits("save", editorObj, password.value);
 }
 
 function cancel() {
-  unWatchDirty?.();
-  unWatchEmail?.();
+  unWatchAll();
 
   emits("cancel");
+}
+
+function unWatchAll() {
+  unWatchDirty?.();
+  unWatchCredential?.();
 }
 
 function storeFileDateToState(dto: IFileInfo | undefined) {
@@ -187,6 +196,15 @@ async function loadLocationOptions() {
         :rules="rulesMap.get('email')"
         label="Email"
       />
+
+      <app-form-field
+        v-model="password"
+        name="password"
+        type="password"
+        label="Password"
+      />
+
+      <hr />
 
       <app-form-field
         v-model="editorObj.website"

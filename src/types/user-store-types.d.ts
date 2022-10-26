@@ -53,13 +53,18 @@ export interface UserStoreActions extends StoreBaseActions {
     loginStatsDto?: UserVMCreateLoginStats,
     fetchAfter?: boolean
   ): Promise<string>;
-  editUser(dto: UserVmEditForInput, fetchAfter?: boolean): Promise<void>;
+  editUser(
+    dto: UserVmEditForInput,
+    fetchAfter?: boolean,
+    password?: string
+  ): Promise<void>;
   /**
    * Uploads avatar file to Google Firebase Storage and returns URL of it.
    * @returns URL of the uploaded avatar image file.
    */
   updateAvatar(dto: UserVMEditAvatarFile): Promise<string>;
   updateEmail(email: string): Promise<void>;
+  updatePassword(password: string): Promise<void>;
   fetchUser(id: string): Promise<UserVM | undefined>;
   fetchUsers(ids?: Array<string>): Promise<Array<UserVM>>;
   /**

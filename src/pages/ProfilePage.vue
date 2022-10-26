@@ -39,8 +39,10 @@ const { isReady } = useAsyncState(async () => {
 
 let tempEditorContent = ref<UserVmEditForInput | undefined>();
 
+const newPassword = ref<string | undefined>();
+
 const hasDirtyForm = ref(false);
-const isEmailChanged = ref(false);
+const isCredentialChanged = ref(false);
 const isReAuthNeeded = ref(false);
 const isReAuthVisible = ref(false);
 const isReAuthenticating = ref(false);
@@ -80,32 +82,23 @@ async function goToHome() {
   await router.push({ name: "Home" });
 }
 
-async function save(dto: UserVmEditForInput) {
+async function save(dto: UserVmEditForInput, password?: string) {
   commonStore.setLoading();
 
-  if (isEmailChanged.value) {
+  if (isCredentialChanged.value) {
+    newPassword.value = password;
     await initiateReAuth(dto);
   } else {
     await saveUserData(dto);
   }
 }
 
-async function saveUserData(dto: UserVmEditForInput) {
+async function saveUserData(dto: UserVmEditForInput, password?: string) {
   try {
-    await userStore.editUser(dto);
+    await userStore.editUser(dto, undefined, password);
   } catch (err) {
     console.error(err);
-    const errStr = String(err);
-
-    addNotification(
-      {
-        message: errStr.includes("storage/unauthorized")
-          ? "Avatar file cannot be uploaded (permission problem)."
-          : errStr,
-        type: "error",
-      },
-      5000
-    );
+    notifyUserUpdateError(err as unknown as Error);
 
     commonStore.setLoading(false);
 
@@ -139,17 +132,7 @@ async function doReAuth(email: string, password: string) {
     await userStore.reAuthenticate(email, password);
   } catch (err) {
     console.error(err);
-    const errStr = String(err);
-
-    addNotification(
-      {
-        message: errStr.includes("auth/user-mismatch")
-          ? "Incorrect username or password."
-          : errStr,
-        type: "error",
-      },
-      5000
-    );
+    notifyReAuthError(err as unknown as Error);
 
     tempEditorContent.value = undefined;
 
@@ -163,11 +146,56 @@ async function doReAuth(email: string, password: string) {
     "Developer error: on reauth, user data is missing."
   );
 
-  await saveUserData(tempEditorContent.value);
+  await saveUserData(tempEditorContent.value, newPassword.value);
+}
+
+function notifyReAuthError(err: Error) {
+  const errStr = String(err);
+
+  const credentialMismatch: string | undefined = `${
+    errStr.includes("auth/user-mismatch")
+      ? "email"
+      : errStr.includes("auth/wrong-password")
+      ? "password"
+      : undefined
+  }`;
+
+  addNotification(
+    {
+      message: credentialMismatch ? `Incorrect ${credentialMismatch}` : errStr,
+      type: "error",
+    },
+    5000
+  );
+}
+
+function notifyUserUpdateError(err: Error) {
+  const errStr = String(err);
+
+  const weakMarker = "auth/weak-password";
+  const passwdPolicy = errStr.includes(weakMarker)
+    ? errStr
+        .split(":")[2]
+        .slice(0, -weakMarker.length - 3) // 3 compensates parentheses and '.'
+        .trim()
+    : undefined;
+
+  addNotification(
+    {
+      message: passwdPolicy
+        ? passwdPolicy
+        : errStr.includes("storage/unauthorized")
+        ? "Avatar file cannot be uploaded (permission problem)."
+        : errStr,
+      type: "error",
+    },
+    5000
+  );
 }
 
 function reAuthCancelled() {
   tempEditorContent.value = undefined;
+  newPassword.value = undefined;
   hasDirtyForm.value = true;
   reAuthEnded();
 }
@@ -187,7 +215,7 @@ function reAuthEnded() {
       <profile-card-editor
         v-else
         v-model:is-dirty="hasDirtyForm"
-        v-model:is-email-changed="isEmailChanged"
+        v-model:is-credential-changed="isCredentialChanged"
         :user="getAuthUser!"
         @save="save"
         @cancel="cancel"
@@ -210,6 +238,7 @@ function reAuthEnded() {
   </div>
 
   <profile-card-editor-reauth-modal
+    v-if="edit"
     :is-waiting="isReAuthenticating"
     :reveal-condition="isReAuthVisible"
     @cancel="reAuthCancelled"

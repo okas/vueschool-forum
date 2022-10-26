@@ -34,6 +34,7 @@ import {
   signInWithPopup,
   signOut as faBSignOut,
   updateEmail as faBUpdateEmail,
+  updatePassword as faBUpdatePassword,
   type UserMetadata,
 } from "@firebase/auth";
 import { getDoc, setDoc, updateDoc } from "@firebase/firestore";
@@ -230,7 +231,8 @@ export const useUserStore = defineStore(
         twitter = null,
         website = null,
       }: UserVmEditForInput,
-      fetchAfter = false
+      fetchAfter = false,
+      password?: string
     ) {
       avatarFile && (avatar = await _uploadAvatar(avatarFile, id));
 
@@ -252,6 +254,7 @@ export const useUserStore = defineStore(
       };
 
       await updateEmail(email);
+      password && (await updatePassword(password));
 
       const userRef = getUserDocRef(id);
 
@@ -261,9 +264,17 @@ export const useUserStore = defineStore(
     }
 
     async function updateEmail(email: string): Promise<void> {
-      ok(fabAuth.currentUser, "Error updating email: no authenticated user!");
+      ok(email, getBadCredentialErrorMsg("email"));
+      ok(fabAuth.currentUser, getNoAuthUserErrorMsg("email"));
 
       return faBUpdateEmail(fabAuth.currentUser, email);
+    }
+
+    async function updatePassword(password: string): Promise<void> {
+      ok(password, getBadCredentialErrorMsg("password"));
+      ok(fabAuth.currentUser, getNoAuthUserErrorMsg("password"));
+
+      return faBUpdatePassword(fabAuth.currentUser, password);
     }
 
     async function updateAvatar({
@@ -365,6 +376,7 @@ export const useUserStore = defineStore(
       createUser,
       editUser,
       updateEmail,
+      updatePassword,
       updateAvatar,
       fetchUser,
       fetchUsers,
@@ -386,4 +398,12 @@ function getAppGoogleProvider() {
   });
 
   return provider;
+}
+
+function getBadCredentialErrorMsg(credential: string): string {
+  return `Error updating credential: no new ${credential} provided!`;
+}
+
+function getNoAuthUserErrorMsg(credential: string): string {
+  return `Error updating ${credential}: no authenticated user!`;
 }

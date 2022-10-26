@@ -47,37 +47,43 @@ function cancelReauth() {
 
       <transition name="scale" mode="out-in">
         <div v-if="isRevealed" class="modal-dialog">
-          <section class="model-content">
-            <h2>Log in again to change your Email</h2>
-          </section>
+          <header>
+            <h2>Please confirm old credentials</h2>
+          </header>
 
-          <vee-form @submit="reAuthenticate">
-            <app-form-field
-              v-model="email"
-              name="reauth-email"
-              type="email"
-              rules="required|email"
-              label="Email"
-            />
+          <section>Just to be sure we are going to be on safe side 😊</section>
 
-            <app-form-field
-              v-model="password"
-              name="reauth-password"
-              type="password"
-              rules="required"
-              label="Password"
-            />
+          <section>
+            <vee-form @submit="reAuthenticate">
+              <app-form-field
+                v-model="email"
+                name="reauth-email"
+                type="email"
+                rules="required|email"
+                label="Email"
+              />
 
-            <div class="modal-footer">
-              <app-spinner v-if="isWaiting" class="loader-indicator" />
+              <app-form-field
+                v-model="password"
+                name="reauth-password"
+                type="password"
+                rules="required"
+                label="Password"
+              />
 
-              <div class="modal-action btn-group">
-                <button class="btn btn-green">Log in</button>
+              <div class="modal-footer">
+                <app-spinner v-if="isWaiting" class="loader-indicator" />
 
-                <button class="btn btn-blue" @click.prevent="cancelReauth">cancel</button>
+                <div class="modal-action btn-group">
+                  <button class="btn btn-green">Log in</button>
+
+                  <button class="btn btn-blue" @click.prevent="cancelReauth">
+                    cancel
+                  </button>
+                </div>
               </div>
-            </div>
-          </vee-form>
+            </vee-form>
+          </section>
         </div>
       </transition>
     </div>
