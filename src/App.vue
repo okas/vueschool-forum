@@ -28,7 +28,7 @@ watchEffect(() => (isLoading.value = commonStore.isLoading));
   </router-view>
 
   <router-view name="footer">
-    <app-footer />
+    <the-footer />
   </router-view>
 
   <app-notifications />
