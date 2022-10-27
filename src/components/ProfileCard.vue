@@ -6,11 +6,13 @@ import { useUserStore } from "@/stores/user-store";
 import type { IFileInfo } from "@/types/avatar-utility-types";
 import type { UserVMWithActivity } from "@/types/userVm-types";
 import {
-  diffFromUnix,
-  formatMonthYearFromUnix,
+  extractFromUnixTS,
+  formatTimeMonthYear,
 } from "@/utils/dateTimeDiffFormat";
 import { getCountPhrase, getProfileTitle } from "@/utils/misc";
+import { useTimeAgo } from "@vueuse/core";
 import { computed, ref, watch } from "vue";
+import { RouterLink } from "vue-router";
 
 const props = defineProps<{
   authUser: UserVMWithActivity;
@@ -26,7 +28,7 @@ const userSelectedAvatarFileData = ref<IFileInfo | undefined>();
 const isLoading = ref(false);
 
 const memberSince = computed(() =>
-  formatMonthYearFromUnix(props.authUser.registeredAt)
+  formatTimeMonthYear(props.authUser.registeredAt)
 );
 
 const avatarTitle = computed(() => getProfileTitle(props.authUser.username));
@@ -38,7 +40,10 @@ const avatarToShow = computed<string | undefined>(
     undefined
 );
 
-const lasVisited = computed(() => diffFromUnix(props.authUser.lastVisitAt));
+const lasVisited = useTimeAgo(extractFromUnixTS(props.authUser.lastVisitAt), {
+  showSecond: true,
+  updateInterval: 10_000,
+});
 
 watch(userSelectedAvatarFileData, async (fileInfo) => {
   if (!fileInfo?.file) {
@@ -139,7 +144,7 @@ function storeFileDateToState(dto: IFileInfo) {
   </div>
 
   <p class="text-xsmall text-faded text-center">
-    <span v-text="`ember since ${memberSince}, `" />
+    <span v-text="`member since ${memberSince}, `" />
     <span v-text="`last visited ${lasVisited}`" />
   </p>
 

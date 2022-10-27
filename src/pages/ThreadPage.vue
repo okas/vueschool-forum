@@ -180,7 +180,7 @@ commonStore.setReady();
       <span style="margin-top: 0.125rem">
         By
         <a href="#" class="link-unstyled">{{ pageViewModel.thread.authorName }}</a
-        >, <app-date :timestamp="pageViewModel.thread.lastPostAt" />.
+        >, <app-date :time="pageViewModel.thread.lastPostAt" />.
       </span>
       <span
         style="margin-top: 0.125rem"
