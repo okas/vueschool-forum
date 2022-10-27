@@ -26,14 +26,8 @@ async function signIn() {
   try {
     await userStore.signInWithEmailAndPassword(email.value, password.value);
   } catch (err) {
-    const errStr = String(err);
-    addNotification(
-      {
-        message: errStr.includes("auth/missing-email") ? "Missing email" : errStr,
-        type: "error",
-      },
-      5000
-    );
+    console.error(err);
+    notifyAuthFailure((err as unknown) as Error);
 
     return;
   }
@@ -50,6 +44,24 @@ function navigate() {
   const { redirectTo } = route.query;
 
   router.push(getValOrFirst(redirectTo) ?? { name: "Home" });
+}
+
+function notifyAuthFailure(err: Error) {
+  const errStr = String(err);
+
+  addNotification(
+    {
+      message: errStr.includes("auth/missing-email")
+        ? "Missing email"
+        : errStr.includes("auth/user-not-found")
+        ? "User not found"
+        : errStr.includes("auth/wrong-password")
+        ? "Incorrect password"
+        : errStr,
+      type: "error",
+    },
+    5000
+  );
 }
 
 commonStore.setReady();
