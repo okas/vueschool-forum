@@ -111,7 +111,7 @@ function countPhrase(length: number) {
           {{ truncate(threadTitle, 30) }}
         </router-link>
         <p class="text-xsmall">
-          By <a href="#">{{ username }}</a
+          By <a href="#" :title="userFullName">{{ username }}</a
           >, <app-date :time="publishedAt" />
         </p>
       </div>
