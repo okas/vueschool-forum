@@ -18,9 +18,10 @@ const userStore = useUserStore();
 
 const postToEdit = ref<string | undefined>();
 
-const renderData = computed<Array<IPostListItemProps>>(() => [
-  ...props.posts.map(transform),
-]);
+// @ts-expect-error Filter result is not considered correctly!
+const renderData = computed<Array<IPostListItemProps>>(() =>
+  props.posts.map(transform).filter((x) => x)
+);
 
 function transform({
   id: postId,

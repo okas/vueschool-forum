@@ -83,12 +83,12 @@ async function fetchPagedViewModels(): Promise<void> {
 
   await userStore.fetchUsers(threads.map(({ userId }) => userId));
 
-  const renderData = [
-    ...threads
-      .filter(({ forumId }) => forumId === props.forumId)
-      .map(({ id }) => threadStore.getThreadMetaInfoFn(id)),
-  ];
+  const renderData = threads
+    .filter(({ forumId }) => forumId === props.forumId)
+    .map(({ id }) => threadStore.getThreadMetaInfoFn(id))
+    .filter((x) => x);
 
+  // @ts-expect-error Filter result is not considered correctly!
   currentPageOfThreads.value = renderData;
 }
 </script>

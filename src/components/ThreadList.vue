@@ -16,9 +16,10 @@ const emits = defineEmits<{
 
 const { getUserByIdFn } = useUserStore();
 
-const renderData = computed<Array<IThreadListItem>>(() => [
-  ...props.threads.map(transform),
-]);
+// @ts-expect-error Filter result is not considered correctly!
+const renderData = computed<Array<IThreadListItem>>(() =>
+  props.threads.map(transform).filter((x) => x)
+);
 
 const pageAtPaginator = computed({
   get() {
