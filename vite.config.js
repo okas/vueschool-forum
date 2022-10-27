@@ -2,6 +2,7 @@ import vue from "@vitejs/plugin-vue";
 import { fileURLToPath, URL } from "node:url";
 import Components from "unplugin-vue-components/vite";
 import { defineConfig } from "vite";
+import { chunkSplitPlugin } from "vite-plugin-chunk-split";
 import eslintPlugin from "vite-plugin-eslint";
 import {
   VeeValidateResolver,
@@ -16,6 +17,9 @@ export default defineConfig({
     Components({
       dts: "src/types/components.d.ts",
       resolvers: [VeeValidateResolver(), Vu3PaginationResolver()],
+    }),
+    chunkSplitPlugin({
+      strategy: "single-vendor",
     }),
   ],
   resolve: {
