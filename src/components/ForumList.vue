@@ -112,7 +112,7 @@ function countPhrase(length: number) {
         </router-link>
         <p class="text-xsmall">
           By <a href="#">{{ username }}</a
-          >, <app-date :timestamp="publishedAt" />
+          >, <app-date :time="publishedAt" />
         </p>
       </div>
     </div>

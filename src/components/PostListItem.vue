@@ -83,13 +83,13 @@ function clickEdit() {
     <div class="post-date text-faded">
       <span v-if="edited?.at">
         edited
-        <em><app-date :timestamp="edited?.at" /></em>
+        <em><app-date :time="edited?.at" /></em>
         |
       </span>
 
       <span>
         created
-        <em><app-date :timestamp="publishedAt" /></em>
+        <em><app-date :time="publishedAt" /></em>
       </span>
     </div>
 

@@ -31,7 +31,7 @@ const profileTitlePhrase = computed(() => getProfileTitle(props.userName));
         </router-link>
       </p>
       <p class="text-faded text-xsmall">
-        By <a href="#" v-text="userName" />, <app-date :timestamp="publishedAt" />.
+        By <a href="#" v-text="userName" />, <app-date :time="publishedAt" />.
       </p>
     </div>
 
@@ -49,7 +49,7 @@ const profileTitlePhrase = computed(() => getProfileTitle(props.userName));
           <a href="#" v-text="userName" />
         </p>
         <p class="text-xsmall text-faded">
-          <app-date :timestamp="publishedAt" />
+          <app-date :time="publishedAt" />
         </p>
       </div>
     </div>

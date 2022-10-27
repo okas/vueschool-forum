@@ -1,11 +1,22 @@
 <script setup lang="ts">
-import { diffFromUnix, formatFromUnix } from "@/utils/dateTimeDiffFormat";
+import { extractFromUnixTS, formatTime } from "@/utils/date-time-helpers";
+import { useTimeAgo } from "@vueuse/core";
 
-defineProps<{
-  timestamp: number;
-}>();
+const props = withDefaults(
+  defineProps<{
+    time: number | Date;
+    updateInterval?: number;
+  }>(),
+  { updateInterval: 10_000 }
+);
+
+const { timeAgo } = useTimeAgo(extractFromUnixTS(props.time), {
+  controls: true,
+  showSecond: true,
+  updateInterval: props.updateInterval,
+});
 </script>
 
 <template>
-  <span :title="formatFromUnix(timestamp)" v-text="diffFromUnix(timestamp)" />
+  <span :title="formatTime(time)" v-text="timeAgo" />
 </template>
