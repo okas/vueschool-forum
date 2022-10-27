@@ -5,6 +5,7 @@ import { usePostStore } from "@/stores/post-store";
 import { useThreadStore } from "@/stores/thread-store";
 import { useUserStore } from "@/stores/user-store";
 import type { UserStoreActions } from "@/types/user-store-types";
+import { useTitle } from "@vueuse/core";
 import {
   START_LOCATION,
   type NavigationGuardWithThis,
@@ -52,7 +53,11 @@ async function verifyGuardedRoute(
     : undefined;
 }
 
-export const afterEachGuard: NavigationHookAfter = () => {
+export const afterEachGuard: NavigationHookAfter = ({ meta }) => {
+  useTitle((meta?.title as string) ?? "Vue School", {
+    titleTemplate: "%s🔹Vue School",
+  });
+
   const commonStore = useCommonStore();
 
   // If any component of current rout is still loading,

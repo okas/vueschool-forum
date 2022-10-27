@@ -6,43 +6,46 @@ const rawRoutes: Readonly<RouteRecordRaw[]> = [
   {
     path: "/",
     name: "Home",
+    meta: { title: "Home" },
     component: () => import("@/pages/HomePage.vue"),
     beforeEnter: routeBeforeEnterGuards.get("Home"),
   },
   {
     path: "/signin",
     name: "SignIn",
-    meta: { requiresGuest: true },
+    meta: { title: "Sign in", requiresGuest: true },
     component: () => import("@/pages/SignInPage.vue"),
   },
   {
     path: "/signout",
     name: "SignOut",
+    meta: { title: "Sign out" },
     component: () => undefined, // To fullfil `RouteRecordRaw` API.
     beforeEnter: routeBeforeEnterGuards.get("SignOut"),
   },
   {
     path: "/register",
     name: "Register",
-    meta: { requiresGuest: true },
+    meta: { title: "Register", requiresGuest: true },
     component: () => import("@/pages/RegisterPage.vue"),
   },
   {
     path: "/me",
     name: "Profile",
-    meta: { requiresAuth: true },
+    meta: { title: "Profile", requiresAuth: true },
     component: () => import("@/pages/ProfilePage.vue"),
   },
   {
     path: "/me/edit",
     name: "ProfileEdit",
-    meta: { requiresAuth: true },
+    meta: { title: "Edit Profile", requiresAuth: true },
     component: () => import("@/pages/ProfilePage.vue"),
     props: { edit: true },
   },
   {
     path: "/category/:categoryId",
     name: "Category",
+    meta: { title: "Category" },
     component: () => import("@/pages/CategoryPage.vue"),
     props: true,
     beforeEnter: routeBeforeEnterGuards.get("Category"),
@@ -60,6 +63,7 @@ const rawRoutes: Readonly<RouteRecordRaw[]> = [
   {
     path: "/forum/:forumId",
     name: "ForumPaged",
+    meta: { title: "Forum" },
     component: () => import("@/pages/ForumPage.vue"),
     props: true,
     beforeEnter: routeBeforeEnterGuards.get("Forum"),
@@ -67,7 +71,7 @@ const rawRoutes: Readonly<RouteRecordRaw[]> = [
   {
     path: "/forum/:forumId/thread/create",
     name: "ThreadCreate",
-    meta: { requiresAuth: true },
+    meta: { title: "New Thread", requiresAuth: true },
     component: () => import("@/pages/ThreadCreatePage.vue"),
     props: true,
     beforeEnter: routeBeforeEnterGuards.get("ThreadCreate"),
@@ -83,6 +87,7 @@ const rawRoutes: Readonly<RouteRecordRaw[]> = [
   {
     path: "/thread/:threadId",
     name: "Thread",
+    meta: { title: "Thread" },
     component: () => import("@/pages/ThreadPage.vue"),
     props: true,
     beforeEnter: routeBeforeEnterGuards.get("Thread"),
@@ -91,6 +96,7 @@ const rawRoutes: Readonly<RouteRecordRaw[]> = [
     // will match everything and put it under `$route.params.pathMatch`
     path: "/:pathMatch(.*)*",
     name: "NotFound",
+    meta: { title: "Not Found" },
     component: () => import("@/pages/SoftNotFoundPage.vue"),
   },
 ];
