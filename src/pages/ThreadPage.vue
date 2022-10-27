@@ -17,6 +17,7 @@ import { onBeforeRouteLeave, useRoute } from "vue-router";
 interface IPageViewModel {
   thread: ThreadVMWithMeta;
   posts: Array<PostVm>;
+  lastPostUsername: string;
 }
 
 const props = defineProps<{
@@ -52,7 +53,14 @@ const pageViewModel = computed<IPageViewModel | undefined>(() => {
     .filter(({ threadId }) => threadId === thread.id)
     .sort(({ publishedAt: a }, { publishedAt: b }) => a - b);
 
-  return { thread, posts } as IPageViewModel;
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+  const lastPost = postStore.items.find(({ id }) => id === thread.lastPostId)!;
+
+  const { name: lastPostUsername } = userStore.items.find(
+    ({ id }) => id === lastPost.userId
+  );
+
+  return { thread, lastPostUsername, posts } as IPageViewModel;
 });
 
 const statsPhrase = computed<string | undefined>(() => {
@@ -178,9 +186,10 @@ commonStore.setReady();
 
     <p style="display: flex; justify-content: space-between">
       <span style="margin-top: 0.125rem">
-        By
+        Created by
         <a href="#" class="link-unstyled">{{ pageViewModel.thread.authorName }}</a
-        >, <app-date :time="pageViewModel.thread.lastPostAt" />.
+        >, last post at <app-date :time="pageViewModel.thread.lastPostAt" /> by
+        {{ pageViewModel.lastPostUsername }}.
       </span>
       <span
         style="margin-top: 0.125rem"
