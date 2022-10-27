@@ -1,22 +1,21 @@
 <script setup lang="ts">
 import { useCommonStore } from "@/stores/common-store";
 import type { IFileInfo } from "@/types/avatar-utility-types";
-import { useFileDialog, type UseFileDialogOptions } from "@vueuse/core";
+import { useFileDialog } from "@vueuse/core";
 import { computed, onUnmounted, reactive, ref, watch } from "vue";
 
 const props = withDefaults(
   defineProps<{
     title?: string;
-    fileDialogOptions?: UseFileDialogOptions;
     avatarSrc?: string | undefined;
+    multiple?: boolean;
+    accept?: string;
   }>(),
   {
     title: "Avatar",
-    fileDialogOptions: {
-      multiple: false,
-      accept: "image/*",
-    },
     avatarSrc: undefined,
+    multiple: false,
+    accept: "image/*",
   }
 );
 
@@ -33,9 +32,7 @@ const avatarPreviewImgDataUrl = ref<string | undefined>();
 
 const createdObjectUrls = reactive<Array<string>>([]);
 
-const singleFile = computed<File | undefined>(
-  () => files.value?.item(0) ?? undefined
-);
+const singleFile = computed<File | undefined>(() => files.value?.item(0) ?? undefined);
 
 watch(singleFile, async (newFile) => {
   if (!newFile) {
@@ -53,7 +50,7 @@ watch(singleFile, async (newFile) => {
 onUnmounted(() => createdObjectUrls.forEach((url) => URL.revokeObjectURL(url)));
 
 function openDialog() {
-  open(props.fileDialogOptions);
+  open({ accept: props.accept, multiple: props.multiple });
 }
 </script>
 
